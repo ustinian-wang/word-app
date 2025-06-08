@@ -1,0 +1,18 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- 每个页面的右下角应该有个悬浮按钮
+- 悬浮按钮可以拖拽移动，
+- 按钮点击后会展开菜单，包含如下菜单
+    - 图片识别
+        - 点击后调用摄像头，功能和 [Recognize.vue](mdc:src/views/Recognize.vue) 一样
+        - 但是会直接跳转 [Recognize.vue](mdc:src/views/Recognize.vue) 并展示识别后的效果
+        - 按钮功能和 [Recognize.vue](mdc:src/views/Recognize.vue) 有些重复了，帮我抽取逻辑复用下
+- 点击页面其他地方会收起菜单
+- 再补充多几个菜单，总共有4个菜单，并做好边界检测：
+    - 如果按钮在左侧被点击，则自动挪到左侧，然后展出剩余的4个功能菜单
+
+
+    - 如果按钮在右侧，则同理

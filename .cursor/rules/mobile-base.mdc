@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- 帮我处理移动端常见问题，例如：
+    - 点击链接出现引用
+    - 双击页面放大
+
+    - 键盘兼容等问题

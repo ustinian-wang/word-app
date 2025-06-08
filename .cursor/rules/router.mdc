@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- 默认路由是访问 @index.vue
+- 右下角有个悬浮的菜单，可以拖拽，点击后会展开一圈周围的菜单，包含了 [Recognize.vue](mdc:src/views/Recognize.vue) [WordBooks.vue](mdc:src/views/WordBooks.vue) [Words.vue](mdc:src/views/Words.vue) [Index.vue](mdc:src/views/Index.vue) 的入口
