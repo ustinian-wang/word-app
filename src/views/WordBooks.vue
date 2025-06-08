@@ -1,12 +1,7 @@
 <template>
   <div class="wordbooks-page">
     <header class="wb-header">
-      <h2>词库管理</h2>
-      <button class="upload-btn" @click="$refs.excelInput.click()">
-        <svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px;"><path d="M12 5v14m7-7H5" stroke="#3578e5" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-        导入
-      </button>
-      <input type="file" accept=".xlsx,.xls" @change="onExcelUpload" style="display:none" ref="excelInput" />
+      <h2 class="title">词库管理</h2>
     </header>
     <div v-if="wordBooks.length === 0" class="empty-tip">
       暂无词库，请导入或添加新词库
@@ -27,6 +22,13 @@
         </div>
       </li>
     </ul>
+    <div class="add-button-container">
+      <button class="upload-btn" @click="$refs.excelInput.click()">
+        <svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px;"><path d="M12 5v14m7-7H5" stroke="#3578e5" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        导入
+      </button>
+      <input type="file" accept=".xlsx,.xls" @change="onExcelUpload" style="display:none" ref="excelInput" />
+    </div>
   </div>
 </template>
 
@@ -95,26 +97,41 @@ export default {
 
 <style scoped>
 .wordbooks-page {
-  padding: 16px 0 80px 0;
+  /* padding: 16px 0 80px 0; */
   max-width: 480px;
   margin: 0 auto;
   width: 100%; 
   background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .wb-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 18px 10px 18px;
+  justify-content: center;
+  padding: 10px 18px 10px 18px;
   border-bottom: 1px solid #e0e7ef;
   margin-bottom: 10px;
   background: #f8fafc;
+  height: 56px;
+  display: flex;
+  align-items: center;
 }
-.wb-header h2 {
+.title {
   font-size: 18px;
   font-weight: 700;
   color: #3578e5;
   margin: 0;
+}
+.empty-tip {
+  color: #aaa;
+  text-align: center;
+  margin: 32px 0;
+  font-size: 15px;
+}
+.add-button-container {
+  margin-top: auto;
+  padding: 10px 18px;
 }
 .upload-btn {
   background: #eaf2fd;
@@ -132,12 +149,6 @@ export default {
 }
 .upload-btn:active {
   background: #d6e6fa;
-}
-.empty-tip {
-  color: #aaa;
-  text-align: center;
-  margin: 32px 0;
-  font-size: 15px;
 }
 .book-list {
   list-style: none;
