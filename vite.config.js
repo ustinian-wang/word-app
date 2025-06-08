@@ -36,7 +36,7 @@ export default defineConfig({
       '@': resolve(__dirname, 'src')
     }
   },
-  base: '/你的仓库名/',
+  base: '/word-app',
   build: {
     outDir: 'dist'
   }
