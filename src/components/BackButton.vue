@@ -1,5 +1,5 @@
 <template>
-  <button class="back-btn" @click="goBack" title="返回上一页">
+  <button v-if="canGoBack" class="back-btn" @click="goBack" title="返回上一页">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3578e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M15 18l-6-6 6-6"/>
     </svg>
@@ -9,6 +9,20 @@
 <script>
 export default {
   name: 'BackButton',
+  data() {
+    return {
+      canGoBack: false
+    };
+  },
+  watch: {
+    '$route': {
+      immediate: true,
+      handler(to, from) {
+        // 检查是否有历史记录
+        this.canGoBack = window.history.length > 1;
+      }
+    }
+  },
   methods: {
     goBack() {
       this.$router.back();
