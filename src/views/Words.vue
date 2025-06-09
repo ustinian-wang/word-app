@@ -23,6 +23,14 @@
         <div class="word-zh" :class="{ 'mosaic': !isZhRevealed }" @click="revealZh">
           {{ word.zh }}
         </div>
+        <div class="audio-btn" @click="playAudio" title="播放发音">
+          <Icon 
+            icon="mdi:volume-high" 
+            width="32" 
+            height="32"
+            :style="{ color: '#3578e5'}"
+          />
+        </div>
       </div>
     </div>
     <div class="card-actions">
@@ -82,6 +90,7 @@
 import { getWordBooks, getCurrentBookIndex, setCurrentBookIndex, getCurrentWords, getBookProgress, setBookProgress } from '../kits/words';
 import FinishModal from '../components/FinishModal.vue';
 import { Icon } from '@iconify/vue2';
+import { getWordAudioUrl } from '../kits/words';
 
 const MOVE_SCALE = 1;
 const MoveDef = {
@@ -112,7 +121,8 @@ export default {
       currentGroup: 0, // 当前组号
       learnedArr: [], // 已学过的单词索引
       groupCount: 1, // 总组数
-      finishAll: false // 是否全部学完
+      finishAll: false, // 是否全部学完
+      audioPlayer: null // 音频播放器
     };
   },
   computed: {
@@ -295,6 +305,22 @@ export default {
     },
     goHome() {
       this.$router.push('/');
+    },
+    playAudio() {
+      const currentWord = this.sliderWords[1];
+      if (!currentWord?.en) return;
+      
+      // 使用 Google TTS API
+      const audioUrl = getWordAudioUrl(currentWord.en);
+      
+      if (this.audioPlayer) {
+        this.audioPlayer.pause();
+      }
+      
+      this.audioPlayer = new Audio(audioUrl);
+      this.audioPlayer.play().catch(err => {
+        console.error('Failed to play audio:', err);
+      });
     }
   },
   mounted() {
@@ -303,6 +329,10 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('storage', this.loadProgress);
+    if (this.audioPlayer) {
+      this.audioPlayer.pause();
+      this.audioPlayer = null;
+    }
   }
 };
 </script>
@@ -584,5 +614,19 @@ export default {
 .action-btn:active {
   background: #f0f4fa;
 }
-
+.audio-btn {
+  margin-top: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #f0f4fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.audio-btn:active {
+  background: #e0e7ef;
+}
 </style>

@@ -39,3 +39,12 @@ export function setBookProgress(bookId, progress) {
   all[bookId] = progress;
   localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
 }
+
+/**
+ * @description 获取单词的音频url
+ * @param {string} word 
+ * @returns 
+ */
+export function getWordAudioUrl(word) {
+  return `https://api.dictionaryapi.dev/media/pronunciations/en/${word}-us.mp3`;
+}

@@ -7506,10 +7506,3 @@ category	 n. 种类， 类， 类别
 rival	 adj. 竞争的，对抗的 n. 竞争对手，敌手；可与匹敌的人 vt. 与 …竞争； 与…匹敌， 比得上
 intend	 vt. 想要， 打算； 意思是； 打算使
 snap	 v. 咔嚓折断，啪地绷断；吧嗒一声；猛咬；厉声说话，怒声责骂 adj. 仓促的， 突然的 n. 吧嗒声；快照`
-
-export function getCet4Words() {
-    return cet4.split('\n').map(line => {
-        const [en, zh] = line.split('	');
-        return { en, zh };
-    });
-}
