@@ -353,7 +353,7 @@ export default {
   min-height: 100vh;
   height: 100vh;
   box-sizing: border-box;
-  padding-bottom: 60px;
+  /* padding-bottom: 60px; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -365,7 +365,7 @@ export default {
   position: absolute;
   top: 0; left: 0;
   width: 100vw;
-  height: calc(100vh - 56px);
+  /* height: calc(100vh - 56px); */
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -423,13 +423,14 @@ export default {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 68px;
+  /* bottom: 68px; */
   height: 32px;
+  top: 10vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  z-index: 9999;
+  z-index: 10;
   pointer-events: none;
   opacity: 0.92;
 }
@@ -603,7 +604,7 @@ export default {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 110px;
+  bottom: 15vh;
   display: flex;
   justify-content: center;
   gap: 38px;
