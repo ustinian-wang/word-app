@@ -6,6 +6,7 @@ const API_BASE =
     ? `http://${__LOCAL_IP__}:${typeof __API_PORT__ !== 'undefined' ? __API_PORT__ : 3001}/`
     : 'http://localhost:3001/';
 request.defaults.baseURL = API_BASE;
+request.defaults.timeout = 60000;
 
 /**
  * @description 识别图片

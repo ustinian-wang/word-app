@@ -1,13 +1,13 @@
 <template>
   <div id="app" class="recognize-page">
     <div class="recognize-header">
-      <span class="recognize-title">图片识别 Demo</span>
+      <span class="recognize-title">图片识别</span>
     </div>
     <div class="recognize-card-group">
       <div class="recognize-card upload-card">
         <div class="upload-dropzone" @click="triggerFileInput">
           <svg class="upload-icon" width="48" height="48" viewBox="0 0 48 48"><g fill="none" stroke="#3578e5" stroke-width="2.5"><rect x="6" y="6" width="36" height="36" rx="8" stroke-dasharray="6 4"/><path d="M24 16v16m0 0l-6-6m6 6l6-6" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
-          <div class="upload-text">点击上传图片</div>
+          <div class="upload-text">点击上传图片识别</div>
         </div>
         <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="onFileChange" />
       </div>
@@ -22,7 +22,7 @@
 import RecognitionResult from '../components/RecognitionResult.vue';
 import { recognizeApi } from '../apis';
 import { $message } from '../kits/toast';
-import { file2Base64 } from '../kits/img';
+import { compressImage } from '../kits/img';
 
 export default {
   name: 'Recognize',
@@ -42,9 +42,10 @@ export default {
     async onFileChange(e) {
       const file = e.target.files[0];
       if (!file) return;
-      const base64 = await file2Base64(file);
+      const maxWidth = Math.min(window.innerWidth, 800);
+      const maxHeight = maxWidth * 2;
+      const base64 = await compressImage(file, maxWidth, maxHeight, 0.8);
       this.onImageUploaded(base64);
-      // 清空input以便连续上传同一张图片
       this.$refs.fileInput.value = '';
     },
     async onImageUploaded(base64) {
@@ -55,14 +56,18 @@ export default {
         const res = await recognizeApi({ ImageBase64: base64 });
         if(res.data.success) {
           $message.success('识别成功');
-          this.products = res.data.data.Products;
+          if(res?.data?.data?.Products?.length === 0){
+            $message.error('没有识别到物体');
+          }else{
+            this.products = res.data.data.Products;
+          }
         } else {
           $message.error('识别失败');
-          alert('识别失败');
+          // alert('识别失败');
         }
       } catch (e) {
         $message.error('识别失败');
-        alert('识别失败');
+        // alert('识别失败');
       }
       this.$forceUpdate();
     }
