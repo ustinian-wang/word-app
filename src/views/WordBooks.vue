@@ -11,18 +11,20 @@
         <div class="book-info">
           <span class="book-name">{{ book.name }}</span>
           <span class="book-count">{{ book.words.length }}词</span>
-          <span v-if="progressMap[book.id] !== undefined" class="book-progress">{{ progressMap[book.id] }}%</span>
+          <span v-if="progressMap[book.id] !== undefined" class="book-progress">
+            {{ progressMap[book.id].percent }}% 已学{{ progressMap[book.id].learned }}词
+          </span>
         </div>
         <div class="book-actions">
           <button v-if="idx !== currentBookIdx" class="switch-btn" @click="selectBook(idx)">切换</button>
           <span v-else class="current-label">当前</span>
-          <button class="delete-btn" @click="removeBook(idx)">
+          <button v-if="false" class="delete-btn" @click="removeBook(idx)">
             <svg width="16" height="16" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6" stroke="#e55" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
           </button>
         </div>
       </li>
     </ul>
-    <div class="add-button-container">
+    <div v-if="false" class="add-button-container">
       <button class="upload-btn" @click="$refs.excelInput.click()">
         <svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:4px;"><path d="M12 5v14m7-7H5" stroke="#3578e5" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
         导入
@@ -42,7 +44,7 @@ export default {
     return {
       wordBooks: getWordBooks(),
       currentBookIdx: getCurrentBookIndex(),
-      progressMap: {}, // { [bookId]: percent }
+      progressMap: {}, // { [bookId]: { learned: number, percent: string } }
     };
   },
   created() {
@@ -87,7 +89,10 @@ export default {
       const map = {};
       for (const book of this.wordBooks) {
         const progress = getBookProgress(book.id);
-        map[book.id] = Math.round((progress.percent || 0) * 100);
+        map[book.id] = {
+          learned: progress.learned?.length || 0,
+          percent: ((progress.percent || 0) * 100).toFixed(2)
+        };
       }
       this.progressMap = map;
     }
@@ -224,6 +229,6 @@ export default {
 .book-progress {
   font-size: 12px;
   color: #4f8cff;
-  margin-left: 8px;
+  /* margin-left: 8px; */
 }
 </style>

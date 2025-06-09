@@ -1,5 +1,6 @@
 // import * as XLSX from 'xlsx';
 import { builtinWordBooks } from '@/wordbooks/builtin';
+import { cloneRequest } from '@ustinian-wang/kit';
 
 const WORD_BOOKS_KEY = 'myWordBooks';
 const CURRENT_BOOK_IDX_KEY = 'currentWordBookIdx';
