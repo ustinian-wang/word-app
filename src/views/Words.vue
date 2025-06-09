@@ -20,9 +20,7 @@
         :style="sliderStyle(idx)"
       >
         <div class="word-en">{{ word.en }}</div>
-        <div class="word-zh" :class="{ 'mosaic': !isZhRevealed }" @click="revealZh">
-          {{ word.zh }}
-        </div>
+        
         <div class="audio-btn" @click="playAudio" title="播放发音">
           <Icon 
             icon="mdi:volume-high" 
@@ -30,6 +28,9 @@
             height="32"
             :style="{ color: '#3578e5'}"
           />
+        </div>
+        <div class="word-zh" :class="{ 'mosaic': !isZhRevealed }" @click="revealZh">
+          <div v-for="item in parseZhAsArr(word.zh)" :key="item" class="word-zh-item">{{ item }}</div>
         </div>
       </div>
     </div>
@@ -145,6 +146,16 @@ export default {
     }
   },
   methods: {
+    parseZhAsArr(zh) {
+      function splitTaggedText(text) {
+        const regex = /([a-z]*\.\s[^a-z]*)/gi;
+        const matches = text.match(regex);
+        return matches ? matches.map(item => item.trim()) : [];
+      }
+
+
+      return splitTaggedText(zh);
+    },
     sliderStyle(idx) {
       const base = (idx - 1) * 100;
       const move = idx === 0 || idx === 2 ? 0 : (this.deltaX / window.innerWidth) * 100;
@@ -385,13 +396,14 @@ export default {
   font-size: 40px;
   font-weight: bold;
   color: #3578e5;
-  margin-bottom: 24px;
+  /* margin-bottom: 24px; */
 }
 .word-zh {
   font-size: 28px;
   color: #333;
   cursor: pointer;
   transition: filter 0.2s;
+  margin-top: 24px;
 }
 .word-zh.mosaic {
   color: transparent;
