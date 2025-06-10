@@ -6,10 +6,11 @@ Vue.use(Vuex);
  * @description
  */
 export const STUDY_STATUS_DEF = {
-    DEFAULT: 0,
-    LEARNING: 1,
-    LEARNED: 2,
-    FORGOT: 3,
+    DEFAULT: 0, // 默认
+    LEARNING: 1, // 学习中
+    LEARNED: 2, // 学习结束
+    REVIEWING: 3, // 复习中
+    REVIEWED: 4, // 复习结束
 };
 
 export default new Vuex.Store({

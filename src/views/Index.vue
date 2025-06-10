@@ -12,17 +12,9 @@
                 <div class="sentence-en">“{{ dailySentence.en }}”</div>
                 <div class="sentence-zh">{{ dailySentence.zh }}</div>
             </div>
-            <div v-if="study_status === STUDY_STATUS_DEF.LEARNED">
-                <button class="start-btn" @click="goWords">
-                    {{ buttonText }}
-                </button>
-                <button class="start-btn" @click="goWords">
-                    {{ buttonText }}
-                </button>
-            </div>
-            <div v-else>
-                <button class="start-btn" @click="goWords">
-                    复习
+            <div class="f_button_group" >
+                <button v-for="option in goOptions" :key="option.status" class="start-btn" @click="option.action">
+                    {{ option.text }}
                 </button>
             </div>
          
@@ -52,13 +44,117 @@
                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                 this.$router.push('/words');
             },
+            goNext(status){
+                
+            }
         },
         computed: {
+            goOptions(){
+                if(this.study_status === STUDY_STATUS_DEF.DEFAULT){
+                    return [
+                        {
+                            text: '背单词',
+                            nextStatus: STUDY_STATUS_DEF.LEARNING,
+                            action: ()=>{
+                                this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
+                                this.$router.push('/words');
+                            }
+                        },
+                        {
+                            text: '复习',
+                            nextStatus: STUDY_STATUS_DEF.REVIEWING,
+                            action: ()=>{
+                                this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
+                                this.$router.push('/words');
+                            }
+                        },  
+                    ]
+                }else if(this.study_status === STUDY_STATUS_DEF.LEARNING){
+                    return [
+                        {
+                            text: '继续背单词',
+                            nextStatus: STUDY_STATUS_DEF.LEARNING,
+                            action: ()=>{
+                                this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
+                                this.$router.push('/words');
+                            }
+                        },
+                    ]
+                }else if(this.study_status === STUDY_STATUS_DEF.LEARNED){
+                    return [
+                        {
+                            text: '再背一组',
+                            nextStatus: STUDY_STATUS_DEF.LEARNING,
+                            action: ()=>{
+                                this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
+                                this.$router.push('/words');
+                            }
+                        },
+                        {
+                            text: '复习',
+                            nextStatus: STUDY_STATUS_DEF.REVIEWING,
+                            action: ()=>{
+                                this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
+                                this.$router.push('/words');
+                            }
+                        },
+                    ]
+                }else if(this.study_status === STUDY_STATUS_DEF.REVIEWING){
+                    return [
+                        {
+                            text: '背单词',
+                            nextStatus: STUDY_STATUS_DEF.LEARNING,
+                            action: ()=>{
+                                this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
+                                this.$router.push('/words');
+                            }
+                        },
+                        {
+                            text: '继续复习',
+                            nextStatus: STUDY_STATUS_DEF.REVIEWING,
+                            action: ()=>{
+                                this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
+                                this.$router.push('/words');
+                            }
+                        },
+                    ]   
+                }else if(this.study_status === STUDY_STATUS_DEF.REVIEWED){
+                    return [
+                        {
+                            text: '背单词',
+                            nextStatus: STUDY_STATUS_DEF.DEFAULT,
+                            action: ()=>{
+                                this.setStudyStatus(STUDY_STATUS_DEF.DEFAULT);
+                                this.$router.push('/words');
+                            }
+                        },
+                        {
+                            text: '复习',
+                            nextStatus: STUDY_STATUS_DEF.REVIEWING,
+                            action: ()=>{
+                                this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
+                                this.$router.push('/words');
+                            }
+                        },
+                    ]
+                }
+
+                return [
+                    {
+                        text: '背单词',
+                        nextStatus: STUDY_STATUS_DEF.DEFAULT,
+                        action: ()=>{
+                            this.setStudyStatus(STUDY_STATUS_DEF.DEFAULT);
+                            this.$router.push('/words');
+                        }
+                    },
+                ]
+            },
             ...mapState(['study_status']),
             buttonText() {
                 switch (this.study_status) {
                     case STUDY_STATUS_DEF.DEFAULT:
-                        return '开始背单词';
+                        return '背单词';
                     case STUDY_STATUS_DEF.LEARNING:
                         return '继续背单词';
                     case STUDY_STATUS_DEF.LEARNED:
@@ -168,10 +264,15 @@
         transition: background 0.2s;
         letter-spacing: 2px;
 
-        position: fixed;
-        bottom: 10vh;
     }
     .start-btn:active {
         background: linear-gradient(90deg, #3578e5 0%, #4f8cff 100%);
+    }
+    .f_button_group{
+        
+        position: fixed;
+        bottom: 10vh;
+        display: flex;
+        gap: 16px;
     }
 </style>
