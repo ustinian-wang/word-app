@@ -10,7 +10,7 @@
         <WordsHeader
             :title="wordBooks[currentBookIdx]?.name || '词库'"
             :showBookList="showBookList"
-            @change="showBookList = true"
+            @change="openBookModal"
         ></WordsHeader>
 
         <!-- 进度条 -->
@@ -56,57 +56,6 @@
                 <Icon icon="mdi:close" width="28" height="28" :style="{ color: '#e55' }" />
             </div>
         </div>
-
-        <!-- 词库选择弹窗 -->
-        <div v-if="showBookList" class="book-modal-mask" @click.self="showBookList = false">
-            <div class="book-modal">
-                <h3>切换词库</h3>
-                <ul>
-                    <li
-                        v-for="(book, idx) in wordBooks"
-                        :key="book.id"
-                        :class="{ active: idx === currentBookIdx }"
-                    >
-                        <span>{{ book.name }}</span>
-                        <button v-if="idx !== currentBookIdx" @click="confirmSwitch(idx)">
-                            切换
-                        </button>
-                        <span v-else class="current-label">当前</span>
-                    </li>
-                </ul>
-                <button class="close-btn" @click="showBookList = false">取消</button>
-            </div>
-        </div>
-
-        <!-- 切换词库确认弹窗 -->
-        <div v-if="showConfirm" class="confirm-mask">
-            <div class="confirm-modal">
-                <div>确定切换到词库「{{ wordBooks[bookToSwitch]?.name }}」吗？</div>
-                <div class="confirm-actions">
-                    <button @click="doSwitchBook">确定</button>
-                    <button @click="showConfirm = false">取消</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 完成学习弹窗 -->
-        <FinishModal
-            :visible="finishAll"
-            :bookName="wordBooks[currentBookIdx]?.name || ''"
-            @restart="restartLearning"
-            @returnHome="stopLearning"
-        />
-
-        <!-- 完成当前组弹窗 -->
-        <FinishModal
-            :visible="finishGroup"
-            :bookName="`${wordBooks[currentBookIdx]?.name || ''} - 第${currentGroup + 1}组`"
-            subtitle="当前组已学完，是否继续下一组？"
-            restartText="继续下一组"
-            homeText="休息一下"
-            @restart="continueToNextGroup"
-            @returnHome="stopAtCurrentGroup"
-        />
     </div>
 </template>
 
@@ -120,13 +69,14 @@
         getBookProgress,
         setBookProgress,
     } from '@/kits/words';
-    import FinishModal from '@/components/FinishModal.vue';
     import { Icon } from '@iconify/vue2';
     import { getWordAudioUrl } from '@/kits/words';
     import { STUDY_STATUS_DEF } from '@/store';
     import { mapMutations } from 'vuex';
     import WordsHeader from './components/WordsHeader.vue';
     import WordsProgress from './components/WordsProgress.vue';
+    import { openBookSelectModal } from './components/bookSelectModal';
+    import { openFinishModal } from '@/components/FinishModal/finishModal';
     // 滑动相关常量
     const MOVE_SCALE = 1;
     const MoveDef = {
@@ -138,7 +88,7 @@
 
     export default {
         name: 'Words',
-        components: { FinishModal, Icon, WordsHeader, WordsProgress },
+        components: { Icon, WordsHeader, WordsProgress },
         data() {
             return {
                 words: [], // 当前词库单词列表
@@ -299,16 +249,51 @@
                 this.saveProgress();
             },
             // 下一组或全部学完处理
-            nextGroupOrFinish() {
+            async nextGroupOrFinish() {
                 // 如果本组学完，进入下一组或全部学完
                 if (this.learnedArr.length >= this.words.length) {
-                    this.finishAll = true;
                     this.saveProgress();
+                    await this.openAllFinishModal();
                     return;
                 }
                 // 当前组学完，显示询问是否继续的模态框
-                this.finishGroup = true;
+                // this.finishGroup = true;
                 this.saveProgress();
+                await this.openGroupFinishModal();
+            },
+            async openAllFinishModal() {
+                let res = await openFinishModal({
+                    bookName: this.wordBooks[this.currentBookIdx]?.name || '',
+                });
+                console.log("[res openAllFinishModal]", res)
+                if (res.success) {
+                    let isContinue = res.data;
+                    if (isContinue) {
+                        // todo 这里帮他自动切换词库，同等水平网上 
+                        // todo 文案也要改下
+                        this.restartLearning();
+                    } else {
+                        this.stopLearning();
+                    }
+                }
+            },
+            async openGroupFinishModal() {
+                let { wordBooks, currentBookIdx, currentGroup } = this;
+                let res = await openFinishModal({
+                    bookName: `${wordBooks[currentBookIdx]?.name || ''} - 第${currentGroup + 1}组`,
+                    subtitle: '当前组已学完，是否继续下一组？',
+                    restartText: '继续下一组',
+                    homeText: '休息一下',
+                });
+                console.log("[res openGroupFinishModal]", res)
+                if (res.success) {
+                    let isContinue = res.data;
+                    if (isContinue) {
+                        this.continueToNextGroup();
+                    } else {
+                        this.stopAtCurrentGroup();
+                    }
+                }
             },
             // 切换词库确认
             confirmSwitch(idx) {
@@ -323,11 +308,21 @@
                 this.showConfirm = false;
                 this.showBookList = false;
             },
+            async openBookModal() {
+                // 调用
+                let res = await openBookSelectModal({
+                    books: this.wordBooks,
+                    currentBookIdx: this.currentBookIdx,
+                });
+                if (res.success) {
+                    let idx = res.data;
+                    this.confirmSwitch(idx);
+                }
+            },
             // 重新开始学习
             restartLearning() {
                 this.currentGroup = 0;
                 this.learnedArr = [];
-                this.finishAll = false;
                 this.saveProgress();
                 this.initLearningQueue();
                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
@@ -339,13 +334,13 @@
                 if (this.currentGroup >= this.groupCount) {
                     this.currentGroup = this.groupCount - 1;
                 }
-                this.finishGroup = false;
+                // this.finishGroup = false;
                 this.initLearningQueue();
             },
             // 停止在当前组
             stopAtCurrentGroup() {
                 // 停止在当前组
-                this.finishGroup = false;
+                // this.finishGroup = false;
                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
                 this.$router.push('/');
             },

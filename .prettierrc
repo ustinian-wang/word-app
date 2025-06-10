@@ -10,5 +10,6 @@
     "bracketSameLine": false,
     "arrowParens": "avoid",
     "printWidth": 100,
-    "vueIndentScriptAndStyle": true
+    "vueIndentScriptAndStyle": true,
+    "endOfLine": "auto"
 } 
