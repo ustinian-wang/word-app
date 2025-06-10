@@ -12,8 +12,15 @@
                 <div class="sentence-en">“{{ dailySentence.en }}”</div>
                 <div class="sentence-zh">{{ dailySentence.zh }}</div>
             </div>
-            <div class="f_button_group" >
-                <button v-for="option in goOptions" :key="option.status" class="start-btn" @click="option.action">
+            <div class="f_button_group">
+                <button
+                    v-for="option in goOptions"
+                    :key="option.status"
+                    class="start-btn"
+                    :class="option.type || 'primary'"
+                    :disabled="buttonLoading"
+                    @click="handleButtonClick(option)"
+                >
                     {{ option.text }}
                 </button>
             </div>
@@ -36,6 +43,7 @@
                     en: 'The best way to get started is to quit talking and begin doing.',
                     zh: '开始的最好方法就是停止空谈并付诸行动。',
                 },
+                buttonLoading: false,
             };
         },
         methods: {
@@ -46,7 +54,16 @@
             },
             goNext(status){
                 
-            }
+            },
+            handleButtonClick(option) {
+                if (this.buttonLoading) return;
+                this.buttonLoading = true;
+                Promise.resolve(option.action()).finally(() => {
+                    setTimeout(() => {
+                        this.buttonLoading = false;
+                    }, 500); // 0.5秒后可再次点击
+                });
+            },
         },
         computed: {
             goOptions(){
@@ -55,6 +72,7 @@
                         {
                             text: '背单词',
                             nextStatus: STUDY_STATUS_DEF.LEARNING,
+                            type: 'primary',
                             action: ()=>{
                                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                                 this.$router.push('/words');
@@ -63,6 +81,7 @@
                         {
                             text: '复习',
                             nextStatus: STUDY_STATUS_DEF.REVIEWING,
+                            type: 'secondary',
                             action: ()=>{
                                 this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
                                 this.$router.push('/words');
@@ -74,6 +93,7 @@
                         {
                             text: '继续背单词',
                             nextStatus: STUDY_STATUS_DEF.LEARNING,
+                            type: 'primary',
                             action: ()=>{
                                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                                 this.$router.push('/words');
@@ -85,6 +105,7 @@
                         {
                             text: '再背一组',
                             nextStatus: STUDY_STATUS_DEF.LEARNING,
+                            type: 'primary',
                             action: ()=>{
                                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                                 this.$router.push('/words');
@@ -93,6 +114,7 @@
                         {
                             text: '复习',
                             nextStatus: STUDY_STATUS_DEF.REVIEWING,
+                            type: 'secondary',
                             action: ()=>{
                                 this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
                                 this.$router.push('/words');
@@ -104,6 +126,7 @@
                         {
                             text: '背单词',
                             nextStatus: STUDY_STATUS_DEF.LEARNING,
+                            type: 'primary',
                             action: ()=>{
                                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                                 this.$router.push('/words');
@@ -112,6 +135,7 @@
                         {
                             text: '继续复习',
                             nextStatus: STUDY_STATUS_DEF.REVIEWING,
+                            type: 'secondary',
                             action: ()=>{
                                 this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
                                 this.$router.push('/words');
@@ -123,6 +147,7 @@
                         {
                             text: '背单词',
                             nextStatus: STUDY_STATUS_DEF.DEFAULT,
+                            type: 'primary',
                             action: ()=>{
                                 this.setStudyStatus(STUDY_STATUS_DEF.DEFAULT);
                                 this.$router.push('/words');
@@ -131,6 +156,7 @@
                         {
                             text: '复习',
                             nextStatus: STUDY_STATUS_DEF.REVIEWING,
+                            type: 'secondary',
                             action: ()=>{
                                 this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
                                 this.$router.push('/words');
@@ -143,6 +169,7 @@
                     {
                         text: '背单词',
                         nextStatus: STUDY_STATUS_DEF.DEFAULT,
+                        type: 'primary',
                         action: ()=>{
                             this.setStudyStatus(STUDY_STATUS_DEF.DEFAULT);
                             this.$router.push('/words');
@@ -250,6 +277,20 @@
         font-size: 15px;
         color: #888;
     }
+    .f_button_group {
+        position: fixed;
+        bottom: 16vh;
+        left: 0;
+        width: 100vw;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        z-index: 10;
+        padding: 0 16px;
+        box-sizing: border-box;
+    }
     .start-btn {
         background: linear-gradient(90deg, #4f8cff 0%, #6ed0ff 100%);
         color: #fff;
@@ -257,22 +298,52 @@
         border-radius: 24px;
         font-size: 18px;
         font-weight: 700;
-        padding: 14px 48px;
-        margin-top: 12px;
-        box-shadow: 0 2px 8px rgba(79, 140, 255, 0.08);
+        padding: 14px 36px;
+        min-width: 120px;
+        box-shadow: 0 2px 12px rgba(79, 140, 255, 0.12);
         cursor: pointer;
-        transition: background 0.2s;
+        transition: background 0.2s, transform 0.1s;
         letter-spacing: 2px;
-
+        outline: none;
+        position: relative;
+        overflow: hidden;
     }
     .start-btn:active {
         background: linear-gradient(90deg, #3578e5 0%, #4f8cff 100%);
     }
-    .f_button_group{
-        
-        position: fixed;
-        bottom: 10vh;
-        display: flex;
-        gap: 16px;
+    .start-btn:disabled {
+        background: #b3d8ff;
+        color: #fff;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+    .start-btn.primary {
+        background: linear-gradient(90deg, #4f8cff 0%, #6ed0ff 100%);
+        color: #fff;
+    }
+    .start-btn.secondary {
+        background: #f0f4fa;
+        color: #3578e5;
+        border: 1.5px solid #b3d8ff;
+    }
+    .start-btn.primary:active {
+        background: linear-gradient(90deg, #3578e5 0%, #4f8cff 100%);
+    }
+    .start-btn.secondary:active {
+        background: #e0e8f8;
+        color: #3578e5;
+    }
+    @media (max-width: 600px) {
+        /* .f_button_group {
+            flex-direction: row;
+            gap: 12px;
+            padding: 0 8vw;
+        }
+        .start-btn {
+            width: auto;
+            min-width: 100px;
+            padding: 12px 0;
+            font-size: 16px;
+        } */
     }
 </style>

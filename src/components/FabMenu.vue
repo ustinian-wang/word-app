@@ -1,7 +1,7 @@
 <template>
     <div
         class="fab-menu"
-        :style="{ right: pos.right + 'px', bottom: pos.bottom + 'px' }"
+        :style="{ left: pos.left + 'px', bottom: pos.bottom + 'px' }"
         @touchstart="onDragStart"
         @mousedown="onDragStart"
     >
@@ -32,7 +32,7 @@
                 menuOpen: false,
                 dragging: false,
                 dragStart: { x: 0, y: 0 },
-                pos: { right: 22, bottom: 90 },
+                pos: { left: 16, bottom: 16 },
                 expandTo: 'left', // 'left' or 'right'
                 menuItems: [
                     { label: '图片识别', icon: '📷', route: '/recognize?auto=true' },
@@ -115,6 +115,7 @@
         mounted() {
             document.addEventListener('mousedown', this.handleGlobalClick);
             document.addEventListener('touchstart', this.handleGlobalClick);
+            this.snapToEdge();
         },
         beforeDestroy() {
             document.removeEventListener('mousedown', this.handleGlobalClick);
