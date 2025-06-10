@@ -13,13 +13,16 @@
         <div class="sentence-zh">{{ dailySentence.zh }}</div>
       </div>
       <button class="start-btn" @click="goWords">
-        开始背单词
+        {{ buttonText }}
       </button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+import { STUDY_STATUS_DEF } from '@/store/index.js';
+
 export default {
   name: 'Index',
   data() {
@@ -34,7 +37,21 @@ export default {
   },
   methods: {
     goWords() {
+
       this.$router.push('/words');
+    }
+  },
+  computed: {
+    ...mapState(['study_status']),
+    buttonText() {
+      switch (this.study_status) {
+        case STUDY_STATUS_DEF.DEFAULT:
+          return '开始背单词';
+        case STUDY_STATUS_DEF.LEARNING:
+          return '继续背单词';
+        case STUDY_STATUS_DEF.LEARNED:
+          return '复习';
+      }
     }
   }
 };
