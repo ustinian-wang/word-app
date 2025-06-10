@@ -2,7 +2,9 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 Vue.use(Vuex);
-
+/**
+ * @description
+ */
 export const STUDY_STATUS_DEF = {
     DEFAULT: 0,
     LEARNING: 1,

@@ -20,7 +20,7 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapState, mapMutations } from 'vuex';
     import { STUDY_STATUS_DEF } from '@/store/index.js';
 
     export default {
@@ -36,7 +36,9 @@
             };
         },
         methods: {
+            ...mapMutations(['setStudyStatus']),
             goWords() {
+                this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                 this.$router.push('/words');
             },
         },

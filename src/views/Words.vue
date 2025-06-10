@@ -92,7 +92,7 @@
             :visible="finishAll"
             :bookName="wordBooks[currentBookIdx]?.name || ''"
             @restart="restartLearning"
-            @returnHome="goHome"
+            @returnHome="stopLearning"
         />
     </div>
 </template>
@@ -109,6 +109,7 @@
     import FinishModal from '../components/FinishModal.vue';
     import { Icon } from '@iconify/vue2';
     import { getWordAudioUrl } from '../kits/words';
+import { STUDY_STATUS_DEF } from '../store';
 
     const MOVE_SCALE = 1;
     const MoveDef = {
@@ -293,6 +294,7 @@
                 this.finishAll = false;
                 this.saveProgress();
                 this.initLearningQueue();
+                this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
             },
             initLearningQueue() {
                 this.wordBooks = getWordBooks();
@@ -337,7 +339,8 @@
                 this.groupCount = Math.ceil(this.words.length / GROUP_SIZE);
                 this.initLearningQueue();
             },
-            goHome() {
+            stopLearning() {
+                this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
                 this.$router.push('/');
             },
             playAudio() {
