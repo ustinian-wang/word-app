@@ -1,24 +1,22 @@
 <template>
+    <!-- 单词学习页面容器 -->
     <div
         class="words-page"
         @touchstart="onTouchStart"
         @touchmove="onTouchMove"
         @touchend="onTouchEnd"
     >
-        <div class="words-header">
-            <span class="book-title" @click="showBookList = true">
-                {{ wordBooks[currentBookIdx]?.name || '词库' }}
-                <svg class="arrow" width="16" height="16" viewBox="0 0 24 24">
-                    <path
-                        d="M6 10l6 6 6-6"
-                        stroke="#3578e5"
-                        stroke-width="2"
-                        fill="none"
-                        stroke-linecap="round"
-                    />
-                </svg>
-            </span>
-        </div>
+        <!-- 顶部词库标题栏 -->
+        <WordsHeader
+            :title="wordBooks[currentBookIdx]?.name || '词库'"
+            :showBookList="showBookList"
+            @change="showBookList = true"
+        ></WordsHeader>
+
+        <!-- 进度条 -->
+        <WordsProgress :total="words.length" :current="learnedArr.length"></WordsProgress>
+
+        <!-- 单词卡片滑动容器 -->
         <div class="slider-container">
             <div
                 v-for="(word, idx) in sliderWords"
@@ -27,8 +25,10 @@
                 :class="{ 'is-animating': isAnimating }"
                 :style="sliderStyle(idx)"
             >
+                <!-- 英文单词 -->
                 <div class="word-en">{{ word.en }}</div>
 
+                <!-- 发音按钮 -->
                 <div class="audio-btn" @click="playAudio" title="播放发音">
                     <Icon
                         icon="mdi:volume-high"
@@ -37,6 +37,8 @@
                         :style="{ color: '#3578e5' }"
                     />
                 </div>
+
+                <!-- 中文释义(点击显示) -->
                 <div class="word-zh" :class="{ mosaic: !isZhRevealed }" @click="revealZh">
                     <div v-for="item in parseZhAsArr(word.zh)" :key="item" class="word-zh-item">
                         {{ item }}
@@ -44,6 +46,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- 底部操作按钮 -->
         <div class="card-actions">
             <div class="action-btn pass-btn" @click="passWord" title="已掌握">
                 <Icon icon="mdi:check" width="28" height="28" :style="{ color: '#4caf50' }" />
@@ -52,14 +56,8 @@
                 <Icon icon="mdi:close" width="28" height="28" :style="{ color: '#e55' }" />
             </div>
         </div>
-        <div class="progress-bar-fixed">
-            <div class="progress-bar-bg" v-if="learningQueue.length > 0">
-                <div class="progress-bar-fg" :style="{ width: progressPercent + '%' }"></div>
-            </div>
-            <div class="progress-text">
-                {{ progressText }}
-            </div>
-        </div>
+
+        <!-- 词库选择弹窗 -->
         <div v-if="showBookList" class="book-modal-mask" @click.self="showBookList = false">
             <div class="book-modal">
                 <h3>切换词库</h3>
@@ -79,6 +77,8 @@
                 <button class="close-btn" @click="showBookList = false">取消</button>
             </div>
         </div>
+
+        <!-- 切换词库确认弹窗 -->
         <div v-if="showConfirm" class="confirm-mask">
             <div class="confirm-modal">
                 <div>确定切换到词库「{{ wordBooks[bookToSwitch]?.name }}」吗？</div>
@@ -88,12 +88,16 @@
                 </div>
             </div>
         </div>
+
+        <!-- 完成学习弹窗 -->
         <FinishModal
             :visible="finishAll"
             :bookName="wordBooks[currentBookIdx]?.name || ''"
             @restart="restartLearning"
             @returnHome="stopLearning"
         />
+
+        <!-- 完成当前组弹窗 -->
         <FinishModal
             :visible="finishGroup"
             :bookName="`${wordBooks[currentBookIdx]?.name || ''} - 第${currentGroup + 1}组`"
@@ -107,6 +111,7 @@
 </template>
 
 <script>
+    // 导入所需的工具函数和组件
     import {
         getWordBooks,
         getCurrentBookIndex,
@@ -114,48 +119,51 @@
         getCurrentWords,
         getBookProgress,
         setBookProgress,
-    } from '../kits/words';
-    import FinishModal from '../components/FinishModal.vue';
+    } from '@/kits/words';
+    import FinishModal from '@/components/FinishModal.vue';
     import { Icon } from '@iconify/vue2';
-    import { getWordAudioUrl } from '../kits/words';
-    import { STUDY_STATUS_DEF } from '../store';
+    import { getWordAudioUrl } from '@/kits/words';
+    import { STUDY_STATUS_DEF } from '@/store';
     import { mapMutations } from 'vuex';
-
+    import WordsHeader from './components/WordsHeader.vue';
+    import WordsProgress from './components/WordsProgress.vue';
+    // 滑动相关常量
     const MOVE_SCALE = 1;
     const MoveDef = {
         LAST: -1,
         NOW: 0,
         NEXT: 1,
     };
-    const GROUP_SIZE = 10;
+    const GROUP_SIZE = 10; // 每组单词数量
 
     export default {
         name: 'Words',
-        components: { FinishModal, Icon },
+        components: { FinishModal, Icon, WordsHeader, WordsProgress },
         data() {
             return {
-                words: [], // 当前词库单词
-                wordBooks: [],
-                currentBookIdx: 0,
+                words: [], // 当前词库单词列表
+                wordBooks: [], // 所有词库列表
+                currentBookIdx: 0, // 当前词库索引
                 learningQueue: [], // 当前组学习的单词索引队列
                 currentIdx: 0, // 当前在 learningQueue 的位置
-                revealedSet: new Set(), // 已揭示释义的索引
-                touchStartX: 0,
-                deltaX: 0,
-                isDragging: false,
-                isAnimating: false,
-                showBookList: false,
-                showConfirm: false,
-                bookToSwitch: null,
+                revealedSet: new Set(), // 已揭示释义的索引集合
+                touchStartX: 0, // 触摸开始位置
+                deltaX: 0, // 滑动距离
+                isDragging: false, // 是否正在拖动
+                isAnimating: false, // 是否正在动画
+                showBookList: false, // 是否显示词库列表
+                showConfirm: false, // 是否显示确认弹窗
+                bookToSwitch: null, // 要切换的词库索引
                 currentGroup: 0, // 当前组号
-                learnedArr: [], // 已学过的单词索引
+                learnedArr: [], // 已学过的单词索引数组
                 groupCount: 1, // 总组数
                 finishAll: false, // 是否全部学完
                 finishGroup: false, // 是否当前组学完
-                audioPlayer: null, // 音频播放器
+                audioPlayer: null, // 音频播放器实例
             };
         },
         computed: {
+            // 获取当前显示的三个单词(前一个、当前、后一个)
             sliderWords() {
                 const prevIdx = this.learningQueue[this.currentIdx - 1];
                 const currIdx = this.learningQueue[this.currentIdx];
@@ -164,32 +172,37 @@
                     typeof idx === 'number' ? this.words[idx] : { en: '', zh: '', enDef: '' };
                 return [getWord(prevIdx), getWord(currIdx), getWord(nextIdx)];
             },
+            // 计算学习进度百分比
             progressPercent() {
-                // 当前词库整体进度百分比
                 return this.learnedArr.length > 0
                     ? Math.round((this.learnedArr.length / this.words.length) * 100)
                     : 0;
             },
+            // 当前学习进度文本
             progressText() {
                 return this.words.length > 0
                     ? `${this.currentIdx + 1} / ${this.learningQueue.length}`
                     : '';
             },
+            // 当前单词是否已显示中文释义
             isZhRevealed() {
                 return this.revealedSet.has(this.learningQueue[this.currentIdx]);
             },
         },
         methods: {
             ...mapMutations(['setStudyStatus']),
+
+            // 将中文释义按词性分割成数组
             parseZhAsArr(zh) {
                 function splitTaggedText(text) {
                     const regex = /([a-z]*\.\s[^a-z]*)/gi;
                     const matches = text.match(regex);
                     return matches ? matches.map(item => item.trim()) : [];
                 }
-
                 return splitTaggedText(zh);
             },
+
+            // 计算单词卡片的样式
             sliderStyle(idx) {
                 const base = (idx - 1) * 100;
                 const move = idx === 0 || idx === 2 ? 0 : (this.deltaX / window.innerWidth) * 100;
@@ -201,12 +214,14 @@
                         : 'none',
                 };
             },
+            // 触摸开始事件处理
             onTouchStart(e) {
                 if (this.isAnimating || this.learningQueue.length === 0) return;
                 this.isDragging = true;
                 this.touchStartX = e.changedTouches[0].clientX;
                 this.deltaX = 0;
             },
+            // 触摸移动事件处理
             onTouchMove(e) {
                 if (!this.isDragging) return;
                 const moveX = e.changedTouches[0].clientX - this.touchStartX;
@@ -219,6 +234,7 @@
                     this.deltaX = moveX;
                 }
             },
+            // 触摸结束事件处理
             onTouchEnd() {
                 if (!this.isDragging) return;
                 this.isDragging = false;
@@ -231,6 +247,7 @@
                     this.animateTo(MoveDef.NOW);
                 }
             },
+            // 动画过渡
             animateTo(direction, cb) {
                 this.isAnimating = true;
                 this.deltaX = direction * window.innerWidth;
@@ -240,16 +257,20 @@
                     if (cb) cb();
                 }, 300);
             },
+            // 显示中文释义
             revealZh() {
                 this.revealedSet.add(this.learningQueue[this.currentIdx]);
                 this.revealedSet = new Set(this.revealedSet);
             },
+            // 已掌握单词
             passWord() {
                 this.animateTo(MoveDef.LAST, this.handlePass);
             },
+            // 再看一次
             failWord() {
                 this.animateTo(MoveDef.NEXT, this.handleFail);
             },
+            // 已掌握单词处理
             handlePass() {
                 // 移除当前单词
                 if (this.learningQueue.length <= 1) {
@@ -267,6 +288,7 @@
                 this.revealedSet = new Set();
                 this.saveProgress();
             },
+            // 再看一次处理
             handleFail() {
                 // 保留当前单词，切换到下一个
                 if (this.currentIdx < this.learningQueue.length - 1) {
@@ -276,6 +298,7 @@
                 this.revealedSet = new Set();
                 this.saveProgress();
             },
+            // 下一组或全部学完处理
             nextGroupOrFinish() {
                 // 如果本组学完，进入下一组或全部学完
                 if (this.learnedArr.length >= this.words.length) {
@@ -287,10 +310,12 @@
                 this.finishGroup = true;
                 this.saveProgress();
             },
+            // 切换词库确认
             confirmSwitch(idx) {
                 this.bookToSwitch = idx;
                 this.showConfirm = true;
             },
+            // 确认切换词库
             doSwitchBook() {
                 setCurrentBookIndex(this.bookToSwitch);
                 this.currentBookIdx = this.bookToSwitch;
@@ -298,6 +323,7 @@
                 this.showConfirm = false;
                 this.showBookList = false;
             },
+            // 重新开始学习
             restartLearning() {
                 this.currentGroup = 0;
                 this.learnedArr = [];
@@ -306,6 +332,7 @@
                 this.initLearningQueue();
                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
             },
+            // 继续下一组
             continueToNextGroup() {
                 // 继续下一组
                 this.currentGroup++;
@@ -315,12 +342,14 @@
                 this.finishGroup = false;
                 this.initLearningQueue();
             },
+            // 停止在当前组
             stopAtCurrentGroup() {
                 // 停止在当前组
                 this.finishGroup = false;
                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
                 this.$router.push('/');
             },
+            // 初始化学习队列
             initLearningQueue() {
                 this.wordBooks = getWordBooks();
                 this.currentBookIdx = getCurrentBookIndex();
@@ -342,6 +371,7 @@
                 this.isDragging = false;
                 this.isAnimating = false;
             },
+            // 保存学习进度
             saveProgress() {
                 const bookId = this.wordBooks[this.currentBookIdx]?.id;
                 if (!bookId) return;
@@ -351,6 +381,7 @@
                     percent: this.progressPercent / 100,
                 });
             },
+            // 加载学习进度
             loadProgress() {
                 this.wordBooks = getWordBooks();
                 this.currentBookIdx = getCurrentBookIndex();
@@ -364,15 +395,18 @@
                 this.groupCount = Math.ceil(this.words.length / GROUP_SIZE);
                 this.initLearningQueue();
             },
+            // 停止学习
             stopLearning() {
                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
                 this.$router.push('/');
             },
+            // 播放音频
             playAudio() {
                 const currentWord = this.sliderWords[1];
-                if (!currentWord?.en) return;
+                if (!currentWord?.en) {
+                    return;
+                }
 
-                // 使用 Google TTS API
                 const audioUrl = getWordAudioUrl(currentWord.en);
 
                 if (this.audioPlayer) {
@@ -385,10 +419,12 @@
                 });
             },
         },
+        // 组件挂载
         mounted() {
             this.loadProgress();
             window.addEventListener('storage', this.loadProgress);
         },
+        // 组件销毁
         beforeDestroy() {
             window.removeEventListener('storage', this.loadProgress);
             if (this.audioPlayer) {
@@ -523,40 +559,7 @@
         text-align: center;
         text-shadow: none;
     }
-    .words-header {
-        position: absolute;
-        top: 18px;
-        left: 0;
-        right: 0;
-        text-align: center;
-        z-index: 20;
-    }
-    .book-title {
-        display: inline-flex;
-        align-items: center;
-        font-size: 18px;
-        height: 44px;
-        line-height: 44px;
-        font-weight: 700;
-        color: #3578e5;
-        cursor: pointer;
-        user-select: none;
-        transition: color 0.2s;
-        /* border-bottom: 1.5px dashed #b3d1fa; */
-        padding: 2px 10px;
-    }
-    .book-title:hover {
-        color: #2256a5;
-        /* border-bottom: 1.5px solid #3578e5; */
-    }
-    .book-title .arrow {
-        margin-left: 4px;
-        transition: transform 0.2s;
-    }
-    .book-title:active .arrow,
-    .book-title:hover .arrow {
-        transform: translateY(2px) scale(1.1);
-    }
+
     .book-modal-mask {
         position: fixed;
         left: 0;

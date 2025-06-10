@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Recognize from '../views/Recognize.vue';
-import Words from '../views/Words.vue';
+import Words from '../views/Words/Words.vue';
 import WordBooks from '../views/WordBooks.vue';
 import Index from '../views/Index.vue';
 
