@@ -19,16 +19,16 @@ src/styles/
 
 ```vue
 <style lang="less" scoped>
-@import '../styles/variables.less';
+    @import '../styles/variables.less';
 
-.my-component {
-  color: @primary-color;
-  padding: @spacing-md;
-  
-  .nested-element {
-    background-color: @light-color;
-  }
-}
+    .my-component {
+        color: @primary-color;
+        padding: @spacing-md;
+
+        .nested-element {
+            background-color: @light-color;
+        }
+    }
 </style>
 ```
 
@@ -45,6 +45,7 @@ import './styles/main.less';
 项目中定义了以下变量：
 
 #### 颜色变量
+
 - `@primary-color`: 主色调
 - `@secondary-color`: 次要色调
 - `@success-color`: 成功色
@@ -54,12 +55,14 @@ import './styles/main.less';
 - `@dark-color`: 深色
 
 #### 字体变量
+
 - `@font-family-base`: 基础字体
 - `@font-size-base`: 基础字体大小
 - `@font-size-lg`: 大字体
 - `@font-size-sm`: 小字体
 
 #### 间距变量
+
 - `@spacing-xs`: 超小间距 (4px)
 - `@spacing-sm`: 小间距 (8px)
 - `@spacing-md`: 中等间距 (16px)
@@ -67,11 +70,13 @@ import './styles/main.less';
 - `@spacing-xl`: 超大间距 (32px)
 
 #### 边框变量
+
 - `@border-radius`: 边框圆角
 - `@border-color`: 边框颜色
 - `@border-width`: 边框宽度
 
 #### 阴影变量
+
 - `@box-shadow`: 基础阴影
 - `@box-shadow-lg`: 大阴影
 
@@ -81,15 +86,15 @@ import './styles/main.less';
 
 ```less
 .parent {
-  color: @primary-color;
-  
-  .child {
-    background: @light-color;
-    
-    &:hover {
-      background: darken(@light-color, 10%);
+    color: @primary-color;
+
+    .child {
+        background: @light-color;
+
+        &:hover {
+            background: darken(@light-color, 10%);
+        }
     }
-  }
 }
 ```
 
@@ -97,9 +102,9 @@ import './styles/main.less';
 
 ```less
 .my-element {
-  color: @primary-color;
-  padding: @spacing-md;
-  border-radius: @border-radius;
+    color: @primary-color;
+    padding: @spacing-md;
+    border-radius: @border-radius;
 }
 ```
 
@@ -107,15 +112,15 @@ import './styles/main.less';
 
 ```less
 .button-mixin() {
-  padding: @spacing-sm @spacing-md;
-  border-radius: @border-radius;
-  cursor: pointer;
+    padding: @spacing-sm @spacing-md;
+    border-radius: @border-radius;
+    cursor: pointer;
 }
 
 .my-button {
-  .button-mixin();
-  background-color: @primary-color;
-  color: white;
+    .button-mixin();
+    background-color: @primary-color;
+    color: white;
 }
 ```
 
@@ -123,8 +128,8 @@ import './styles/main.less';
 
 ```less
 .my-element {
-  background-color: lighten(@primary-color, 20%);
-  border-color: darken(@primary-color, 10%);
+    background-color: lighten(@primary-color, 20%);
+    border-color: darken(@primary-color, 10%);
 }
 ```
 
@@ -137,4 +142,4 @@ import './styles/main.less';
 
 ## 示例组件
 
-查看 `src/components/ExampleComponent.vue` 了解完整的使用示例。 
+查看 `src/components/ExampleComponent.vue` 了解完整的使用示例。
