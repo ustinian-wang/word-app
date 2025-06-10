@@ -3,6 +3,7 @@ import App from './App.vue';
 import router from './router';
 import { Icon } from '@iconify/vue2';
 import { registerSW } from 'virtual:pwa-register';
+import VConsole from 'vconsole';
 
 Vue.component('Icon', Icon);
 
@@ -18,6 +19,10 @@ const updateSW = registerSW({
     console.log('应用已准备就绪，可以离线使用');
   }
 });
+
+if (process.env.NODE_ENV !== 'production') {
+  new VConsole();
+}
 
 new Vue({
   router,

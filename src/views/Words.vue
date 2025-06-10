@@ -20,9 +20,7 @@
         :style="sliderStyle(idx)"
       >
         <div class="word-en">{{ word.en }}</div>
-        <div class="word-zh" :class="{ 'mosaic': !isZhRevealed }" @click="revealZh">
-          {{ word.zh }}
-        </div>
+        
         <div class="audio-btn" @click="playAudio" title="播放发音">
           <Icon 
             icon="mdi:volume-high" 
@@ -30,6 +28,9 @@
             height="32"
             :style="{ color: '#3578e5'}"
           />
+        </div>
+        <div class="word-zh" :class="{ 'mosaic': !isZhRevealed }" @click="revealZh">
+          <div v-for="item in parseZhAsArr(word.zh)" :key="item" class="word-zh-item">{{ item }}</div>
         </div>
       </div>
     </div>
@@ -144,6 +145,16 @@ export default {
     }
   },
   methods: {
+    parseZhAsArr(zh) {
+      function splitTaggedText(text) {
+        const regex = /([a-z]*\.\s[^a-z]*)/gi;
+        const matches = text.match(regex);
+        return matches ? matches.map(item => item.trim()) : [];
+      }
+
+
+      return splitTaggedText(zh);
+    },
     sliderStyle(idx) {
       const base = (idx - 1) * 100;
       const move = idx === 0 || idx === 2 ? 0 : (this.deltaX / window.innerWidth) * 100;
@@ -342,7 +353,7 @@ export default {
   min-height: 100vh;
   height: 100vh;
   box-sizing: border-box;
-  padding-bottom: 60px;
+  /* padding-bottom: 60px; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -354,7 +365,7 @@ export default {
   position: absolute;
   top: 0; left: 0;
   width: 100vw;
-  height: calc(100vh - 56px);
+  /* height: calc(100vh - 56px); */
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -385,13 +396,14 @@ export default {
   font-size: 40px;
   font-weight: bold;
   color: #3578e5;
-  margin-bottom: 24px;
+  /* margin-bottom: 24px; */
 }
 .word-zh {
   font-size: 28px;
   color: #333;
   cursor: pointer;
   transition: filter 0.2s;
+  margin-top: 24px;
 }
 .word-zh.mosaic {
   color: transparent;
@@ -411,13 +423,14 @@ export default {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 68px;
+  /* bottom: 68px; */
   height: 32px;
+  top: 10vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  z-index: 9999;
+  z-index: 10;
   pointer-events: none;
   opacity: 0.92;
 }
@@ -591,7 +604,7 @@ export default {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 110px;
+  bottom: 15vh;
   display: flex;
   justify-content: center;
   gap: 38px;

@@ -11,6 +11,7 @@
     "@ustinian-wang/kit": "^1.0.9",
     "axios": "^0.27.2",
     "register-service-worker": "^1.7.2",
+    "vconsole": "^3.15.1",
     "vue": "^2.6.14",
     "vue-router": "3",
     "workbox-webpack-plugin": "^7.3.0",
