@@ -12,9 +12,20 @@
                 <div class="sentence-en">“{{ dailySentence.en }}”</div>
                 <div class="sentence-zh">{{ dailySentence.zh }}</div>
             </div>
-            <button class="start-btn" @click="goWords">
-                {{ buttonText }}
-            </button>
+            <div v-if="study_status === STUDY_STATUS_DEF.LEARNED">
+                <button class="start-btn" @click="goWords">
+                    {{ buttonText }}
+                </button>
+                <button class="start-btn" @click="goWords">
+                    {{ buttonText }}
+                </button>
+            </div>
+            <div v-else>
+                <button class="start-btn" @click="goWords">
+                    复习
+                </button>
+            </div>
+         
         </div>
     </div>
 </template>

@@ -2,10 +2,14 @@
     <div v-if="visible" class="finish-mask">
         <div class="finish-modal">
             <div class="finish-title">🎉 恭喜你！</div>
-            <div class="finish-desc">本轮词库「{{ bookName }}」已全部学完</div>
+            <div class="finish-desc">{{ subtitle || `本轮词库「${bookName}」已全部学完` }}</div>
             <div class="finish-actions">
-                <button class="finish-btn" @click="$emit('restart')">再来一轮</button>
-                <button class="finish-btn home-btn" @click="$emit('returnHome')">休息一下</button>
+                <button class="finish-btn" @click="$emit('restart')">
+                    {{ restartText || '再来一轮' }}
+                </button>
+                <button class="finish-btn home-btn" @click="$emit('returnHome')">
+                    {{ homeText || '休息一下' }}
+                </button>
             </div>
         </div>
     </div>
@@ -20,6 +24,18 @@
                 default: false,
             },
             bookName: {
+                type: String,
+                default: '',
+            },
+            subtitle: {
+                type: String,
+                default: '',
+            },
+            restartText: {
+                type: String,
+                default: '',
+            },
+            homeText: {
                 type: String,
                 default: '',
             },

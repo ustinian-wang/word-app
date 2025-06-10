@@ -94,6 +94,15 @@
             @restart="restartLearning"
             @returnHome="stopLearning"
         />
+        <FinishModal
+            :visible="finishGroup"
+            :bookName="`${wordBooks[currentBookIdx]?.name || ''} - 第${currentGroup + 1}组`"
+            subtitle="当前组已学完，是否继续下一组？"
+            restartText="继续下一组"
+            homeText="休息一下"
+            @restart="continueToNextGroup"
+            @returnHome="stopAtCurrentGroup"
+        />
     </div>
 </template>
 
@@ -109,7 +118,8 @@
     import FinishModal from '../components/FinishModal.vue';
     import { Icon } from '@iconify/vue2';
     import { getWordAudioUrl } from '../kits/words';
-import { STUDY_STATUS_DEF } from '../store';
+    import { STUDY_STATUS_DEF } from '../store';
+    import { mapMutations } from 'vuex';
 
     const MOVE_SCALE = 1;
     const MoveDef = {
@@ -141,6 +151,7 @@ import { STUDY_STATUS_DEF } from '../store';
                 learnedArr: [], // 已学过的单词索引
                 groupCount: 1, // 总组数
                 finishAll: false, // 是否全部学完
+                finishGroup: false, // 是否当前组学完
                 audioPlayer: null, // 音频播放器
             };
         },
@@ -169,6 +180,7 @@ import { STUDY_STATUS_DEF } from '../store';
             },
         },
         methods: {
+            ...mapMutations(['setStudyStatus']),
             parseZhAsArr(zh) {
                 function splitTaggedText(text) {
                     const regex = /([a-z]*\.\s[^a-z]*)/gi;
@@ -271,11 +283,9 @@ import { STUDY_STATUS_DEF } from '../store';
                     this.saveProgress();
                     return;
                 }
-                this.currentGroup++;
-                if (this.currentGroup >= this.groupCount) {
-                    this.currentGroup = this.groupCount - 1;
-                }
-                this.initLearningQueue();
+                // 当前组学完，显示询问是否继续的模态框
+                this.finishGroup = true;
+                this.saveProgress();
             },
             confirmSwitch(idx) {
                 this.bookToSwitch = idx;
@@ -295,6 +305,21 @@ import { STUDY_STATUS_DEF } from '../store';
                 this.saveProgress();
                 this.initLearningQueue();
                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
+            },
+            continueToNextGroup() {
+                // 继续下一组
+                this.currentGroup++;
+                if (this.currentGroup >= this.groupCount) {
+                    this.currentGroup = this.groupCount - 1;
+                }
+                this.finishGroup = false;
+                this.initLearningQueue();
+            },
+            stopAtCurrentGroup() {
+                // 停止在当前组
+                this.finishGroup = false;
+                this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
+                this.$router.push('/');
             },
             initLearningQueue() {
                 this.wordBooks = getWordBooks();
