@@ -42,12 +42,16 @@ export default {
   name: 'WordBooks',
   data() {
     return {
-      wordBooks: getWordBooks(),
-      currentBookIdx: getCurrentBookIndex(),
+      // wordBooks: [], getWordBooks(),
+      // currentBookIdx: [],getCurrentBookIndex(),
+      wordBooks: [],
+      currentBookIdx: 0,
       progressMap: {}, // { [bookId]: { learned: number, percent: string } }
     };
   },
-  created() {
+  async created() {
+    this.wordBooks = await getWordBooks();
+    this.currentBookIdx = await getCurrentBookIndex();
     this.refreshProgress();
   },
   methods: {

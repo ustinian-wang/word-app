@@ -1,23 +1,55 @@
 // import * as XLSX from 'xlsx';
 import { builtinWordBooks } from '@/wordbooks/builtin';
-import { cloneRequest } from '@ustinian-wang/kit';
+import { openDB } from 'idb';
+
+const DB_NAME = 'wordAppDB';
+const DB_VERSION = 1;
+const STORE_BOOKS = 'wordBooks';
+const STORE_PROGRESS = 'progress';
+const STORE_META = 'meta';
 
 const WORD_BOOKS_KEY = 'myWordBooks';
 const CURRENT_BOOK_IDX_KEY = 'currentWordBookIdx';
 const INIT_FLAG_KEY = 'wordBooksInited';
 const PROGRESS_KEY = 'wordBooksProgress';
 
-export function getWordBooks() {
-  return JSON.parse(localStorage.getItem(WORD_BOOKS_KEY) || '[]');
+async function getDB() {
+  return openDB(DB_NAME, DB_VERSION, {
+    upgrade(db) {
+      if (!db.objectStoreNames.contains(STORE_BOOKS)) {
+        db.createObjectStore(STORE_BOOKS, { keyPath: 'id', autoIncrement: true });
+      }
+      if (!db.objectStoreNames.contains(STORE_PROGRESS)) {
+        db.createObjectStore(STORE_PROGRESS);
+      }
+      if (!db.objectStoreNames.contains(STORE_META)) {
+        db.createObjectStore(STORE_META);
+      }
+    }
+  });
 }
-export function saveWordBooks(books) {
-  localStorage.setItem(WORD_BOOKS_KEY, JSON.stringify(books));
+
+export async function getWordBooks() {
+  const db = await getDB();
+  const all = await db.getAll(STORE_BOOKS);
+  return all;
 }
-export function getCurrentBookIndex() {
-  return Number(localStorage.getItem(CURRENT_BOOK_IDX_KEY) || 0);
+export async function saveWordBooks(books) {
+  const db = await getDB();
+  const tx = db.transaction(STORE_BOOKS, 'readwrite');
+  await tx.objectStore(STORE_BOOKS).clear();
+  for (const book of books) {
+    await tx.objectStore(STORE_BOOKS).put(book);
+  }
+  await tx.done;
 }
-export function setCurrentBookIndex(idx) {
-  localStorage.setItem(CURRENT_BOOK_IDX_KEY, idx);
+export async function getCurrentBookIndex() {
+  const db = await getDB();
+  return (await db.get(STORE_META, 'currentBookIdx')) || 0;
+}
+export async function setCurrentBookIndex(idx) {
+  const db = await getDB();
+  await db.put(STORE_META, idx, 'currentBookIdx');
 }
 export function getCurrentWords() {
   const books = getWordBooks();
@@ -25,20 +57,23 @@ export function getCurrentWords() {
   return books[idx]?.words || [];
 }
 
-export function initDefaultWordBooks() {
-  if (localStorage.getItem(INIT_FLAG_KEY)) return;
-  localStorage.setItem(WORD_BOOKS_KEY, JSON.stringify(builtinWordBooks));
-  localStorage.setItem(INIT_FLAG_KEY, '1');
+export async function initDefaultWordBooks() {
+  const db = await getDB();
+  const inited = await db.get(STORE_META, 'inited');
+  if (inited) return;
+  for (const book of builtinWordBooks) {
+    await db.add(STORE_BOOKS, book);
+  }
+  await db.put(STORE_META, 1, 'inited');
 }
 
-export function getBookProgress(bookId) {
-  const all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
-  return all[bookId] || { group: 0, learned: [], percent: 0 };
+export async function getBookProgress(bookId) {
+  const db = await getDB();
+  return (await db.get(STORE_PROGRESS, String(bookId))) || { group: 0, learned: [], percent: 0 };
 }
-export function setBookProgress(bookId, progress) {
-  const all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
-  all[bookId] = progress;
-  localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
+export async function setBookProgress(bookId, progress) {
+  const db = await getDB();
+  await db.put(STORE_PROGRESS, progress, String(bookId));
 }
 
 /**

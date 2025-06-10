@@ -87,10 +87,9 @@
 </template>
 
 <script>
-import { getWordBooks, getCurrentBookIndex, setCurrentBookIndex, getCurrentWords, getBookProgress, setBookProgress } from '../kits/words';
+import { getWordBooks, getCurrentBookIndex, setCurrentBookIndex, getCurrentWords, getBookProgress, setBookProgress, getWordAudioUrl } from '../kits/words';
 import FinishModal from '../components/FinishModal.vue';
 import { Icon } from '@iconify/vue2';
-import { getWordAudioUrl } from '../kits/words';
 
 const MOVE_SCALE = 1;
 const MoveDef = {
@@ -229,7 +228,7 @@ export default {
       this.revealedSet = new Set();
       this.saveProgress();
     },
-    nextGroupOrFinish() {
+    async nextGroupOrFinish() {
       // 如果本组学完，进入下一组或全部学完
       if (this.learnedArr.length >= this.words.length) {
         this.finishAll = true;
@@ -240,30 +239,31 @@ export default {
       if (this.currentGroup >= this.groupCount) {
         this.currentGroup = this.groupCount - 1;
       }
-      this.initLearningQueue();
+      await this.initLearningQueue();
     },
     confirmSwitch(idx) {
       this.bookToSwitch = idx;
       this.showConfirm = true;
     },
-    doSwitchBook() {
-      setCurrentBookIndex(this.bookToSwitch);
+    async doSwitchBook() {
+      await setCurrentBookIndex(this.bookToSwitch);
       this.currentBookIdx = this.bookToSwitch;
       this.loadProgress();
       this.showConfirm = false;
       this.showBookList = false;
     },
-    restartLearning() {
+    async restartLearning() {
       this.currentGroup = 0;
       this.learnedArr = [];
       this.finishAll = false;
       this.saveProgress();
-      this.initLearningQueue();
+      await this.initLearningQueue();
     },
-    initLearningQueue() {
-      this.wordBooks = getWordBooks();
-      this.currentBookIdx = getCurrentBookIndex();
-      this.words = getCurrentWords();
+    async initLearningQueue() {
+      this.wordBooks = await getWordBooks();
+      this.currentBookIdx = await getCurrentBookIndex();
+      this.words = await getCurrentWords();
+      console.log('[initLearningQueue]', this.wordBooks, this.currentBookIdx, this.words)
       this.groupCount = Math.ceil(this.words.length / GROUP_SIZE);
       // 过滤掉已学过的单词，取当前组的10个
       const groupStart = this.currentGroup * GROUP_SIZE;
@@ -281,22 +281,22 @@ export default {
       this.isDragging = false;
       this.isAnimating = false;
     },
-    saveProgress() {
+    async saveProgress() {
       const bookId = this.wordBooks[this.currentBookIdx]?.id;
       if (!bookId) return;
-      setBookProgress(bookId, {
+      await setBookProgress(bookId, {
         group: this.currentGroup,
         learned: this.learnedArr,
         percent: this.progressPercent / 100
       });
     },
-    loadProgress() {
-      this.wordBooks = getWordBooks();
-      this.currentBookIdx = getCurrentBookIndex();
-      this.words = getCurrentWords();
+    async loadProgress() {
+      this.wordBooks = await getWordBooks();
+      this.currentBookIdx = await getCurrentBookIndex();
+      this.words = await getCurrentWords();
       const bookId = this.wordBooks[this.currentBookIdx]?.id;
       if (!bookId) return;
-      const progress = getBookProgress(bookId);
+      const progress = await getBookProgress(bookId);
       this.currentGroup = progress.group || 0;
       this.learnedArr = progress.learned || [];
       this.finishAll = (this.learnedArr.length >= this.words.length);

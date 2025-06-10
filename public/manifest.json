@@ -2,7 +2,7 @@
   "name": "单词学习",
   "short_name": "单词学习",
   "description": "一个简单的单词学习应用",
-  "start_url": "/",
+  "start_url": "/word-app/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3578e5",
