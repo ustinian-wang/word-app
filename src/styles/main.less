@@ -1,0 +1,94 @@
+// 导入变量文件
+@import './variables.less';
+
+// 全局样式
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: @font-family-base;
+  font-size: @font-size-base;
+  line-height: 1.5;
+  color: @dark-color;
+  background-color: @light-color;
+}
+
+// 通用工具类
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 @spacing-md;
+}
+
+.btn {
+  display: inline-block;
+  padding: @spacing-sm @spacing-md;
+  border: @border-width solid transparent;
+  border-radius: @border-radius;
+  font-size: @font-size-base;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &-primary {
+    background-color: @primary-color;
+    color: white;
+    
+    &:hover {
+      background-color: darken(@primary-color, 10%);
+    }
+  }
+  
+  &-secondary {
+    background-color: @secondary-color;
+    color: white;
+    
+    &:hover {
+      background-color: darken(@secondary-color, 10%);
+    }
+  }
+  
+  &-success {
+    background-color: @success-color;
+    color: white;
+    
+    &:hover {
+      background-color: darken(@success-color, 10%);
+    }
+  }
+}
+
+// 卡片组件
+.card {
+  background: white;
+  border-radius: @border-radius;
+  box-shadow: @box-shadow;
+  padding: @spacing-lg;
+  margin-bottom: @spacing-md;
+  
+  &-header {
+    border-bottom: @border-width solid @border-color;
+    padding-bottom: @spacing-md;
+    margin-bottom: @spacing-md;
+    font-size: @font-size-lg;
+    font-weight: bold;
+  }
+  
+  &-body {
+    color: @dark-color;
+  }
+}
+
+// 响应式工具类
+@media (max-width: 768px) {
+  .container {
+    padding: 0 @spacing-sm;
+  }
+  
+  .card {
+    padding: @spacing-md;
+  }
+} 

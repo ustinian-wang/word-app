@@ -5,6 +5,9 @@ import { Icon } from '@iconify/vue2';
 import { registerSW } from 'virtual:pwa-register';
 import VConsole from 'vconsole';
 
+// 导入Less样式
+import './styles/main.less';
+
 Vue.component('Icon', Icon);
 
 // 注册 service worker

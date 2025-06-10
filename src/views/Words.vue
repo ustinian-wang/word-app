@@ -348,7 +348,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .words-page {
   min-height: 100vh;
   height: 100vh;
@@ -365,7 +365,7 @@ export default {
   position: absolute;
   top: 0; left: 0;
   width: 100vw;
-  /* height: calc(100vh - 56px); */
+  // height: calc(100vh - 56px); 
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -375,7 +375,8 @@ export default {
   position: absolute;
   top: 0; left: 0;
   width: 100vw;
-  height: calc(100vh - 56px);
+  // height: calc(100vh - 56px);
+  height: 100vh;
   background: #fff;
   border-radius: 0;
   box-shadow: none;
