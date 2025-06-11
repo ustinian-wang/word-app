@@ -38,41 +38,17 @@
                 </div>
 
                 <!-- 权威词典链接 -->
-                <div class="dictionary-links">
-                    <div class="dictionary-title">权威词典</div>
-                    <div class="dictionary-buttons">
-                        <button
-                            v-for="dictType in recommendedDictionaries"
-                            :key="dictType"
-                            class="dict-btn"
-                            @click="openDictionary(dictType, word.en)"
-                            :title="getDictionaryName(dictType)"
-                        >
-                            <Icon :icon="getDictionaryIcon(dictType)" width="16" height="16" />
-                            <span>{{ getDictionaryName(dictType) }}</span>
-                        </button>
-                    </div>
-                </div>
+                <DictionaryLinks :word="word.en" />
             </div>
         </div>
 
         <!-- 底部操作按钮 -->
-        <div class="card-actions">
-            <div class="action-btn pass-btn" @click="passWord" title="已掌握">
-                <Icon icon="mdi:check" width="28" height="28" :style="{ color: '#4caf50' }" />
-            </div>
-            <div class="action-btn fail-btn" @click="failWord" title="再看一次">
-                <Icon icon="mdi:close" width="28" height="28" :style="{ color: '#e55' }" />
-            </div>
-            <div
-                v-if="false"
-                class="action-btn iframe-btn"
-                @click="openIframeExample"
-                title="打开网页"
-            >
-                <Icon icon="mdi:web" width="28" height="28" :style="{ color: '#3578e5' }" />
-            </div>
-        </div>
+        <CardActions
+            :showIframeBtn="false"
+            @pass="passWord"
+            @fail="failWord"
+            @iframe="openIframeExample"
+        />
     </div>
 </template>
 
@@ -85,9 +61,8 @@
         getCurrentWords,
         getBookProgress,
         setBookProgress,
+        getWordAudioUrl,
     } from '@/kits/words';
-    import { Icon } from '@iconify/vue2';
-    import { getWordAudioUrl } from '@/kits/words';
     import { STUDY_STATUS_DEF } from '@/store';
     import { mapMutations } from 'vuex';
     import WordsHeader from './components/WordsHeader.vue';
@@ -96,12 +71,8 @@
     import { openFinishModal } from '@/components/FinishModal/finishModal';
     import { openIframeModal } from '@/components/IframeModal/iframeModal';
     import AudioButton from '@/components/AudioButton.vue';
-    import {
-        getRecommendedDictionaries,
-        getDictionaryUrl,
-        getDictionaryName,
-        getDictionaryIcon,
-    } from './dictionaryConfig';
+    import CardActions from '@/components/CardActions.vue';
+    import DictionaryLinks from '@/components/DictionaryLinks.vue';
     // 滑动相关常量
     const MOVE_SCALE = 1;
     const MoveDef = {
@@ -113,7 +84,7 @@
 
     export default {
         name: 'Words',
-        components: { Icon, WordsHeader, WordsProgress, AudioButton },
+        components: { WordsHeader, WordsProgress, AudioButton, CardActions, DictionaryLinks },
         data() {
             return {
                 words: [], // 当前词库单词列表
@@ -126,9 +97,6 @@
                 deltaX: 0, // 滑动距离
                 isDragging: false, // 是否正在拖动
                 isAnimating: false, // 是否正在动画
-                showBookList: false, // 是否显示词库列表
-                showConfirm: false, // 是否显示确认弹窗
-                bookToSwitch: null, // 要切换的词库索引
                 currentGroup: 0, // 当前组号
                 learnedArr: [], // 已学过的单词索引数组
                 groupCount: 1, // 总组数
@@ -162,25 +130,10 @@
             isZhRevealed() {
                 return this.revealedSet.has(this.learningQueue[this.currentIdx]);
             },
-            // 推荐词典列表
-            recommendedDictionaries() {
-                return getRecommendedDictionaries();
-            },
         },
         methods: {
             ...mapMutations(['setStudyStatus']),
-
             getWordAudioUrl,
-            // 获取词典名称
-            getDictionaryName(dictType) {
-                return getDictionaryName(dictType);
-            },
-
-            // 获取词典图标
-            getDictionaryIcon(dictType) {
-                return getDictionaryIcon(dictType);
-            },
-
             // 将中文释义按词性分割成数组
             parseZhAsArr(zh) {
                 function splitTaggedText(text) {
@@ -304,7 +257,7 @@
                 let res = await openFinishModal({
                     bookName: this.wordBooks[this.currentBookIdx]?.name || '',
                 });
-                console.log('[res openAllFinishModal]', res);
+                // console.log('[res openAllFinishModal]', res);
                 if (res.success) {
                     let isContinue = res.data;
                     if (isContinue) {
@@ -324,7 +277,7 @@
                     restartText: '继续下一组',
                     homeText: '休息一下',
                 });
-                console.log('[res openGroupFinishModal]', res);
+                // console.log('[res openGroupFinishModal]', res);
                 if (res.success) {
                     let isContinue = res.data;
                     if (isContinue) {
@@ -332,30 +285,6 @@
                     } else {
                         this.stopAtCurrentGroup();
                     }
-                }
-            },
-            // 切换词库确认
-            confirmSwitch(idx) {
-                this.bookToSwitch = idx;
-                this.showConfirm = true;
-            },
-            // 确认切换词库
-            doSwitchBook() {
-                setCurrentBookIndex(this.bookToSwitch);
-                this.currentBookIdx = this.bookToSwitch;
-                this.loadProgress();
-                this.showConfirm = false;
-                this.showBookList = false;
-            },
-            async openBookModal() {
-                // 调用
-                let res = await openBookSelectModal({
-                    books: this.wordBooks,
-                    currentBookIdx: this.currentBookIdx,
-                });
-                if (res.success) {
-                    let idx = res.data;
-                    this.confirmSwitch(idx);
                 }
             },
             // 重新开始学习
@@ -398,7 +327,7 @@
                     if (!this.learnedArr.includes(i)) groupWords.push(i);
                 }
                 this.learningQueue = groupWords;
-                console.log(this.learningQueue, groupStart, groupEnd, this.words);
+                // console.log(this.learningQueue, groupStart, groupEnd, this.words);
                 this.currentIdx = 0;
                 this.revealedSet = new Set();
                 this.deltaX = 0;
@@ -444,65 +373,35 @@
                         showUrlInput: true,
                         width: '90vw',
                         height: '80vh',
-                        onLoaded: url => {
-                            console.log('页面加载完成:', url);
+                        onLoaded: () => {
+                            // console.log('页面加载完成:', url);
                         },
                         onError: error => {
+                            // eslint-disable-next-line no-console
                             console.error('加载错误:', error.message);
                         },
                         onUrlChange: url => {
+                            // eslint-disable-next-line no-console
                             console.log('URL已更改:', url);
                         },
                     });
-                    console.log('iframe弹窗已关闭');
+                    // console.log('iframe弹窗已关闭');
                 } catch (error) {
+                    // eslint-disable-next-line no-console
                     console.error('打开iframe弹窗失败:', error);
                 }
             },
-            // 打开词典
-            async openDictionary(dictType, word) {
-                if (!word) return;
-
-                try {
-                    const url = getDictionaryUrl(dictType, word);
-                    const dictName = getDictionaryName(dictType);
-                    const title = `${dictName} - ${word}`;
-
-                    await openIframeModal({
-                        url,
-                        title,
-                        showRefresh: true,
-                        showUrlInput: false, // 词典页面不需要URL输入
-                        width: '90vw',
-                        height: '80vh',
-                        onLoaded: loadedUrl => {
-                            console.log(`${dictName}加载完成:`, loadedUrl);
-                        },
-                        onError: error => {
-                            console.error(`${dictName}加载错误:`, error.message);
-                            // 如果iframe加载失败，提示用户
-                            if (
-                                error.message.includes('frame-ancestors') ||
-                                error.message.includes('CSP')
-                            ) {
-                                if (dictType === 'cambridge' || dictType === 'merriam') {
-                                    alert(
-                                        `${dictName}不支持在iframe中显示。\n\n建议：\n1. 尝试其他国内词典\n2. 或直接访问：${url}`
-                                    );
-                                } else {
-                                    alert(`${dictName}不支持在iframe中显示，请尝试其他词典。`);
-                                }
-                            } else if (error.message.includes('加载已取消')) {
-                                console.log('用户取消了加载');
-                                // 不显示alert，因为这是用户主动取消的
-                            } else {
-                                alert(`${dictName}加载失败: ${error.message}`);
-                            }
-                        },
-                    });
-                } catch (error) {
-                    console.error(`打开词典失败:`, error);
-                    alert(`打开${getDictionaryName(dictType)}失败: ${error.message}`);
+            async openBookModal() {
+                // 调用
+                let res = await openBookSelectModal({
+                    books: this.wordBooks,
+                    currentBookIdx: this.currentBookIdx,
+                });
+                if (res.success) {
+                    let idx = res.data;
+                    setCurrentBookIndex(idx);
+                    this.currentBookIdx = idx;
+                    this.loadProgress();
                 }
             },
         },
@@ -752,35 +651,6 @@
     .confirm-actions button:last-child {
         background: #e0e7ef;
         color: #888;
-    }
-    .card-actions {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 15vh;
-        display: flex;
-        justify-content: center;
-        gap: 38px;
-        z-index: 30;
-    }
-    .action-btn {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: #fff;
-        border: none;
-        box-shadow: 0 2px 8px rgba(60, 60, 60, 0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 44px;
-        cursor: pointer;
-        transition:
-            box-shadow 0.2s,
-            background 0.2s;
-    }
-    .action-btn:active {
-        background: #f0f4fa;
     }
 
     // 词典链接样式
