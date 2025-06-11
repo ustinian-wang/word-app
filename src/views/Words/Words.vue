@@ -16,14 +16,8 @@
         <WordsProgress :total="words.length" :current="learnedArr.length"></WordsProgress>
 
         <!-- 单词卡片滑动容器 -->
-        <div class="slider-container">
-            <div
-                v-for="(word, idx) in sliderWords"
-                :key="idx"
-                class="word-card"
-                :class="{ 'is-animating': isAnimating }"
-                :style="sliderStyle(idx)"
-            >
+        <SliderContainer :items="sliderWords" :isAnimating="isAnimating" :deltaX="deltaX">
+            <template #default="{ item: word }">
                 <!-- 英文单词 -->
                 <div class="word-en">{{ word.en }}</div>
 
@@ -39,8 +33,8 @@
 
                 <!-- 权威词典链接 -->
                 <DictionaryLinks :word="word.en" />
-            </div>
-        </div>
+            </template>
+        </SliderContainer>
 
         <!-- 底部操作按钮 -->
         <CardActions
@@ -73,6 +67,7 @@
     import AudioButton from '@/components/AudioButton.vue';
     import CardActions from '@/components/CardActions.vue';
     import DictionaryLinks from '@/components/DictionaryLinks.vue';
+    import SliderContainer from '@/components/SliderContainer.vue';
     // 滑动相关常量
     const MOVE_SCALE = 1;
     const MoveDef = {
@@ -84,7 +79,14 @@
 
     export default {
         name: 'Words',
-        components: { WordsHeader, WordsProgress, AudioButton, CardActions, DictionaryLinks },
+        components: {
+            WordsHeader,
+            WordsProgress,
+            AudioButton,
+            CardActions,
+            DictionaryLinks,
+            SliderContainer,
+        },
         data() {
             return {
                 words: [], // 当前词库单词列表
@@ -144,18 +146,6 @@
                 return splitTaggedText(zh);
             },
 
-            // 计算单词卡片的样式
-            sliderStyle(idx) {
-                const base = (idx - 1) * 100;
-                const move = idx === 0 || idx === 2 ? 0 : (this.deltaX / window.innerWidth) * 100;
-                return {
-                    transform: `translateX(calc(${base}% + ${move}vw))`,
-                    zIndex: idx === 1 ? 2 : 1,
-                    transition: this.isAnimating
-                        ? 'transform 0.3s cubic-bezier(.25,.8,.5,1)'
-                        : 'none',
-                };
-            },
             // 触摸开始事件处理
             onTouchStart(e) {
                 if (this.isAnimating || this.learningQueue.length === 0) return;
@@ -430,42 +420,6 @@
         overflow: hidden;
         position: relative;
     }
-    .slider-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        // height: calc(100vh - 56px);
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        pointer-events: none;
-    }
-    .word-card {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        // height: calc(100vh - 56px);
-        height: 100vh;
-        background: #fff;
-        border-radius: 0;
-        box-shadow: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        will-change: transform;
-        box-sizing: border-box;
-        pointer-events: auto;
-        transition: box-shadow 0.2s;
-        padding-top: 15vh;
-    }
-    .word-card.is-animating {
-        transition:
-            transform 0.3s cubic-bezier(0.25, 0.8, 0.5, 1),
-            box-shadow 0.2s;
-    }
     .word-en {
         font-size: 40px;
         font-weight: bold;
@@ -478,6 +432,8 @@
         cursor: pointer;
         transition: filter 0.2s;
         margin-top: 24px;
+        height: 200px;
+        overflow: hidden;
     }
     .word-zh.mosaic {
         color: transparent;
