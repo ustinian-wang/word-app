@@ -1,6 +1,7 @@
 <template>
-    <div class="audio-btn" :class="{ 'is-playing': isPlaying }" @click="handleClick" :title="title">
-        <Icon icon="mdi:volume-high" width="32" height="32" :style="{ color: '#3578e5' }" />
+    <div class="audio-btn" :class="{ 'is-playing': isPlaying, 'is-loading': isLoading }" @click="handleClick" :title="title">
+        <Icon v-if="!isLoading" icon="mdi:volume-high" width="32" height="32" :style="{ color: '#3578e5' }" />
+        <Icon v-else icon="mdi:loading" width="32" height="32" :style="{ color: '#3578e5' }" class="loading-icon" />
     </div>
 </template>
 
@@ -25,6 +26,7 @@ export default {
     data() {
         return {
             isPlaying: false,
+            isLoading: false,
             audioPlayer: null
         }
     },
@@ -39,27 +41,28 @@ export default {
                 this.audioPlayer.pause()
             }
 
-            let wordAudioUrl = await getAvailableAudioUrl(this.word)
-            if (!wordAudioUrl) {
-                $message.error('网络异常，请稍后重试')
-                return
-            }
-            this.audioPlayer = new Audio(wordAudioUrl)
+            this.isLoading = true
+            try {
+                let wordAudioUrl = await getAvailableAudioUrl(this.word)
+                if (!wordAudioUrl) {
+                    $message.error('网络异常，请稍后重试')
+                    return
+                }
+                this.audioPlayer = new Audio(wordAudioUrl)
 
-            // 添加音频结束监听器
-            this.audioPlayer.addEventListener('ended', () => {
-                this.isPlaying = false
-            })
-
-            this.audioPlayer
-                .play()
-                .then(() => {
-                    this.isPlaying = true
-                })
-                .catch(err => {
-                    console.error('Failed to play audio:', err)
+                // 添加音频结束监听器
+                this.audioPlayer.addEventListener('ended', () => {
                     this.isPlaying = false
                 })
+
+                await this.audioPlayer.play()
+                this.isPlaying = true
+            } catch (err) {
+                console.error('Failed to play audio:', err)
+                this.isPlaying = false
+            } finally {
+                this.isLoading = false
+            }
         }
     },
     beforeDestroy() {
@@ -71,6 +74,7 @@ export default {
             this.audioPlayer = null
         }
         this.isPlaying = false
+        this.isLoading = false
     }
 }
 </script>
@@ -98,6 +102,25 @@ export default {
 .audio-btn:active {
     background: #e0e7ef;
     transform: scale(0.95);
+}
+
+// 加载状态的动画效果
+.audio-btn.is-loading {
+    background: #f0f4fa;
+    cursor: wait;
+}
+
+.loading-icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 // 播放状态的动画效果
