@@ -58,7 +58,7 @@
         getWordAudioUrl,
     } from '@/kits/words';
     import { STUDY_STATUS_DEF } from '@/store';
-    import { mapMutations } from 'vuex';
+    import { mapGetters, mapMutations, mapState } from 'vuex';
     import WordsHeader from './components/WordsHeader.vue';
     import WordsProgress from './components/WordsProgress.vue';
     import { openBookSelectModal } from './components/bookSelectModal';
@@ -89,9 +89,9 @@
         },
         data() {
             return {
-                words: [], // 当前词库单词列表
-                wordBooks: [], // 所有词库列表
-                currentBookIdx: 0, // 当前词库索引
+                // words: [], // 当前词库单词列表
+                // wordBooks: [], // 所有词库列表
+                // currentBookIdx: 0, // 当前词库索引
                 learningQueue: [], // 当前组学习的单词索引队列
                 currentIdx: 0, // 当前在 learningQueue 的位置
                 revealedSet: new Set(), // 已揭示释义的索引集合
@@ -107,6 +107,8 @@
             };
         },
         computed: {
+            ...mapState('book', ['currentBookIdx', 'wordBooks', 'words']),
+            ...mapGetters('book', ['bookName']),
             // 获取当前显示的三个单词(前一个、当前、后一个)
             sliderWords() {
                 const prevIdx = this.learningQueue[this.currentIdx - 1];
@@ -134,6 +136,7 @@
             },
         },
         methods: {
+            ...mapMutations('book', ['setCurrentBookIdx', 'setWordBooks', 'setWords']),
             ...mapMutations(['setStudyStatus']),
             getWordAudioUrl,
             // 将中文释义按词性分割成数组
@@ -245,7 +248,7 @@
             },
             async openAllFinishModal() {
                 let res = await openFinishModal({
-                    bookName: this.wordBooks[this.currentBookIdx]?.name || '',
+                    bookName: this.bookName,
                 });
                 // console.log('[res openAllFinishModal]', res);
                 if (res.success) {
@@ -260,9 +263,9 @@
                 }
             },
             async openGroupFinishModal() {
-                let { wordBooks, currentBookIdx, currentGroup } = this;
+                let { currentGroup } = this;
                 let res = await openFinishModal({
-                    bookName: `${wordBooks[currentBookIdx]?.name || ''} - 第${currentGroup + 1}组`,
+                    bookName: `${this.bookName} - 第${currentGroup + 1}组`,
                     subtitle: '当前组已学完，是否继续下一组？',
                     restartText: '继续下一组',
                     homeText: '休息一下',
@@ -304,9 +307,12 @@
             },
             // 初始化学习队列
             initLearningQueue() {
-                this.wordBooks = getWordBooks();
-                this.currentBookIdx = getCurrentBookIndex();
-                this.words = getCurrentWords();
+                // this.wordBooks = getWordBooks();
+                this.setWordBooks(getWordBooks());
+                // this.currentBookIdx = getCurrentBookIndex();
+                this.setCurrentBookIdx(getCurrentBookIndex());
+                // this.words = getCurrentWords();
+                this.setWords(getCurrentWords());
                 this.groupCount = Math.ceil(this.words.length / GROUP_SIZE);
                 // 过滤掉已学过的单词，取当前组的10个
                 const groupStart = this.currentGroup * GROUP_SIZE;
@@ -336,9 +342,12 @@
             },
             // 加载学习进度
             loadProgress() {
-                this.wordBooks = getWordBooks();
-                this.currentBookIdx = getCurrentBookIndex();
-                this.words = getCurrentWords();
+                // this.wordBooks = getWordBooks();
+                this.setWordBooks(getWordBooks());
+                // this.currentBookIdx = getCurrentBookIndex();
+                this.setCurrentBookIdx(getCurrentBookIndex());
+                // this.words = getCurrentWords();
+                this.setWords(getCurrentWords());
                 const bookId = this.wordBooks[this.currentBookIdx]?.id;
                 if (!bookId) return;
                 const progress = getBookProgress(bookId);
@@ -389,8 +398,8 @@
                 });
                 if (res.success) {
                     let idx = res.data;
-                    setCurrentBookIndex(idx);
-                    this.currentBookIdx = idx;
+                    // this.currentBookIdx = idx;
+                    this.setCurrentBookIdx(idx);
                     this.loadProgress();
                 }
             },
