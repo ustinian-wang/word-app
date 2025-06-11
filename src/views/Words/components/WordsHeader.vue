@@ -17,13 +17,12 @@
 </template>
 
 <script>
-export default {
-  name: 'WordsHeader',
-  props: {
-    title: String,
-    showBookList: Boolean,
-  }
-}
+    export default {
+        name: 'WordsHeader',
+        props: {
+            title: String,
+        },
+    };
 </script>
 
 <style lang="less" scoped>
@@ -61,5 +60,4 @@ export default {
     .book-title:hover .arrow {
         transform: translateY(2px) scale(1.1);
     }
-
 </style>

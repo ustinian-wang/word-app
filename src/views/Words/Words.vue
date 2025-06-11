@@ -9,7 +9,6 @@
         <!-- 顶部词库标题栏 -->
         <WordsHeader
             :title="wordBooks[currentBookIdx]?.name || '词库'"
-            :showBookList="showBookList"
             @change="openBookModal"
         ></WordsHeader>
 
@@ -29,19 +28,7 @@
                 <div class="word-en">{{ word.en }}</div>
 
                 <!-- 发音按钮 -->
-                <div 
-                    class="audio-btn" 
-                    :class="{ 'is-playing': isAudioPlaying }" 
-                    @click="playAudio" 
-                    title="播放发音"
-                >
-                    <Icon
-                        icon="mdi:volume-high"
-                        width="32"
-                        height="32"
-                        :style="{ color: '#3578e5' }"
-                    />
-                </div>
+                <AudioButton :audioUrl="getWordAudioUrl(word?.en)" title="播放发音" />
 
                 <!-- 中文释义(点击显示) -->
                 <div class="word-zh" :class="{ mosaic: !isZhRevealed }" @click="revealZh">
@@ -108,6 +95,7 @@
     import { openBookSelectModal } from './components/bookSelectModal';
     import { openFinishModal } from '@/components/FinishModal/finishModal';
     import { openIframeModal } from '@/components/IframeModal/iframeModal';
+    import AudioButton from '@/components/AudioButton.vue';
     import {
         getRecommendedDictionaries,
         getDictionaryUrl,
@@ -125,7 +113,7 @@
 
     export default {
         name: 'Words',
-        components: { Icon, WordsHeader, WordsProgress },
+        components: { Icon, WordsHeader, WordsProgress, AudioButton },
         data() {
             return {
                 words: [], // 当前词库单词列表
@@ -146,8 +134,6 @@
                 groupCount: 1, // 总组数
                 finishAll: false, // 是否全部学完
                 finishGroup: false, // 是否当前组学完
-                audioPlayer: null, // 音频播放器实例
-                isAudioPlaying: false, // 是否正在播放音频
             };
         },
         computed: {
@@ -184,6 +170,7 @@
         methods: {
             ...mapMutations(['setStudyStatus']),
 
+            getWordAudioUrl,
             // 获取词典名称
             getDictionaryName(dictType) {
                 return getDictionaryName(dictType);
@@ -447,36 +434,6 @@
                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
                 this.$router.push('/');
             },
-            // 播放音频
-            playAudio() {
-                const currentWord = this.sliderWords[1];
-                if (!currentWord?.en) {
-                    return;
-                }
-
-                const audioUrl = getWordAudioUrl(currentWord.en);
-
-                if (this.audioPlayer) {
-                    this.audioPlayer.pause();
-                }
-
-                this.audioPlayer = new Audio(audioUrl);
-                
-                // 添加音频结束监听器
-                this.audioPlayer.addEventListener('ended', () => {
-                    this.isAudioPlaying = false;
-                });
-                
-                this.audioPlayer
-                    .play()
-                    .then(() => {
-                        this.isAudioPlaying = true;
-                    })
-                    .catch(err => {
-                        console.error('Failed to play audio:', err);
-                        this.isAudioPlaying = false;
-                    });
-            },
             // 打开iframe弹窗示例
             async openIframeExample() {
                 try {
@@ -521,7 +478,7 @@
                         onLoaded: loadedUrl => {
                             console.log(`${dictName}加载完成:`, loadedUrl);
                         },
-                        onError: (error) => {
+                        onError: error => {
                             console.error(`${dictName}加载错误:`, error.message);
                             // 如果iframe加载失败，提示用户
                             if (
@@ -529,7 +486,9 @@
                                 error.message.includes('CSP')
                             ) {
                                 if (dictType === 'cambridge' || dictType === 'merriam') {
-                                    alert(`${dictName}不支持在iframe中显示。\n\n建议：\n1. 尝试其他国内词典\n2. 或直接访问：${url}`);
+                                    alert(
+                                        `${dictName}不支持在iframe中显示。\n\n建议：\n1. 尝试其他国内词典\n2. 或直接访问：${url}`
+                                    );
                                 } else {
                                     alert(`${dictName}不支持在iframe中显示，请尝试其他词典。`);
                                 }
@@ -555,14 +514,6 @@
         // 组件销毁
         beforeDestroy() {
             window.removeEventListener('storage', this.loadProgress);
-            if (this.audioPlayer) {
-                this.audioPlayer.pause();
-                this.audioPlayer.removeEventListener('ended', () => {
-                    this.isAudioPlaying = false;
-                });
-                this.audioPlayer = null;
-            }
-            this.isAudioPlaying = false;
         },
     };
 </script>
@@ -830,67 +781,6 @@
     }
     .action-btn:active {
         background: #f0f4fa;
-    }
-    .audio-btn {
-        margin-top: 24px;
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: #f0f4fa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-    }
-    
-    .audio-btn .iconify {
-        transition: color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        color: #3578e5;
-    }
-    
-    .audio-btn:active {
-        background: #e0e7ef;
-        transform: scale(0.95);
-    }
-    
-    // 播放状态的动画效果
-    .audio-btn.is-playing {
-        background: linear-gradient(45deg, #3578e5, #4f8cff);
-        animation: audioPulse 2s ease-in-out infinite;
-        box-shadow: 0 0 20px rgba(53, 120, 229, 0.3);
-    }
-    
-    .audio-btn.is-playing .iconify {
-        color: #fff !important;
-        animation: audioIconGlow 2s ease-in-out infinite;
-    }
-    
-    // 脉冲动画
-    @keyframes audioPulse {
-        0% {
-            box-shadow: 0 0 20px rgba(53, 120, 229, 0.3);
-        }
-        50% {
-            box-shadow: 0 0 25px rgba(53, 120, 229, 0.5);
-        }
-        100% {
-            box-shadow: 0 0 20px rgba(53, 120, 229, 0.3);
-        }
-    }
-    
-    // 图标发光动画
-    @keyframes audioIconGlow {
-        0% {
-            filter: brightness(1);
-        }
-        50% {
-            filter: brightness(1.15);
-        }
-        100% {
-            filter: brightness(1);
-        }
     }
 
     // 词典链接样式
