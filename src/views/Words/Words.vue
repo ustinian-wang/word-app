@@ -37,11 +37,7 @@
         </SliderContainer>
 
         <!-- 底部操作按钮 -->
-        <CardActions
-            :showIframeBtn="false"
-            @pass="passWord"
-            @fail="failWord"
-        />
+        <CardActions :showIframeBtn="false" @pass="passWord" @fail="failWord" />
     </div>
 </template>
 
@@ -62,7 +58,6 @@
     import WordsProgress from './components/WordsProgress.vue';
     import { openBookSelectModal } from './components/bookSelectModal';
     import { openFinishModal } from '@/components/FinishModal/finishModal';
-    import { openIframeModal } from '@/components/IframeModal/iframeModal';
     import AudioButton from '@/components/AudioButton.vue';
     import CardActions from '@/components/CardActions.vue';
     import DictionaryLinks from '@/components/DictionaryLinks.vue';
@@ -107,7 +102,7 @@
         },
         computed: {
             ...mapState('book', ['currentBookIdx', 'wordBooks', 'words']),
-            ...mapGetters('book', ['bookName']),
+            ...mapGetters('book', ['bookName', 'bookId']),
             // 获取当前显示的三个单词(前一个、当前、后一个)
             sliderWords() {
                 const prevIdx = this.learningQueue[this.currentIdx - 1];
@@ -331,8 +326,10 @@
             },
             // 保存学习进度
             saveProgress() {
-                const bookId = this.wordBooks[this.currentBookIdx]?.id;
-                if (!bookId) return;
+                const bookId = this.bookId;
+                if (!bookId) {
+                    return;
+                }
                 setBookProgress(bookId, {
                     group: this.currentGroup,
                     learned: this.learnedArr,
@@ -347,8 +344,10 @@
                 this.setCurrentBookIdx(getCurrentBookIndex());
                 // this.words = getCurrentWords();
                 this.setWords(getCurrentWords());
-                const bookId = this.wordBooks[this.currentBookIdx]?.id;
-                if (!bookId) return;
+                const bookId = this.bookId;
+                if (!bookId) {
+                    return;
+                }
                 const progress = getBookProgress(bookId);
                 this.currentGroup = progress.group || 0;
                 this.learnedArr = progress.learned || [];

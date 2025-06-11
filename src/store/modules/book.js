@@ -9,6 +9,9 @@ export default {
         bookName: state => {
             return state.wordBooks[state.currentBookIdx]?.name || '';
         },
+        bookId: state => {
+            return state.wordBooks[state.currentBookIdx]?.id || 0;
+        },
     },
     mutations: {
         setCurrentBookIdx(state, idx) {
