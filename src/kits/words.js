@@ -50,23 +50,28 @@ export function setBookProgress(bookId, progress) {
 export function getWordAudioUrl(word) {
     return `https://api.dictionaryapi.dev/media/pronunciations/en/${word}-us.mp3`;
 }
+let word_cache = {};
 /**
  * @description
  * @param {*} word 
  * @returns 
  */
 export async function getAvailableAudioUrl(word) {
+    if(word_cache[word]){
+        return word_cache[word];
+    }
     let count = 0;
     while (count < 3) {
         let part = count > 0 ? '-' + count : '';
         let url = getWordUrl(word, part);
         console.log(`jser [url]`, url);
         if (!(await isUrl404(url))) {
+            word_cache[word]=url;
             return url;
         }
         count++;
     }
-    
+    word_cache[word]='';
     return '';
 }
 function getWordUrl(word, part = '') {
