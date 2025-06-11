@@ -907,7 +907,7 @@
     }
 
     .dictionary-buttons {
-        padding: 16px;
+        padding: 0 24px;
         display: flex;
         justify-content: flex-start;
         gap: 16px;
