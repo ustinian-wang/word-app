@@ -41,7 +41,6 @@
             :showIframeBtn="false"
             @pass="passWord"
             @fail="failWord"
-            @iframe="openIframeExample"
         />
     </div>
 </template>
@@ -361,34 +360,6 @@
             stopLearning() {
                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
                 this.$router.push('/');
-            },
-            // 打开iframe弹窗示例
-            async openIframeExample() {
-                try {
-                    await openIframeModal({
-                        url: 'https://example.com',
-                        title: '示例网页',
-                        showRefresh: true,
-                        showUrlInput: true,
-                        width: '90vw',
-                        height: '80vh',
-                        onLoaded: () => {
-                            // console.log('页面加载完成:', url);
-                        },
-                        onError: error => {
-                            // eslint-disable-next-line no-console
-                            console.error('加载错误:', error.message);
-                        },
-                        onUrlChange: url => {
-                            // eslint-disable-next-line no-console
-                            console.log('URL已更改:', url);
-                        },
-                    });
-                    // console.log('iframe弹窗已关闭');
-                } catch (error) {
-                    // eslint-disable-next-line no-console
-                    console.error('打开iframe弹窗失败:', error);
-                }
             },
             async openBookModal() {
                 // 调用
