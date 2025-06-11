@@ -1,45 +1,54 @@
 // import * as XLSX from 'xlsx';
-import { builtinWordBooks } from '@/wordbooks/builtin';
-import { cloneRequest } from '@ustinian-wang/kit';
-import { isUrl404 } from './url';
+import { builtinWordBooks } from '@/wordbooks/builtin'
+import { cloneRequest } from '@ustinian-wang/kit'
+import { isUrl404 } from './url'
 
-const WORD_BOOKS_KEY = 'myWordBooks';
-const CURRENT_BOOK_IDX_KEY = 'currentWordBookIdx';
-const INIT_FLAG_KEY = 'wordBooksInited';
-const PROGRESS_KEY = 'wordBooksProgress';
+const WORD_BOOKS_KEY = 'myWordBooks'
+const CURRENT_BOOK_IDX_KEY = 'currentWordBookIdx'
+const INIT_FLAG_KEY = 'wordBooksInited'
+const PROGRESS_KEY = 'wordBooksProgress'
 
 export function getWordBooks() {
-    return JSON.parse(localStorage.getItem(WORD_BOOKS_KEY) || '[]');
+    return JSON.parse(localStorage.getItem(WORD_BOOKS_KEY) || '[]')
 }
 export function saveWordBooks(books) {
-    localStorage.setItem(WORD_BOOKS_KEY, JSON.stringify(books));
+    localStorage.setItem(WORD_BOOKS_KEY, JSON.stringify(books))
 }
 export function getCurrentBookIndex() {
-    return Number(localStorage.getItem(CURRENT_BOOK_IDX_KEY) || 0);
+    return Number(localStorage.getItem(CURRENT_BOOK_IDX_KEY) || 0)
 }
 export function setCurrentBookIndex(idx) {
-    localStorage.setItem(CURRENT_BOOK_IDX_KEY, idx);
+    localStorage.setItem(CURRENT_BOOK_IDX_KEY, idx)
 }
 export function getCurrentWords() {
-    const books = getWordBooks();
-    const idx = getCurrentBookIndex();
-    return books[idx]?.words || [];
+    const books = getWordBooks()
+    const idx = getCurrentBookIndex()
+    return books[idx]?.words || []
 }
 
 export function initDefaultWordBooks() {
-    if (localStorage.getItem(INIT_FLAG_KEY)) return;
-    localStorage.setItem(WORD_BOOKS_KEY, JSON.stringify(builtinWordBooks));
-    localStorage.setItem(INIT_FLAG_KEY, '1');
+    if (localStorage.getItem(INIT_FLAG_KEY)) return
+    localStorage.setItem(WORD_BOOKS_KEY, JSON.stringify(builtinWordBooks))
+    localStorage.setItem(INIT_FLAG_KEY, '1')
 }
-
+/**
+ * @description 获取词库学习进度
+ * @param {number} bookId
+ * @returns {{group: number, learned: number[], percent: number}}
+ */
 export function getBookProgress(bookId) {
-    const all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
-    return all[bookId] || { group: 0, learned: [], percent: 0 };
+    const all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}')
+    return all[bookId] || { group: 0, learned: [], percent: 0 }
 }
+/**
+ * @description 设置词库学习进度
+ * @param {number} bookId
+ * @param {{group: number, learned: number[], percent: number}} progress
+ */
 export function setBookProgress(bookId, progress) {
-    const all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
-    all[bookId] = progress;
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
+    const all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}')
+    all[bookId] = progress
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(all))
 }
 
 /**
@@ -48,32 +57,39 @@ export function setBookProgress(bookId, progress) {
  * @returns
  */
 export function getWordAudioUrl(word) {
-    return `https://api.dictionaryapi.dev/media/pronunciations/en/${word}-us.mp3`;
+    return `https://api.dictionaryapi.dev/media/pronunciations/en/${word}-us.mp3`
 }
-let word_cache = {};
+let word_cache = {}
 /**
  * @description
- * @param {*} word 
- * @returns 
+ * @param {*} word
+ * @returns
  */
 export async function getAvailableAudioUrl(word) {
-    if(word_cache[word]){
-        return word_cache[word];
+    if (word_cache[word]) {
+        return word_cache[word]
     }
-    let count = 0;
+    let count = 0
     while (count < 3) {
-        let part = count > 0 ? '-' + count : '';
-        let url = getWordUrl(word, part);
-        console.log(`jser [url]`, url);
+        let part = count > 0 ? '-' + count : ''
+        let url = getWordUrl(word, part)
+        console.log(`jser [url]`, url)
         if (!(await isUrl404(url))) {
-            word_cache[word]=url;
-            return url;
+            word_cache[word] = url
+            return url
         }
-        count++;
+        count++
     }
-    word_cache[word]='';
-    return '';
+    word_cache[word] = ''
+    return ''
 }
 function getWordUrl(word, part = '') {
-    return `https://api.dictionaryapi.dev/media/pronunciations/en/${word}${part}-us.mp3`;
+    return `https://api.dictionaryapi.dev/media/pronunciations/en/${word}${part}-us.mp3`
+}
+
+
+export function splitTaggedText(text) {
+    const regex = /([a-z]*\.\s[^a-z]*)/gi
+    const matches = text.match(regex)
+    return matches ? matches.map(item => item.trim()) : []
 }
