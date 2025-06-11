@@ -24,7 +24,10 @@ const updateSW = registerSW({
     },
 });
 
-if (process.env.NODE_ENV !== 'production') {
+// eslint-disable-next-line no-undef
+let urlObj = new URL(location.href);
+let _debug = urlObj.searchParams.get('_debug') === 'true';
+if (process.env.NODE_ENV !== 'production' || _debug) {
     new VConsole();
 }
 
