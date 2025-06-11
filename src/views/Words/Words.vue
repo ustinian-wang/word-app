@@ -362,7 +362,8 @@ export default {
     color: #333;
     cursor: pointer;
     transition: filter 0.2s;
-    margin-top: 24px;
+    // margin-top: 24px;
+    padding: 24px;
     min-height: 100px;
     // overflow: hidden;
 }
