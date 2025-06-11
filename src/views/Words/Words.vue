@@ -22,7 +22,7 @@
                 <div class="word-en">{{ word.en }}</div>
 
                 <!-- 发音按钮 -->
-                <AudioButton :audioUrl="getWordAudioUrl(word?.en)" title="播放发音" />
+                <AudioButton :word="word?.en" title="播放发音" />
 
                 <!-- 中文释义(点击显示) -->
                 <div class="word-zh" :class="{ mosaic: !isZhRevealed }" @click="revealZh">
@@ -412,7 +412,7 @@
         transition: filter 0.2s;
         margin-top: 24px;
         min-height: 100px;
-        overflow: hidden;
+        // overflow: hidden;
     }
     .word-zh.mosaic {
         color: transparent;

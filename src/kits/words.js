@@ -1,6 +1,7 @@
 // import * as XLSX from 'xlsx';
 import { builtinWordBooks } from '@/wordbooks/builtin';
 import { cloneRequest } from '@ustinian-wang/kit';
+import { isUrl404 } from './url';
 
 const WORD_BOOKS_KEY = 'myWordBooks';
 const CURRENT_BOOK_IDX_KEY = 'currentWordBookIdx';
@@ -48,4 +49,26 @@ export function setBookProgress(bookId, progress) {
  */
 export function getWordAudioUrl(word) {
     return `https://api.dictionaryapi.dev/media/pronunciations/en/${word}-us.mp3`;
+}
+/**
+ * @description
+ * @param {*} word 
+ * @returns 
+ */
+export async function getAvailableAudioUrl(word) {
+    let count = 0;
+    while (count < 3) {
+        let part = count > 0 ? '-' + count : '';
+        let url = getWordUrl(word, part);
+        console.log(`jser [url]`, url);
+        if (!(await isUrl404(url))) {
+            return url;
+        }
+        count++;
+    }
+    
+    return '';
+}
+function getWordUrl(word, part = '') {
+    return `https://api.dictionaryapi.dev/media/pronunciations/en/${word}${part}-us.mp3`;
 }
