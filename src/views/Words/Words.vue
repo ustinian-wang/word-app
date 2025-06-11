@@ -432,7 +432,7 @@
         cursor: pointer;
         transition: filter 0.2s;
         margin-top: 24px;
-        height: 200px;
+        min-height: 100px;
         overflow: hidden;
     }
     .word-zh.mosaic {
