@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>词典iframe测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-item {
+            background: white;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .test-header {
+            background: #3578e5;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+        }
+        .test-iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+        .test-status {
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+        .status-success {
+            color: #28a745;
+        }
+        .status-error {
+            color: #dc3545;
+        }
+        .status-loading {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>词典iframe支持测试</h1>
+        <p>测试各种词典网站是否支持在iframe中显示</p>
+        
+        <div class="test-item">
+            <div class="test-header">维基词典 (Wiktionary) - hello</div>
+            <iframe 
+                class="test-iframe" 
+                src="https://en.wiktionary.org/wiki/hello"
+                onload="updateStatus(this, 'success')"
+                onerror="updateStatus(this, 'error')">
+            </iframe>
+            <div class="test-status status-loading" id="status-wiktionary">加载中...</div>
+        </div>
+
+        <div class="test-item">
+            <div class="test-header">Urban词典 - hello</div>
+            <iframe 
+                class="test-iframe" 
+                src="https://www.urbandictionary.com/define.php?term=hello"
+                onload="updateStatus(this, 'success')"
+                onerror="updateStatus(this, 'error')">
+            </iframe>
+            <div class="test-status status-loading" id="status-urban">加载中...</div>
+        </div>
+
+        <div class="test-item">
+            <div class="test-header">Vocabulary.com - hello</div>
+            <iframe 
+                class="test-iframe" 
+                src="https://www.vocabulary.com/dictionary/hello"
+                onload="updateStatus(this, 'success')"
+                onerror="updateStatus(this, 'error')">
+            </iframe>
+            <div class="test-status status-loading" id="status-vocabulary">加载中...</div>
+        </div>
+
+        <div class="test-item">
+            <div class="test-header">Thesaurus.com - hello</div>
+            <iframe 
+                class="test-iframe" 
+                src="https://www.thesaurus.com/browse/hello"
+                onload="updateStatus(this, 'success')"
+                onerror="updateStatus(this, 'error')">
+            </iframe>
+            <div class="test-status status-loading" id="status-thesaurus">加载中...</div>
+        </div>
+
+        <div class="test-item">
+            <div class="test-header">RhymeZone - hello</div>
+            <iframe 
+                class="test-iframe" 
+                src="https://www.rhymezone.com/r/rhyme.cgi?Word=hello"
+                onload="updateStatus(this, 'success')"
+                onerror="updateStatus(this, 'error')">
+            </iframe>
+            <div class="test-status status-loading" id="status-rhymezone">加载中...</div>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(iframe, status) {
+            const statusElement = iframe.parentNode.querySelector('.test-status');
+            const statusText = {
+                'success': '✅ 支持iframe显示',
+                'error': '❌ 不支持iframe显示',
+                'loading': '⏳ 加载中...'
+            };
+            
+            statusElement.textContent = statusText[status];
+            statusElement.className = `test-status status-${status}`;
+        }
+
+        // 设置超时检测
+        setTimeout(() => {
+            const iframes = document.querySelectorAll('.test-iframe');
+            iframes.forEach(iframe => {
+                const statusElement = iframe.parentNode.querySelector('.test-status');
+                if (statusElement.textContent === '加载中...') {
+                    updateStatus(iframe, 'error');
+                }
+            });
+        }, 10000); // 10秒超时
+    </script>
+</body>
+</html> 

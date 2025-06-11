@@ -44,6 +44,23 @@
                         {{ item }}
                     </div>
                 </div>
+
+                <!-- 权威词典链接 -->
+                <div class="dictionary-links">
+                    <div class="dictionary-title">权威词典</div>
+                    <div class="dictionary-buttons">
+                        <button
+                            v-for="dictType in recommendedDictionaries"
+                            :key="dictType"
+                            class="dict-btn"
+                            @click="openDictionary(dictType, word.en)"
+                            :title="getDictionaryName(dictType)"
+                        >
+                            <Icon :icon="getDictionaryIcon(dictType)" width="16" height="16" />
+                            <span>{{ getDictionaryName(dictType) }}</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -54,6 +71,14 @@
             </div>
             <div class="action-btn fail-btn" @click="failWord" title="再看一次">
                 <Icon icon="mdi:close" width="28" height="28" :style="{ color: '#e55' }" />
+            </div>
+            <div
+                v-if="false"
+                class="action-btn iframe-btn"
+                @click="openIframeExample"
+                title="打开网页"
+            >
+                <Icon icon="mdi:web" width="28" height="28" :style="{ color: '#3578e5' }" />
             </div>
         </div>
     </div>
@@ -77,6 +102,13 @@
     import WordsProgress from './components/WordsProgress.vue';
     import { openBookSelectModal } from './components/bookSelectModal';
     import { openFinishModal } from '@/components/FinishModal/finishModal';
+    import { openIframeModal } from '@/components/IframeModal/iframeModal';
+    import {
+        getRecommendedDictionaries,
+        getDictionaryUrl,
+        getDictionaryName,
+        getDictionaryIcon,
+    } from './dictionaryConfig';
     // 滑动相关常量
     const MOVE_SCALE = 1;
     const MoveDef = {
@@ -113,6 +145,8 @@
             };
         },
         computed: {
+            ...mapMutations(['setStudyStatus']),
+
             // 获取当前显示的三个单词(前一个、当前、后一个)
             sliderWords() {
                 const prevIdx = this.learningQueue[this.currentIdx - 1];
@@ -138,9 +172,23 @@
             isZhRevealed() {
                 return this.revealedSet.has(this.learningQueue[this.currentIdx]);
             },
+            // 推荐词典列表
+            recommendedDictionaries() {
+                return getRecommendedDictionaries();
+            },
         },
         methods: {
             ...mapMutations(['setStudyStatus']),
+
+            // 获取词典名称
+            getDictionaryName(dictType) {
+                return getDictionaryName(dictType);
+            },
+
+            // 获取词典图标
+            getDictionaryIcon(dictType) {
+                return getDictionaryIcon(dictType);
+            },
 
             // 将中文释义按词性分割成数组
             parseZhAsArr(zh) {
@@ -265,11 +313,11 @@
                 let res = await openFinishModal({
                     bookName: this.wordBooks[this.currentBookIdx]?.name || '',
                 });
-                console.log("[res openAllFinishModal]", res)
+                console.log('[res openAllFinishModal]', res);
                 if (res.success) {
                     let isContinue = res.data;
                     if (isContinue) {
-                        // todo 这里帮他自动切换词库，同等水平网上 
+                        // todo 这里帮他自动切换词库，同等水平网上
                         // todo 文案也要改下
                         this.restartLearning();
                     } else {
@@ -285,7 +333,7 @@
                     restartText: '继续下一组',
                     homeText: '休息一下',
                 });
-                console.log("[res openGroupFinishModal]", res)
+                console.log('[res openGroupFinishModal]', res);
                 if (res.success) {
                     let isContinue = res.data;
                     if (isContinue) {
@@ -412,6 +460,75 @@
                 this.audioPlayer.play().catch(err => {
                     console.error('Failed to play audio:', err);
                 });
+            },
+            // 打开iframe弹窗示例
+            async openIframeExample() {
+                try {
+                    await openIframeModal({
+                        url: 'https://example.com',
+                        title: '示例网页',
+                        showRefresh: true,
+                        showUrlInput: true,
+                        width: '90vw',
+                        height: '80vh',
+                        onLoaded: url => {
+                            console.log('页面加载完成:', url);
+                        },
+                        onError: error => {
+                            console.error('加载错误:', error.message);
+                        },
+                        onUrlChange: url => {
+                            console.log('URL已更改:', url);
+                        },
+                    });
+                    console.log('iframe弹窗已关闭');
+                } catch (error) {
+                    console.error('打开iframe弹窗失败:', error);
+                }
+            },
+            // 打开词典
+            async openDictionary(dictType, word) {
+                if (!word) return;
+
+                try {
+                    const url = getDictionaryUrl(dictType, word);
+                    const dictName = getDictionaryName(dictType);
+                    const title = `${dictName} - ${word}`;
+
+                    await openIframeModal({
+                        url,
+                        title,
+                        showRefresh: true,
+                        showUrlInput: false, // 词典页面不需要URL输入
+                        width: '90vw',
+                        height: '80vh',
+                        onLoaded: loadedUrl => {
+                            console.log(`${dictName}加载完成:`, loadedUrl);
+                        },
+                        onError: (error) => {
+                            console.error(`${dictName}加载错误:`, error.message);
+                            // 如果iframe加载失败，提示用户
+                            if (
+                                error.message.includes('frame-ancestors') ||
+                                error.message.includes('CSP')
+                            ) {
+                                if (dictType === 'cambridge' || dictType === 'merriam') {
+                                    alert(`${dictName}不支持在iframe中显示。\n\n建议：\n1. 尝试其他国内词典\n2. 或直接访问：${url}`);
+                                } else {
+                                    alert(`${dictName}不支持在iframe中显示，请尝试其他词典。`);
+                                }
+                            } else if (error.message.includes('加载已取消')) {
+                                console.log('用户取消了加载');
+                                // 不显示alert，因为这是用户主动取消的
+                            } else {
+                                alert(`${dictName}加载失败: ${error.message}`);
+                            }
+                        },
+                    });
+                } catch (error) {
+                    console.error(`打开词典失败:`, error);
+                    alert(`打开${getDictionaryName(dictType)}失败: ${error.message}`);
+                }
             },
         },
         // 组件挂载
@@ -708,5 +825,72 @@
     }
     .audio-btn:active {
         background: #e0e7ef;
+    }
+
+    // 词典链接样式
+    .dictionary-links {
+        margin-top: 32px;
+        text-align: center;
+    }
+
+    .dictionary-title {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 12px;
+        font-weight: 500;
+    }
+
+    .dictionary-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .dict-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        color: #333;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 60px;
+        justify-content: center;
+
+        &:hover {
+            background: #e9ecef;
+            border-color: #3578e5;
+            color: #3578e5;
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+
+        .iconify {
+            color: #666;
+        }
+
+        &:hover .iconify {
+            color: #3578e5;
+        }
+    }
+
+    // 响应式设计
+    @media (max-width: 480px) {
+        .dictionary-buttons {
+            gap: 6px;
+        }
+
+        .dict-btn {
+            padding: 6px 10px;
+            font-size: 12px;
+            min-width: 50px;
+        }
     }
 </style>
