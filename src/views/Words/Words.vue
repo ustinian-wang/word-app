@@ -48,24 +48,25 @@ import {
     setBookProgress,
     getWordAudioUrl,
     splitTaggedText
-} from '@/kits/words'
-import { STUDY_STATUS_DEF } from '@/store'
-import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
-import WordsHeader from './components/WordsHeader.vue'
-import WordsProgress from './components/WordsProgress.vue'
-import { openBookSelectModal } from './components/bookSelectModal'
-import { openFinishModal } from '@/components/FinishModal/finishModal'
-import AudioButton from '@/components/AudioButton.vue'
-import CardActions from '@/components/CardActions.vue'
-import DictionaryLinks from '@/components/DictionaryLinks.vue'
-import SliderContainer from '@/components/SliderContainer.vue'
+} from '@/kits/words';
+import { STUDY_STATUS_DEF } from '@/store';
+import { mapGetters, mapMutations, mapState, mapActions } from 'vuex';
+import WordsHeader from './components/WordsHeader.vue';
+import WordsProgress from './components/WordsProgress.vue';
+import { openBookSelectModal } from './components/bookSelectModal';
+import { openFinishModal } from '@/components/FinishModal/finishModal';
+import AudioButton from '@/components/AudioButton.vue';
+import CardActions from '@/components/CardActions.vue';
+import DictionaryLinks from '@/components/DictionaryLinks.vue';
+import SliderContainer from '@/components/SliderContainer.vue';
+import { sleep } from '@ustinian-wang/kit';
 // 滑动相关常量
-const MOVE_SCALE = 1
+const MOVE_SCALE = 1;
 const MoveDef = {
     LAST: -1,
     NOW: 0,
     NEXT: 1
-}
+};
 // const GROUP_SIZE = 10 // 每组单词数量
 
 export default {
@@ -92,27 +93,39 @@ export default {
             currentIdx: 0, // 当前在 learningQueue 的位置
             revealedSet: new Set(), // 已揭示释义的索引集合
             currentGroup: 0, // 当前组号
-            learnedArr: [], // 已学过的单词索引数组
+            learnedArr: [] // 已学过的单词索引数组
             // groupCount: 1, // 总组数
+        };
+    },
+    watch: {
+        currentIdx() {
+            this.saveProgress();
         }
     },
     computed: {
         ...mapState('book', ['currentBookIdx', 'wordBooks', 'words', 'GROUP_SIZE', 'progress']),
-        ...mapGetters('book', ['bookName', 'bookId', 'groupCount']),
+        ...mapGetters('book', [
+            'bookName',
+            'bookId',
+            'groupCount',
+            'groupStart',
+            'groupEnd',
+            'getGroupWords'
+        ]),
         // 获取当前显示的三个单词(前一个、当前、后一个)
         sliderWords() {
-            const prevIdx = this.learningQueue[this.currentIdx - 1]
-            const currIdx = this.learningQueue[this.currentIdx]
-            const nextIdx = this.learningQueue[this.currentIdx + 1]
+            const prevIdx = this.learningQueue[this.currentIdx - 1];
+            const currIdx = this.learningQueue[this.currentIdx];
+            const nextIdx = this.learningQueue[this.currentIdx + 1];
             const getWord = idx =>
-                typeof idx === 'number' ? this.words[idx] : { en: '', zh: '', enDef: '' }
-            return [getWord(prevIdx), getWord(currIdx), getWord(nextIdx)]
+                typeof idx === 'number' ? this.words[idx] : { en: '', zh: '', enDef: '' };
+            return [getWord(prevIdx), getWord(currIdx), getWord(nextIdx)];
         },
         ...mapGetters('book', ['progressPercent', 'progressText']),
 
         // 当前单词是否已显示中文释义
         isZhRevealed() {
-            return this.revealedSet.has(this.learningQueue[this.currentIdx])
+            return this.revealedSet.has(this.learningQueue[this.currentIdx]);
         }
     },
     methods: {
@@ -123,230 +136,206 @@ export default {
         splitTaggedText,
         // 触摸开始事件处理
         onTouchStart(e) {
-            if (this.isAnimating || this.learningQueue.length === 0) return
-            this.isDragging = true
-            this.touchStartX = e.changedTouches[0].clientX
-            this.deltaX = 0
+            if (this.isAnimating || this.learningQueue.length === 0) return;
+            this.isDragging = true;
+            this.touchStartX = e.changedTouches[0].clientX;
+            this.deltaX = 0;
         },
         // 触摸移动事件处理
         onTouchMove(e) {
-            if (!this.isDragging) return
-            const moveX = e.changedTouches[0].clientX - this.touchStartX
+            if (!this.isDragging) return;
+            const moveX = e.changedTouches[0].clientX - this.touchStartX;
             if (
                 (this.currentIdx === 0 && moveX > 0) ||
                 (this.currentIdx === this.learningQueue.length - 1 && moveX < 0)
             ) {
-                this.deltaX = moveX * MOVE_SCALE
+                this.deltaX = moveX * MOVE_SCALE;
             } else {
-                this.deltaX = moveX
+                this.deltaX = moveX;
             }
         },
         // 触摸结束事件处理
         onTouchEnd() {
-            if (!this.isDragging) return
-            this.isDragging = false
-            const threshold = window.innerWidth / 16
+            if (!this.isDragging) return;
+            this.isDragging = false;
+            const threshold = window.innerWidth / 16;
             if (this.deltaX < -threshold) {
-                this.animateTo(MoveDef.LAST, this.handlePass)
+                this.animateTo(MoveDef.LAST, this.handlePass);
             } else if (this.deltaX > threshold) {
-                this.animateTo(MoveDef.NEXT, this.handleFail)
+                this.animateTo(MoveDef.NEXT, this.handleFail);
             } else {
-                this.animateTo(MoveDef.NOW)
+                this.animateTo(MoveDef.NOW);
             }
         },
         // 动画过渡
-        animateTo(direction, cb) {
-            this.isAnimating = true
-            this.deltaX = direction * window.innerWidth
-            setTimeout(() => {
-                this.isAnimating = false
-                this.deltaX = 0
-                if (cb) cb()
-            }, 300)
+        async animateTo(direction, cb) {
+            this.isAnimating = true;
+            this.deltaX = direction * window.innerWidth;
+            await sleep(300);
+            this.isAnimating = false;
+            this.deltaX = 0;
+            cb?.();
         },
         // 显示中文释义
         revealZh() {
-            this.revealedSet.add(this.learningQueue[this.currentIdx])
-            this.revealedSet = new Set(this.revealedSet)
+            this.revealedSet.add(this.learningQueue[this.currentIdx]);
+            this.revealedSet = new Set(this.revealedSet);
         },
         // 已掌握单词
         passWord() {
-            this.animateTo(MoveDef.LAST, this.handlePass)
+            this.animateTo(MoveDef.LAST, this.handlePass);
         },
         // 再看一次
         failWord() {
-            this.animateTo(MoveDef.NEXT, this.handleFail)
+            this.animateTo(MoveDef.NEXT, this.handleFail);
         },
         // 已掌握单词处理
         handlePass() {
             // 移除当前单词
             if (this.learningQueue.length <= 1) {
-                this.learnedArr.push(this.learningQueue[this.currentIdx])
-                this.saveProgress()
-                this.nextGroupOrFinish()
-                return
+                this.learnedArr.push(this.learningQueue[this.currentIdx]);
+                this.saveProgress();
+                this.nextGroupOrFinish();
+                return;
             }
-            this.learnedArr.push(this.learningQueue[this.currentIdx])
-            this.learningQueue.splice(this.currentIdx, 1)
+            this.learnedArr.push(this.learningQueue[this.currentIdx]);
+            this.learningQueue.splice(this.currentIdx, 1);
             if (this.currentIdx >= this.learningQueue.length) {
-                this.currentIdx = this.learningQueue.length - 1
+                this.currentIdx = this.learningQueue.length - 1;
             }
-            this.revealedSet.clear()
-            this.revealedSet = new Set()
-            this.saveProgress()
+            this.revealedSet.clear();
+            this.revealedSet = new Set();
+            this.saveProgress();
         },
         // 再看一次处理
         handleFail() {
             // 保留当前单词，切换到下一个
             if (this.currentIdx < this.learningQueue.length - 1) {
-                this.currentIdx++
+                this.currentIdx++;
             }
-            this.revealedSet.clear()
-            this.revealedSet = new Set()
-            this.saveProgress()
+            this.revealedSet.clear();
+            this.revealedSet = new Set();
+            this.saveProgress();
         },
         // 下一组或全部学完处理
         async nextGroupOrFinish() {
             // 如果本组学完，进入下一组或全部学完
             if (this.learnedArr.length >= this.words.length) {
-                this.saveProgress()
-                await this.openAllFinishModal()
-                return
+                this.saveProgress();
+                await this.openAllFinishModal();
+                return;
             }
             // 当前组学完，显示询问是否继续的模态框
-            this.saveProgress()
-            await this.openGroupFinishModal()
+            this.saveProgress();
+            await this.openGroupFinishModal();
         },
         async openAllFinishModal() {
             let res = await openFinishModal({
                 bookName: this.bookName
-            })
+            });
             // console.log('[res openAllFinishModal]', res);
             if (res.success) {
-                let isContinue = res.data
+                let isContinue = res.data;
                 if (isContinue) {
                     // todo 这里帮他自动切换词库，同等水平网上
                     // todo 文案也要改下
-                    this.restartLearning()
+                    this.restartLearning();
                 } else {
-                    this.stopLearning()
+                    this.stopLearning();
                 }
             }
         },
         async openGroupFinishModal() {
-            let { currentGroup } = this
+            let { currentGroup } = this;
             let res = await openFinishModal({
                 bookName: `${this.bookName} - 第${currentGroup + 1}组`,
                 subtitle: '当前组已学完，是否继续下一组？',
                 restartText: '继续下一组',
                 homeText: '休息一下'
-            })
+            });
             // console.log('[res openGroupFinishModal]', res);
             if (res.success) {
-                let isContinue = res.data
+                let isContinue = res.data;
                 if (isContinue) {
-                    this.continueToNextGroup()
+                    this.continueToNextGroup();
                 } else {
-                    this.stopAtCurrentGroup()
+                    this.stopAtCurrentGroup();
                 }
             }
         },
         // 重新开始学习
         restartLearning() {
-            this.currentGroup = 0
-            this.learnedArr = []
-            this.saveProgress()
-            this.initLearningQueue()
-            this.setStudyStatus(STUDY_STATUS_DEF.LEARNED)
+            this.currentGroup = 0;
+            this.learnedArr = [];
+            this.saveProgress();
+            this.initLearningQueue();
+            this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
         },
         // 继续下一组
         continueToNextGroup() {
             // 继续下一组
-            this.currentGroup++
+            this.currentGroup++;
             if (this.currentGroup >= this.groupCount) {
-                this.currentGroup = this.groupCount - 1
+                this.currentGroup = this.groupCount - 1;
             }
-            this.initLearningQueue()
+            this.initLearningQueue();
         },
         // 停止在当前组
         stopAtCurrentGroup() {
             // 停止在当前组
-            this.setStudyStatus(STUDY_STATUS_DEF.LEARNED)
-            this.$router.push('/')
+            this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
+            this.$router.push('/');
         },
         // 初始化学习队列
         initLearningQueue() {
-            this.setWordBooks(getWordBooks())
-            this.setCurrentBookIdx(getCurrentBookIndex())
-            this.setWords(getCurrentWords())
+            // this.setWordBooks(getWordBooks())
+            // this.setCurrentBookIdx(getCurrentBookIndex())
+            // this.setWords(getCurrentWords())
             // 过滤掉已学过的单词，取当前组的10个
-            const groupStart = this.currentGroup * this.GROUP_SIZE
-            const groupEnd = Math.min(groupStart + this.GROUP_SIZE, this.words.length)
-            // 只学未学过的
-            const groupWords = []
-            for (let i = groupStart; i < groupEnd; i++) {
-                if (!this.learnedArr.includes(i)) groupWords.push(i)
-            }
-            this.learningQueue = groupWords
-            this.currentIdx = 0
-            this.revealedSet = new Set()
-            this.deltaX = 0
-            this.isDragging = false
-            this.isAnimating = false
+            this.learningQueue = this.getGroupWords();
+            this.currentIdx = 0;
+            this.revealedSet = new Set();
+            this.deltaX = 0;
+            this.isDragging = false;
+            this.isAnimating = false;
         },
-        // 保存学习进度
-        saveProgress() {
-            const bookId = this.bookId
-            if (!bookId) {
-                return
-            }
-            setBookProgress(bookId, {
-                group: this.currentGroup,
-                learned: this.learnedArr,
-                percent: this.progressPercent / 100
-            })
-        },
-        ...mapActions('book', ['loadBook']),
+        ...mapActions('book', ['loadBook', 'saveProgress']),
         // 加载学习进度
         loadProgress() {
-            this.loadBook(this.bookId)
-            const bookId = this.bookId
-            if (!bookId) {
-                return
-            }
-            const progress = this.progress
-            this.currentGroup = progress.group || 0
-            this.learnedArr = progress.learned || []
-            this.initLearningQueue()
+            this.loadBook(this.bookId);
+            const progress = this.progress;
+            this.currentGroup = progress.currentGroup || 0;
+            this.learnedArr = progress.learnedArr || [];
+            this.initLearningQueue();
         },
         // 停止学习
         stopLearning() {
-            this.setStudyStatus(STUDY_STATUS_DEF.LEARNED)
-            this.$router.push('/')
+            this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
+            this.$router.push('/');
         },
         async openBookModal() {
             // 调用
             let res = await openBookSelectModal({
                 books: this.wordBooks,
                 currentBookIdx: this.currentBookIdx
-            })
+            });
             if (res.success) {
-                let idx = res.data
-                this.setCurrentBookIdx(idx)
-                this.loadProgress()
+                let idx = res.data;
+                this.setCurrentBookIdx(idx);
+                this.loadProgress();
             }
         }
     },
     // 组件挂载
     mounted() {
-        this.loadProgress()
-        window.addEventListener('storage', this.loadProgress)
+        this.loadProgress();
+        window.addEventListener('storage', this.loadProgress);
     },
     // 组件销毁
     beforeDestroy() {
-        window.removeEventListener('storage', this.loadProgress)
+        window.removeEventListener('storage', this.loadProgress);
     }
-}
+};
 </script>
 
 <style lang="less" scoped>
@@ -379,7 +368,10 @@ export default {
 }
 .word-zh.mosaic {
     color: transparent;
-    text-shadow: 0 0 8px #bbb, 0 0 12px #bbb, 0 0 16px #bbb;
+    text-shadow:
+        0 0 8px #bbb,
+        0 0 12px #bbb,
+        0 0 16px #bbb;
     filter: blur(6px) brightness(0.1);
     pointer-events: auto;
     user-select: none;
