@@ -24,7 +24,6 @@
                     {{ option.text }}
                 </button>
             </div>
-         
         </div>
     </div>
 </template>
@@ -52,9 +51,7 @@
                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                 this.$router.push('/words');
             },
-            goNext(status){
-                
-            },
+            goNext(status) {},
             handleButtonClick(option) {
                 if (this.buttonLoading) return;
                 this.buttonLoading = true;
@@ -66,103 +63,103 @@
             },
         },
         computed: {
-            goOptions(){
-                if(this.study_status === STUDY_STATUS_DEF.DEFAULT){
+            goOptions() {
+                if (this.study_status === STUDY_STATUS_DEF.DEFAULT) {
                     return [
                         {
                             text: '背单词',
                             nextStatus: STUDY_STATUS_DEF.LEARNING,
                             type: 'primary',
-                            action: ()=>{
+                            action: () => {
                                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                                 this.$router.push('/words');
-                            }
+                            },
                         },
                         {
                             text: '复习',
                             nextStatus: STUDY_STATUS_DEF.REVIEWING,
                             type: 'secondary',
-                            action: ()=>{
+                            action: () => {
                                 this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
                                 this.$router.push('/words');
-                            }
-                        },  
-                    ]
-                }else if(this.study_status === STUDY_STATUS_DEF.LEARNING){
+                            },
+                        },
+                    ];
+                } else if (this.study_status === STUDY_STATUS_DEF.LEARNING) {
                     return [
                         {
                             text: '继续背单词',
                             nextStatus: STUDY_STATUS_DEF.LEARNING,
                             type: 'primary',
-                            action: ()=>{
+                            action: () => {
                                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                                 this.$router.push('/words');
-                            }
+                            },
                         },
-                    ]
-                }else if(this.study_status === STUDY_STATUS_DEF.LEARNED){
+                    ];
+                } else if (this.study_status === STUDY_STATUS_DEF.LEARNED) {
                     return [
                         {
                             text: '再背一组',
                             nextStatus: STUDY_STATUS_DEF.LEARNING,
                             type: 'primary',
-                            action: ()=>{
+                            action: () => {
                                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                                 this.$router.push('/words');
-                            }
+                            },
                         },
                         {
                             text: '复习',
                             nextStatus: STUDY_STATUS_DEF.REVIEWING,
                             type: 'secondary',
-                            action: ()=>{
+                            action: () => {
                                 this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
                                 this.$router.push('/words');
-                            }
+                            },
                         },
-                    ]
-                }else if(this.study_status === STUDY_STATUS_DEF.REVIEWING){
+                    ];
+                } else if (this.study_status === STUDY_STATUS_DEF.REVIEWING) {
                     return [
                         {
                             text: '背单词',
                             nextStatus: STUDY_STATUS_DEF.LEARNING,
                             type: 'primary',
-                            action: ()=>{
+                            action: () => {
                                 this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
                                 this.$router.push('/words');
-                            }
+                            },
                         },
                         {
                             text: '继续复习',
                             nextStatus: STUDY_STATUS_DEF.REVIEWING,
                             type: 'secondary',
-                            action: ()=>{
+                            action: () => {
                                 this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
                                 this.$router.push('/words');
-                            }
+                            },
                         },
-                    ]   
-                }else if(this.study_status === STUDY_STATUS_DEF.REVIEWED){
+                    ];
+                } else if (this.study_status === STUDY_STATUS_DEF.REVIEWED) {
                     return [
                         {
                             text: '背单词',
                             nextStatus: STUDY_STATUS_DEF.DEFAULT,
                             type: 'primary',
-                            action: ()=>{
+                            action: () => {
                                 this.setStudyStatus(STUDY_STATUS_DEF.DEFAULT);
                                 this.$router.push('/words');
-                            }
+                            },
                         },
                         {
                             text: '复习',
                             nextStatus: STUDY_STATUS_DEF.REVIEWING,
                             type: 'secondary',
-                            action: ()=>{
+                            action: () => {
                                 this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
                                 this.$router.push('/words');
-                            }
+                            },
                         },
-                    ]
+                    ];
                 }
 
                 return [
@@ -170,12 +167,12 @@
                         text: '背单词',
                         nextStatus: STUDY_STATUS_DEF.DEFAULT,
                         type: 'primary',
-                        action: ()=>{
+                        action: () => {
                             this.setStudyStatus(STUDY_STATUS_DEF.DEFAULT);
                             this.$router.push('/words');
-                        }
+                        },
                     },
-                ]
+                ];
             },
             ...mapState(['study_status']),
             buttonText() {
@@ -302,7 +299,9 @@
         min-width: 120px;
         box-shadow: 0 2px 12px rgba(79, 140, 255, 0.12);
         cursor: pointer;
-        transition: background 0.2s, transform 0.1s;
+        transition:
+            background 0.2s,
+            transform 0.1s;
         letter-spacing: 2px;
         outline: none;
         position: relative;

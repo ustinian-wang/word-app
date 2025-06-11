@@ -145,8 +145,6 @@
             };
         },
         computed: {
-            ...mapMutations(['setStudyStatus']),
-
             // 获取当前显示的三个单词(前一个、当前、后一个)
             sliderWords() {
                 const prevIdx = this.learningQueue[this.currentIdx - 1];
