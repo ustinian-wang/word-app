@@ -43,10 +43,10 @@ class IframeModalManager {
                     title: options.title || '',
                     showRefresh: options.showRefresh !== false,
                     showUrlInput: options.showUrlInput !== false,
-                    width: options.width || '90vw',
-                    height: options.height || '80vh',
-                    closeOnOverlay: options.closeOnOverlay !== false,
-                },
+                    width: options.width || '100vw',
+                    height: options.height || '100vh',
+                    closeOnOverlay: options.closeOnOverlay !== false
+                }
             });
 
             // 监听事件
