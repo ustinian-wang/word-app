@@ -10,7 +10,7 @@
         <WordsHeader :title="bookName" @change="openBookModal"></WordsHeader>
 
         <!-- 进度条 -->
-        <WordsProgress :total="words.length" :current="learnedArr.length"></WordsProgress>
+        <WordsProgress :total="learningQueue.length" :current="currentIdx + 1"></WordsProgress>
 
         <!-- 单词卡片滑动容器 -->
         <SliderContainer :items="sliderWords" :isAnimating="isAnimating" :deltaX="deltaX">
@@ -40,15 +40,7 @@
 
 <script>
 // 导入所需的工具函数和组件
-import {
-    getWordBooks,
-    getCurrentBookIndex,
-    getCurrentWords,
-    getBookProgress,
-    setBookProgress,
-    getWordAudioUrl,
-    splitTaggedText
-} from '@/kits/words';
+import { getWordAudioUrl, splitTaggedText } from '@/kits/words';
 import { STUDY_STATUS_DEF } from '@/store';
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex';
 import WordsHeader from './components/WordsHeader.vue';
@@ -293,6 +285,7 @@ export default {
             // this.setWords(getCurrentWords())
             // 过滤掉已学过的单词，取当前组的10个
             this.learningQueue = this.getGroupWords();
+            console.log('[this.learningQueue initLearningQueue]', this.learningQueue);
             this.currentIdx = 0;
             this.revealedSet = new Set();
             this.deltaX = 0;
