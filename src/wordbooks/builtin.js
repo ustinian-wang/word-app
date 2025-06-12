@@ -20,6 +20,12 @@ function createBook(id, name, source) {
     return {
         id,
         name,
-        words,
+        words
     };
+}
+
+export function getDailyWord() {
+    const words = builtinWordBooks.map(book => book.words).flat();
+    const randomIndex = Math.floor(Math.random() * words.length);
+    return words[randomIndex];
 }
