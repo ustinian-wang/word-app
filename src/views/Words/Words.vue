@@ -10,7 +10,11 @@
         <WordsHeader :title="bookName" @change="openBookModal"></WordsHeader>
 
         <!-- 进度条 -->
-        <WordsProgress :total="learningQueue.length" :current="currentIdx + 1"></WordsProgress>
+        <WordsProgress
+            v-show="learningQueue.length > 0"
+            :total="learningQueue.length"
+            :current="learningQueue.length === 0 ? 0 : currentIdx + 1"
+        ></WordsProgress>
 
         <!-- 单词卡片滑动容器 -->
         <SliderContainer :items="sliderWords" :isAnimating="isAnimating" :deltaX="deltaX">
@@ -322,6 +326,9 @@ export default {
     // 组件挂载
     mounted() {
         this.loadProgress();
+        if (this.learningQueue.length === 0) {
+            this.nextGroupOrFinish();
+        }
         window.addEventListener('storage', this.loadProgress);
     },
     // 组件销毁
