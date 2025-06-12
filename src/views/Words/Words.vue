@@ -13,7 +13,7 @@
         <WordsProgress
             v-show="learningQueue.length > 0"
             :total="learningQueue.length"
-            :current="learningQueue.length === 0 ? 0 : currentIdx + 1"
+            :current="currentIdx + 1"
         ></WordsProgress>
 
         <!-- 单词卡片滑动容器 -->
