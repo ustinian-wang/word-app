@@ -10,11 +10,14 @@
 export function enterFullscreen(element = document.documentElement) {
     if (element.requestFullscreen) {
         return element.requestFullscreen();
-    } else if (element.webkitRequestFullscreen) { // Safari
+    } else if (element.webkitRequestFullscreen) {
+        // Safari
         return element.webkitRequestFullscreen();
-    } else if (element.msRequestFullscreen) { // IE11
+    } else if (element.msRequestFullscreen) {
+        // IE11
         return element.msRequestFullscreen();
-    } else if (element.mozRequestFullScreen) { // Firefox
+    } else if (element.mozRequestFullScreen) {
+        // Firefox
         return element.mozRequestFullScreen();
     }
     return Promise.reject(new Error('Fullscreen API is not supported'));
@@ -27,11 +30,14 @@ export function enterFullscreen(element = document.documentElement) {
 export function exitFullscreen() {
     if (document.exitFullscreen) {
         return document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) { // Safari
+    } else if (document.webkitExitFullscreen) {
+        // Safari
         return document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) { // IE11
+    } else if (document.msExitFullscreen) {
+        // IE11
         return document.msExitFullscreen();
-    } else if (document.mozCancelFullScreen) { // Firefox
+    } else if (document.mozCancelFullScreen) {
+        // Firefox
         return document.mozCancelFullScreen();
     }
     return Promise.reject(new Error('Fullscreen API is not supported'));
