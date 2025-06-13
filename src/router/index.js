@@ -4,6 +4,7 @@ import Recognize from '../views/Recognize.vue';
 import Words from '../views/Words/Words.vue';
 import WordBooks from '../views/WordBooks.vue';
 import Index from '../views/Index.vue';
+import Redirect from '@/views/Redirect.vue';
 
 Vue.use(Router);
 
@@ -13,5 +14,6 @@ export default new Router({
         { path: '/recognize', component: Recognize, name: '图片识别' },
         { path: '/words', component: Words, name: '背单词' },
         { path: '/wordbooks', component: WordBooks, name: '词库' },
+        { path: '/redirect/:path(.*)', component: Redirect }
     ],
 });

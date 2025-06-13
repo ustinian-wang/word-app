@@ -38,6 +38,7 @@ export default {
                 { label: '图片识别', icon: '📷', route: '/recognize?auto=true' },
                 { label: '背单词', icon: '📖', route: '/words' },
                 { label: '词库', icon: '📚', route: '/wordbooks' },
+                { label: '清理缓存', icon: '🧹', action: 'clearCache' },
                 { label: '首页', icon: '🏠', route: '/' }
             ]
         };
@@ -122,8 +123,55 @@ export default {
             }
             this.menuOpen = false;
         },
+        async clearCache() {
+            try {
+                // 清理 localStorage
+                localStorage.clear();
+                
+                // 清理 sessionStorage
+                sessionStorage.clear();
+                
+                // 清理 IndexedDB
+                const databases = await window.indexedDB.databases();
+                databases.forEach(db => {
+                    if (db.name) {
+                        window.indexedDB.deleteDatabase(db.name);
+                    }
+                });
+                
+                // 清理 Service Worker 缓存
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+                }
+                
+                // 清理单词缓存
+                if (window.word_cache) {
+                    window.word_cache = {};
+                }
+                
+                this.$message.success('缓存清理成功，页面将在3秒后刷新');
+                
+                // 3秒后刷新页面
+                setTimeout(() => {
+                    // 获取当前路由
+                    const currentRoute = this.$route;
+                    // 先跳转到重定向页面
+                    this.$router.replace({
+                        path: '/redirect' + currentRoute.fullPath
+                    });
+                }, 3000);
+            } catch (error) {
+                console.error('清理缓存失败:', error);
+                this.$message.error('清理缓存失败，请重试');
+            }
+        },
         goMenu(route) {
-            this.$router.push(route);
+            if (route === 'clearCache') {
+                this.clearCache();
+            } else {
+                this.$router.push(route);
+            }
             this.menuOpen = false;
         }
     },
@@ -159,9 +207,7 @@ export default {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition:
-        box-shadow 0.2s,
-        background 0.2s;
+    transition: box-shadow 0.2s, background 0.2s;
 }
 
 .fab-main:active {
