@@ -21,7 +21,7 @@ const updateSW = registerSW({
     },
     onOfflineReady() {
         console.log('应用已准备就绪，可以离线使用');
-    },
+    }
 });
 
 // eslint-disable-next-line no-undef
@@ -34,5 +34,5 @@ if (process.env.NODE_ENV !== 'production' || _debug) {
 new Vue({
     router,
     store,
-    render: h => h(App),
+    render: h => h(App)
 }).$mount('#app');
