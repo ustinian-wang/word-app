@@ -23,7 +23,9 @@ function showToast({ message, type = 'success', duration = 2000 }) {
             instance.visible = false;
             setTimeout(() => {
                 instance.$destroy();
-                document.body.removeChild(instance.$el);
+                if (document.body.contains(instance.$el)) {
+                    document.body.removeChild(instance.$el);
+                }
                 toastInstance = null;
             }, 300);
         }, duration);

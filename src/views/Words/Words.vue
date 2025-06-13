@@ -311,16 +311,7 @@ export default {
             this.$router.push('/');
         },
         async openBookModal() {
-            // 调用
-            let res = await openBookSelectModal({
-                books: this.wordBooks,
-                currentBookIdx: this.currentBookIdx
-            });
-            if (res.success) {
-                let idx = res.data;
-                this.setCurrentBookIdx(idx);
-                this.loadProgress();
-            }
+            this.$router.push('/wordbooks');
         }
     },
     // 组件挂载

@@ -79,15 +79,15 @@ export default {
             const event = e.touches ? e.touches[0] : e;
             const dx = event.clientX - this.dragStart.x;
             const dy = this.dragStart.y - event.clientY;
-            
+
             let left = this.dragStart.left + dx;
             let bottom = this.dragStart.bottom + dy;
-            
+
             // 限制在屏幕内
             const btnRect = this.$el.getBoundingClientRect();
             left = Math.max(0, Math.min(window.innerWidth - btnRect.width, left));
             bottom = Math.max(0, Math.min(window.innerHeight - btnRect.height, bottom));
-            
+
             this.pos = { left, bottom };
             e.preventDefault && e.preventDefault();
         },
@@ -97,17 +97,17 @@ export default {
             document.removeEventListener('mouseup', this.onDragEnd);
             document.removeEventListener('touchmove', this.onDragMove);
             document.removeEventListener('touchend', this.onDragEnd);
-            
+
             // 根据位置决定吸附到哪一边
             const btnRect = this.$el.getBoundingClientRect();
             const isLeft = btnRect.left < window.innerWidth / 2;
-            
+
             if (isLeft) {
                 this.pos.left = 16;
             } else {
                 this.pos.left = window.innerWidth - btnRect.width - 16;
             }
-            
+
             // 如果菜单打开，更新展开方向
             if (this.menuOpen) {
                 this.expandTo = isLeft ? 'right' : 'left';
@@ -159,7 +159,9 @@ export default {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: box-shadow 0.2s, background 0.2s;
+    transition:
+        box-shadow 0.2s,
+        background 0.2s;
 }
 
 .fab-main:active {
