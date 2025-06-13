@@ -1,4 +1,10 @@
-import { getBookProgress, getCurrentWords, getWordBooks, setBookProgress } from '@/kits/words';
+import {
+    getBookProgress,
+    getCurrentWords,
+    getWordBooks,
+    setBookProgress,
+    setCurrentBookIndex
+} from '@/kits/words';
 
 export default {
     namespaced: true,
@@ -66,6 +72,7 @@ export default {
     mutations: {
         setCurrentBookIdx(state, idx) {
             state.currentBookIdx = idx;
+            setCurrentBookIndex(idx);
         },
         setWordBooks(state, books) {
             state.wordBooks = books;
