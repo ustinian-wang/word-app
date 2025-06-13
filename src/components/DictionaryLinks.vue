@@ -103,7 +103,7 @@ export default {
 
 <style lang="less" scoped>
 .dictionary-links {
-    margin-top: 32px;
+    // margin-top: 32px;
     text-align: center;
 }
 

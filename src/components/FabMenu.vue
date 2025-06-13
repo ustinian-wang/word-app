@@ -12,9 +12,9 @@
             <div v-if="menuOpen" class="fab-menu-list" :class="expandTo">
                 <button
                     v-for="item in menuItems"
-                    :key="item.route"
+                    :key="item.action"
                     class="fab-menu-item"
-                    @click="goMenu(item.route)"
+                    @click="goMenu(item)"
                 >
                     <span class="icon">{{ item.icon }}</span>
                     <span class="label">{{ item.label }}</span>
@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 import { sleep } from '@ustinian-wang/kit';
 export default {
     name: 'FabMenu',
@@ -35,15 +35,24 @@ export default {
             dragging: false,
             dragStart: { x: 0, y: 0 },
             pos: { left: 16, bottom: 16 },
-            expandTo: 'left', // 'left' or 'right'
-            menuItems: [
+            expandTo: 'left' // 'left' or 'right'
+        };
+    },
+    computed: {
+        ...mapState(['isFullscreen']),
+        menuItems() {
+            return [
                 { label: '图片识别', icon: '📷', route: '/recognize?auto=true' },
                 { label: '背单词', icon: '📖', route: '/words' },
                 { label: '词库', icon: '📚', route: '/wordbooks' },
                 { label: '清理缓存', icon: '🧹', action: 'clearCache' },
-                { label: '首页', icon: '🏠', route: '/' }
-            ]
-        };
+                { label: '全屏', icon: this.fullscreenIcon, action: 'toggleFullscreen' },
+                // { label: '首页', icon: '🏠', route: '/' }
+            ];
+        },
+        fullscreenIcon() {
+            return this.isFullscreen ? '🔳' : '🔲';
+        }
     },
     methods: {
         toggleMenu() {
@@ -125,7 +134,7 @@ export default {
             }
             this.menuOpen = false;
         },
-        ...mapMutations(['setCacheFrozen']),
+        ...mapMutations(['setCacheFrozen', 'setIsFullscreen']),
         async clearCache() {
             this.setCacheFrozen(true);
             try {
@@ -164,9 +173,13 @@ export default {
                 window.location.reload(true);
             }
         },
-        goMenu(route) {
-            if (route === 'clearCache') {
+        goMenu(item) {
+            if (item.action === 'clearCache') {
                 this.clearCache();
+            } else if (item.action === 'toggleFullscreen') {
+                this.setIsFullscreen(!this.isFullscreen);
+            } else if (item.route) {
+                this.$router.push(item.route);
             } else {
                 this.$router.replace({
                     path: '/redirect' + this.$route.fullPath
@@ -207,7 +220,9 @@ export default {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: box-shadow 0.2s, background 0.2s;
+    transition:
+        box-shadow 0.2s,
+        background 0.2s;
 }
 
 .fab-main:active {

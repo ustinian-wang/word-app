@@ -60,7 +60,9 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    // justify-content: center;
+    padding-top: 20vh;
+    gap: 16px;
     will-change: transform;
     pointer-events: none;
     transition: opacity 0.3s ease;

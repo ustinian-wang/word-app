@@ -536,7 +536,7 @@ export default {
 
 // 词典链接样式
 .dictionary-links {
-    margin-top: 32px;
+    // margin-top: 32px;
     text-align: center;
 }
 

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import book from './modules/book';
+import { enterFullscreen, exitFullscreen } from '@/kits/fullscreen';
 
 Vue.use(Vuex);
 /**
@@ -18,7 +19,8 @@ export default new Vuex.Store({
     state: {
         // 在这里定义你的状态
         study_status: STUDY_STATUS_DEF.DEFAULT,
-        cache_frozen: false
+        cache_frozen: false,
+        isFullscreen: false
     },
 
     mutations: {
@@ -28,6 +30,14 @@ export default new Vuex.Store({
         // 在这里定义你的mutations
         setStudyStatus(state, status) {
             state.study_status = status;
+        },
+        setIsFullscreen(state, isFullscreen) {
+            state.isFullscreen = isFullscreen;
+            if (isFullscreen) {
+                enterFullscreen();
+            } else {
+                exitFullscreen();
+            }
         }
     },
 

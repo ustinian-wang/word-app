@@ -1,5 +1,5 @@
 <template>
-    <div id="app" @dblclick="toggleFullscreen">
+    <div id="app">
         <template v-if="$route.path !== '/'">
             <BackButton />
             <BackToHome />
@@ -20,7 +20,6 @@ import { initDefaultWordBooks } from './kits/words';
 import BackToHome from './components/BackToHome.vue';
 import BackButton from '@/components/BackButton.vue';
 import FabMenu from '@/components/FabMenu.vue';
-import { toggleFullscreen } from '@/kits/fullscreen';
 
 export default {
     name: 'App',

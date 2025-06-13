@@ -80,9 +80,9 @@ export default {
 
 <style lang="less" scoped>
 .audio-btn {
-    margin-top: 24px;
-    width: 48px;
-    height: 48px;
+    // margin-top: 24px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: #f0f4fa;
     display: flex;
