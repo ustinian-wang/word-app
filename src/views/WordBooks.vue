@@ -83,13 +83,17 @@ export default {
     computed: {
         ...mapState('book', ['wordBooks', 'currentBookIdx', 'progress']),
         progressMap() {
-            return this.wordBooks.map(book => {
+            let map = {};
+            this.wordBooks.forEach(book => {
                 const progress = getBookProgress(book.id);
-                return {
-                    learned: progress.learned?.length || 0,
-                    percent: ((progress.percent || 0) * 100).toFixed(2)
+                let learned = progress.learned?.length || 0;
+                let percent = (learned / book.words.length).toFixed(4);
+                map[book.id] = {
+                    learned,
+                    percent
                 };
             });
+            return map;
         }
     },
     methods: {

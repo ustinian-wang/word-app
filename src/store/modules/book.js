@@ -87,6 +87,14 @@ export default {
         }
     },
     actions: {
+        moveToNextGroup({ getters, state }) {
+            state.progress.currentGroup = state.progress.currentGroup + 1;
+            setBookProgress(getters.bookId, {
+                group: state.progress.currentGroup,
+                learned: state.progress.learnedArr,
+                percent: getters.progressPercent / 100
+            });
+        },
         loadBook({ commit, getters, state }, bookIdx) {
             let wordBooks = getWordBooks();
             commit('setCurrentBookIdx', bookIdx);

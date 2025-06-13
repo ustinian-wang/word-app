@@ -39,6 +39,7 @@ export function initDefaultWordBooks() {
  */
 export function getBookProgress(bookId) {
     const all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
+    console.log('[getBookProgress]', all, bookId, all[bookId]);
     return all[bookId] || { group: 0, learned: [], percent: 0 };
 }
 /**

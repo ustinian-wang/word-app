@@ -88,8 +88,8 @@ export default {
             learningQueue: [], // 当前组学习的单词索引队列，里面存的是单词在书本里面的编号，不是单词本身
             currentIdx: 0, // 当前在 learningQueue 的位置
             revealedSet: new Set(), // 已揭示释义的索引集合
-            currentGroup: 0, // 当前组号
-            learnedArr: [] // 已学过的单词索引数组
+            // currentGroup: 0, // 当前组号
+            // learnedArr: [] // 已学过的单词索引数组
             // groupCount: 1, // 总组数
         };
     },
@@ -100,6 +100,12 @@ export default {
     },
     computed: {
         ...mapState('book', ['currentBookIdx', 'wordBooks', 'words', 'GROUP_SIZE', 'progress']),
+        currentGroup() {
+            return this.progress.currentGroup;
+        },
+        learnedArr() {
+            return this.progress.learnedArr;
+        },
         ...mapGetters('book', [
             'bookName',
             'bookId',
@@ -271,10 +277,7 @@ export default {
         // 继续下一组
         continueToNextGroup() {
             // 继续下一组
-            this.currentGroup++;
-            if (this.currentGroup >= this.groupCount) {
-                this.currentGroup = this.groupCount - 1;
-            }
+            this.moveToNextGroup();
             this.initLearningQueue();
         },
         // 停止在当前组
@@ -297,13 +300,13 @@ export default {
             this.isDragging = false;
             this.isAnimating = false;
         },
-        ...mapActions('book', ['loadBook', 'saveProgress']),
+        ...mapActions('book', ['loadBook', 'saveProgress', 'moveToNextGroup']),
         // 加载学习进度
         loadProgress() {
             this.loadBook(this.currentBookIdx);
-            const progress = this.progress;
-            this.currentGroup = progress.currentGroup || 0;
-            this.learnedArr = progress.learnedArr || [];
+            // const progress = this.progress;
+            // this.currentGroup = progress.currentGroup || 0;
+            // this.learnedArr = progress.learnedArr || [];
             this.initLearningQueue();
         },
         // 停止学习
