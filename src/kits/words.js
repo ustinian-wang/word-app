@@ -2,6 +2,7 @@
 import { builtinWordBooks } from '@/wordbooks/builtin';
 import { cloneRequest } from '@ustinian-wang/kit';
 import { isUrl404 } from './url';
+import { str2Int } from './cast';
 
 const WORD_BOOKS_KEY = 'myWordBooks';
 const CURRENT_BOOK_IDX_KEY = 'currentWordBookIdx';
@@ -15,10 +16,10 @@ export function saveWordBooks(books) {
     localStorage.setItem(WORD_BOOKS_KEY, JSON.stringify(books));
 }
 export function getCurrentBookIndex() {
-    return Number(localStorage.getItem(CURRENT_BOOK_IDX_KEY) || 0);
+    return str2Int(localStorage.getItem(CURRENT_BOOK_IDX_KEY) || 0);
 }
 export function setCurrentBookIndex(idx) {
-    localStorage.setItem(CURRENT_BOOK_IDX_KEY, idx);
+    localStorage.setItem(CURRENT_BOOK_IDX_KEY, str2Int(idx));
 }
 export function getCurrentWords() {
     const books = getWordBooks();

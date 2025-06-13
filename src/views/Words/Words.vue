@@ -153,7 +153,7 @@ export default {
             if (!this.isDragging) return;
             this.isDragging = false;
             const threshold = window.innerWidth / 4;
-            
+
             if (Math.abs(this.deltaX) > threshold) {
                 this.isAnimating = true;
                 if (this.deltaX > 0) {
@@ -175,7 +175,7 @@ export default {
                 }
                 this.revealedSet.clear();
             }
-            
+
             // 平滑回弹
             this.deltaX = 0;
             setTimeout(() => {
@@ -300,7 +300,7 @@ export default {
         ...mapActions('book', ['loadBook', 'saveProgress']),
         // 加载学习进度
         loadProgress() {
-            this.loadBook(this.bookId);
+            this.loadBook(this.currentBookIdx);
             const progress = this.progress;
             this.currentGroup = progress.currentGroup || 0;
             this.learnedArr = progress.learnedArr || [];

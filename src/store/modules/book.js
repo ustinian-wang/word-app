@@ -71,6 +71,8 @@ export default {
     },
     mutations: {
         setCurrentBookIdx(state, idx) {
+            console.trace();
+            console.log('[setCurrentBookIdx]', idx);
             state.currentBookIdx = idx;
             setCurrentBookIndex(idx);
         },
@@ -85,10 +87,11 @@ export default {
         }
     },
     actions: {
-        loadBook({ commit, getters, state }, bookId) {
-            commit('setCurrentBookIdx', bookId);
-            commit('setWordBooks', getWordBooks());
-            commit('setWords', getCurrentWords());
+        loadBook({ commit, getters, state }, bookIdx) {
+            let wordBooks = getWordBooks();
+            commit('setCurrentBookIdx', bookIdx);
+            commit('setWordBooks', wordBooks);
+            commit('setWords', wordBooks[bookIdx]?.words || []);
 
             const progress = getBookProgress(getters.bookId);
             state.progress.currentGroup = progress.group || 0;
