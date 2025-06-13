@@ -122,7 +122,8 @@ export default {
         // 当前单词是否已显示中文释义
         isZhRevealed() {
             return this.revealedSet.has(this.learningQueue[this.currentIdx]);
-        }
+        },
+        ...mapGetters(['cacheWrapper'])
     },
     methods: {
         ...mapMutations('book', ['setCurrentBookIdx', 'setWordBooks', 'setWords']),
@@ -320,11 +321,12 @@ export default {
         if (this.learningQueue.length === 0) {
             this.nextGroupOrFinish();
         }
-        window.addEventListener('storage', this.loadProgress);
+        this.cacheHandler = this.cacheWrapper(this.loadProgress);
+        window.addEventListener('storage', this.cacheHandler);
     },
     // 组件销毁
     beforeDestroy() {
-        window.removeEventListener('storage', this.loadProgress);
+        window.removeEventListener('storage', this.cacheHandler);
     }
 };
 </script>

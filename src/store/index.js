@@ -11,20 +11,21 @@ export const STUDY_STATUS_DEF = {
     LEARNING: 1, // 学习中
     LEARNED: 2, // 学习结束
     REVIEWING: 3, // 复习中
-    REVIEWED: 4, // 复习结束
+    REVIEWED: 4 // 复习结束
 };
 
 export default new Vuex.Store({
     state: {
         // 在这里定义你的状态
         study_status: STUDY_STATUS_DEF.DEFAULT,
+        cache_frozen: false
     },
 
     mutations: {
         // 在这里定义你的mutations
         setStudyStatus(state, status) {
             state.study_status = status;
-        },
+        }
     },
 
     actions: {
@@ -33,10 +34,18 @@ export default new Vuex.Store({
 
     getters: {
         // 在这里定义你的getters
+        cacheWrapper(state) {
+            return function (fn) {
+                if (state.cache_frozen) {
+                    return;
+                }
+                fn?.apply?.(this, arguments);
+            };
+        }
     },
 
     modules: {
         // 在这里定义你的模块
-        book,
-    },
+        book
+    }
 });
