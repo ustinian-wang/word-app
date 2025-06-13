@@ -1,13 +1,13 @@
 <template>
     <div class="slider-container">
         <div
-            v-for="(item, idx) in items"
-            :key="idx"
+            v-for="(item, index) in items"
+            :key="index"
             class="slider-item"
-            :class="{ 'is-animating': isAnimating }"
-            :style="getSliderStyle(idx)"
+            :class="{ 'is-current': index === 1 }"
+            :style="getItemStyle(index)"
         >
-            <slot :item="item" :index="idx"></slot>
+            <slot :item="item" :index="index"></slot>
         </div>
     </div>
 </template>
@@ -30,15 +30,14 @@ export default {
         }
     },
     methods: {
-        getSliderStyle(idx) {
-            const base = (idx - 1) * 100;
-            const move = idx === 0 || idx === 2 ? 0 : (this.deltaX / window.innerWidth) * 100;
+        getItemStyle(index) {
+            const base = (index - 1) * 100;
+            const move = this.deltaX / window.innerWidth * 100;
             return {
                 transform: `translateX(calc(${base}% + ${move}vw))`,
-                zIndex: idx === 1 ? 2 : 1,
-                transition: this.isAnimating
-                    ? 'transform 0.3s cubic-bezier(.25,.8,.5,1)'
-                    : 'none',
+                transition: this.isAnimating ? 'transform 0.3s cubic-bezier(0.25, 0.8, 0.5, 1)' : 'none',
+                zIndex: index === 1 ? 2 : 1,
+                opacity: index === 1 ? 1 : 0.5
             };
         }
     }
@@ -47,39 +46,36 @@ export default {
 
 <style lang="less" scoped>
 .slider-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    perspective: 1000px;
 }
 
 .slider-item {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #fff;
-    border-radius: 0;
-    box-shadow: none;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     will-change: transform;
-    box-sizing: border-box;
-    pointer-events: auto;
-    transition: box-shadow 0.2s;
-    padding-top: 15vh;
-}
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 
-.slider-item.is-animating {
-    transition:
-        transform 0.3s cubic-bezier(0.25, 0.8, 0.5, 1),
-        box-shadow 0.2s;
+    &.is-current {
+        pointer-events: auto;
+    }
+
+    // 相邻项的位置和样式
+    &:nth-child(1) {
+        transform: translateX(-100%) scale(0.9);
+    }
+
+    &:nth-child(3) {
+        transform: translateX(100%) scale(0.9);
+    }
 }
 </style> 

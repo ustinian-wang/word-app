@@ -113,8 +113,12 @@ export default {
             const prevIdx = this.learningQueue[this.currentIdx - 1];
             const currIdx = this.learningQueue[this.currentIdx];
             const nextIdx = this.learningQueue[this.currentIdx + 1];
-            const getWord = idx =>
-                typeof idx === 'number' ? this.words[idx] : { en: '', zh: '', enDef: '' };
+            const getWord = idx => {
+                if (typeof idx === 'number') {
+                    return this.words[idx] || { en: '', zh: '', enDef: '' };
+                }
+                return { en: '', zh: '', enDef: '' };
+            };
             return [getWord(prevIdx), getWord(currIdx), getWord(nextIdx)];
         },
         ...mapGetters('book', ['progressPercent', 'progressText']),
@@ -142,36 +146,41 @@ export default {
         onTouchMove(e) {
             if (!this.isDragging) return;
             const moveX = e.changedTouches[0].clientX - this.touchStartX;
-            if (
-                (this.currentIdx === 0 && moveX > 0) ||
-                (this.currentIdx === this.learningQueue.length - 1 && moveX < 0)
-            ) {
-                this.deltaX = moveX * MOVE_SCALE;
-            } else {
-                this.deltaX = moveX;
-            }
+            this.deltaX = moveX;
         },
         // 触摸结束事件处理
         onTouchEnd() {
             if (!this.isDragging) return;
             this.isDragging = false;
-            const threshold = window.innerWidth / 16;
-            if (this.deltaX < -threshold) {
-                this.animateTo(MoveDef.LAST, this.handlePass);
-            } else if (this.deltaX > threshold) {
-                this.animateTo(MoveDef.NEXT, this.handleFail);
-            } else {
-                this.animateTo(MoveDef.NOW);
+            const threshold = window.innerWidth / 4;
+            
+            if (Math.abs(this.deltaX) > threshold) {
+                this.isAnimating = true;
+                if (this.deltaX > 0) {
+                    // 向右滑动，显示上一个单词
+                    if (this.currentIdx > 0) {
+                        this.currentIdx--;
+                    } else {
+                        // 如果是第一个单词，循环到最后一个
+                        this.currentIdx = this.learningQueue.length - 1;
+                    }
+                } else {
+                    // 向左滑动，显示下一个单词
+                    if (this.currentIdx < this.learningQueue.length - 1) {
+                        this.currentIdx++;
+                    } else {
+                        // 如果是最后一个单词，循环到第一个
+                        this.currentIdx = 0;
+                    }
+                }
+                this.revealedSet.clear();
             }
-        },
-        // 动画过渡
-        async animateTo(direction, cb) {
-            this.isAnimating = true;
-            this.deltaX = direction * window.innerWidth;
-            await sleep(300);
-            this.isAnimating = false;
+            
+            // 平滑回弹
             this.deltaX = 0;
-            cb?.();
+            setTimeout(() => {
+                this.isAnimating = false;
+            }, 300);
         },
         // 显示中文释义
         revealZh() {
@@ -180,15 +189,6 @@ export default {
         },
         // 已掌握单词
         passWord() {
-            this.animateTo(MoveDef.LAST, this.handlePass);
-        },
-        // 再看一次
-        failWord() {
-            this.animateTo(MoveDef.NEXT, this.handleFail);
-        },
-        // 已掌握单词处理
-        handlePass() {
-            // 移除当前单词
             if (this.learningQueue.length <= 1) {
                 this.learnedArr.push(this.learningQueue[this.currentIdx]);
                 this.saveProgress();
@@ -201,17 +201,17 @@ export default {
                 this.currentIdx = this.learningQueue.length - 1;
             }
             this.revealedSet.clear();
-            this.revealedSet = new Set();
             this.saveProgress();
         },
-        // 再看一次处理
-        handleFail() {
+        // 再看一次
+        failWord() {
             // 保留当前单词，切换到下一个
             if (this.currentIdx < this.learningQueue.length - 1) {
                 this.currentIdx++;
+            } else {
+                this.currentIdx = 0;
             }
             this.revealedSet.clear();
-            this.revealedSet = new Set();
             this.saveProgress();
         },
         // 下一组或全部学完处理
