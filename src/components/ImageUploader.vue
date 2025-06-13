@@ -23,13 +23,30 @@
         },
         methods: {
             async upload() {
-                let file = await openOneFileSelectionWindow({
-                    accept: 'image/*',
-                    onSelect: file => {
-                        console.log(`jser [upload] 111`, file);
-                    },
-                });
-                if (file) {
+                try {
+                    let file = await openOneFileSelectionWindow({
+                        accept: 'image/*',
+                        onSelect: file => {
+                            console.log(`jser [upload] 111`, file);
+                        },
+                    });
+                    
+                    if (!file) return;
+                    
+                    // 检查文件大小
+                    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+                    if (file.size > MAX_FILE_SIZE) {
+                        $message.error('图片大小不能超过10MB');
+                        return;
+                    }
+                    
+                    // 检查文件类型
+                    if (!file.type.startsWith('image/')) {
+                        $message.error('请选择图片文件');
+                        return;
+                    }
+                    
+                    $message.loading('处理图片中...');
                     const base64 = await file2Base64(file);
                     if (base64) {
                         $message.loading('上传图片中...');
@@ -37,23 +54,12 @@
                         this.previewUrl = base64;
                         this.$emit('image-uploaded', base64);
                     } else {
-                        console.error('图片转base64失败');
+                        $message.error('图片处理失败');
                     }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    $message.error('上传失败，请重试');
                 }
-                console.log(`jser [upload] 222`, file);
-                // console.log(`jser [upload] 111`)
-                // const input = document.createElement('input');
-                // input.type = 'file';
-                // input.accept = 'image/*';
-                // input.onchange = (e) => {
-                //   const file = e.target.files[0];
-                //   if (!file) return;
-                //   const base64 = await file2Base64(file);
-                //   if(base64) {
-                //     this.previewUrl = base64;
-                //     this.$emit('image-uploaded', base64);
-                //   }
-                // }
             },
             async onFileChange(e) {
                 const file = e.target.files[0];

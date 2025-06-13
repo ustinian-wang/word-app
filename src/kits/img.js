@@ -5,9 +5,14 @@
  */
 export function file2Base64(file) {
     return new Promise((resolve, reject) => {
+        if (!file) {
+            reject(new Error('No file provided'));
+            return;
+        }
         const reader = new FileReader();
-        reader.readAsDataURL(file);
+        reader.onerror = () => reject(new Error('Failed to read file'));
         reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(file);
     });
 }
 

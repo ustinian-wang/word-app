@@ -60,6 +60,7 @@ export default {
             } catch (err) {
                 console.error('Failed to play audio:', err)
                 this.isPlaying = false
+                $message.error('播放失败，请稍后重试')
             } finally {
                 this.isLoading = false
             }
@@ -68,9 +69,7 @@ export default {
     beforeDestroy() {
         if (this.audioPlayer) {
             this.audioPlayer.pause()
-            this.audioPlayer.removeEventListener('ended', () => {
-                this.isPlaying = false
-            })
+            this.audioPlayer.src = ''
             this.audioPlayer = null
         }
         this.isPlaying = false

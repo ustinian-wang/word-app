@@ -59,23 +59,42 @@ export function setBookProgress(bookId, progress) {
 export function getWordAudioUrl(word) {
     return `https://api.dictionaryapi.dev/media/pronunciations/en/${word}-us.mp3`;
 }
+const MAX_CACHE_SIZE = 1000; // 最大缓存条目数
 let word_cache = {};
+let cache_keys = []; // 用于LRU缓存
+
 /**
- * @description
- * @param {*} word
- * @returns
+ * @description 获取可用的音频URL
+ * @param {string} word 单词
+ * @returns {Promise<string>} 音频URL
  */
 export async function getAvailableAudioUrl(word) {
     if (word_cache[word]) {
+        // 更新LRU缓存
+        const index = cache_keys.indexOf(word);
+        if (index > -1) {
+            cache_keys.splice(index, 1);
+        }
+        cache_keys.push(word);
         return word_cache[word];
     }
+
     let count = 0;
     while (count < 3) {
         let part = count > 0 ? '-' + count : '';
         let url = getWordUrl(word, part);
         console.log(`jser [url]`, url);
         if (!(await isUrl404(url))) {
+            // 添加新缓存
             word_cache[word] = url;
+            cache_keys.push(word);
+            
+            // 如果超出缓存大小限制，删除最旧的条目
+            if (cache_keys.length > MAX_CACHE_SIZE) {
+                const oldestKey = cache_keys.shift();
+                delete word_cache[oldestKey];
+            }
+            
             return url;
         }
         count++;
