@@ -22,6 +22,9 @@ export default new Vuex.Store({
     },
 
     mutations: {
+        setCacheFrozen(state, frozen) {
+            state.cache_frozen = frozen;
+        },
         // 在这里定义你的mutations
         setStudyStatus(state, status) {
             state.study_status = status;
