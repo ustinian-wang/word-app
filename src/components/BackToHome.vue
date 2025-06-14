@@ -17,35 +17,36 @@
 </template>
 
 <script>
-    export default {
-        name: 'BackToHome',
-        methods: {
-            goHome() {
-                this.$router.push('/');
-            },
-        },
-    };
+import { gotoIndex } from '@/router';
+export default {
+    name: 'BackToHome',
+    methods: {
+        goHome() {
+            gotoIndex();
+        }
+    }
+};
 </script>
 
 <style scoped>
-    .back-home-btn {
-        position: absolute;
-        top: 18px;
-        right: 18px;
-        background: rgba(255, 255, 255, 0.95);
-        border: none;
-        border-radius: 50%;
-        /* box-shadow: 0 2px 8px rgba(60,60,60,0.10); */
-        width: 44px;
-        height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 100;
-        transition: box-shadow 0.2s;
-    }
-    .back-home-btn:hover {
-        /* box-shadow: 0 4px 16px rgba(60,60,60,0.18); */
-    }
+.back-home-btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 50%;
+    /* box-shadow: 0 2px 8px rgba(60,60,60,0.10); */
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    transition: box-shadow 0.2s;
+}
+.back-home-btn:hover {
+    /* box-shadow: 0 4px 16px rgba(60,60,60,0.18); */
+}
 </style>

@@ -72,6 +72,7 @@ import SliderContainer from '@/components/SliderContainer.vue';
 import { sleep } from '@ustinian-wang/kit';
 import { passReview, failReview } from '@/kits/idb';
 import { playNice, playHandsup, playOhno, playRight } from '@/kits/audio';
+import { gotoIndex, gotoWordBooks } from '@/router';
 // 滑动相关常量
 const MOVE_SCALE = 1;
 const MoveDef = {
@@ -318,7 +319,7 @@ export default {
         stopAtCurrentGroup() {
             // 停止在当前组
             this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
-            this.$router.push('/');
+            gotoIndex();
         },
         // 初始化学习队列
         initLearningQueue() {
@@ -348,10 +349,10 @@ export default {
         // 停止学习
         stopLearning() {
             this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
-            this.$router.push('/');
+            gotoIndex();
         },
         async openBookModal() {
-            this.$router.push('/wordbooks');
+            gotoWordBooks();
         },
         // 播放当前单词音频
         async playCurrentWord() {
