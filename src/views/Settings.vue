@@ -33,6 +33,9 @@
 
                 <!-- <span class="setting-unit">px</span> -->
             </div>
+            <div class="setting-item" @click="clearSysCache">
+                <span class="setting-label" style="color: #3578e5;">清理缓存</span>
+            </div>
         </div>
         <div class="settings-footer">更多设置即将开放…</div>
         <!-- <div class="settings-actions">
@@ -42,6 +45,7 @@
 </template>
 
 <script>
+import { clearSysCache } from '@/kits/sysCache';
 import WaInputNumber from '@/components/wa-input-number.vue';
 // import WaSwitch from '@/components/wa-switch.vue';
 import { mapGetters, mapState } from 'vuex';
@@ -72,6 +76,7 @@ export default {
         }
     },
     methods: {
+        clearSysCache,
         saveSettings() {
             // 这里可以扩展为保存到本地存储或全局store
             alert('设置已保存（仅本地演示，未持久化）');
