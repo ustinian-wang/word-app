@@ -69,6 +69,7 @@ import CardActions from '@/components/CardActions.vue';
 import DictionaryLinks from '@/components/DictionaryLinks.vue';
 import SliderContainer from '@/components/SliderContainer.vue';
 import { sleep } from '@ustinian-wang/kit';
+import { passReview, failReview } from '@/kits/idb';
 // 滑动相关常量
 const MOVE_SCALE = 1;
 const MoveDef = {
@@ -109,10 +110,14 @@ export default {
     },
     watch: {
         currentIdx() {
-            this.saveProgress();
+            // this.saveProgress();
         }
     },
     computed: {
+        curr_learning_word() {
+            let no = this.learningQueue[this.currentIdx];
+            return this.words[no].en;
+        },
         ...mapGetters('cache', ['add_usr_learned_no']),
         ...mapState('book', ['currentBookIdx', 'wordBooks', 'words', 'GROUP_SIZE', 'currentGroup']),
         ...mapGetters('cache', ['usr_learned_no_arr']),
@@ -212,9 +217,10 @@ export default {
         },
         // 已掌握单词
         passWord() {
+            passReview(this.curr_learning_word);
             if (this.learningQueue.length <= 1) {
                 this.add_usr_learned_no(this.learningQueue[this.currentIdx]);
-                this.saveProgress();
+                // this.saveProgress();
                 this.nextGroupOrFinish();
                 return;
             }
@@ -224,10 +230,11 @@ export default {
                 this.currentIdx = this.learningQueue.length - 1;
             }
             this.revealedSet.clear();
-            this.saveProgress();
+            // this.saveProgress();
         },
         // 再看一次
         failWord() {
+            failReview(this.curr_learning_word);
             // 保留当前单词，切换到下一个
             if (this.currentIdx < this.learningQueue.length - 1) {
                 this.currentIdx++;
@@ -235,18 +242,18 @@ export default {
                 this.currentIdx = 0;
             }
             this.revealedSet.clear();
-            this.saveProgress();
+            // this.saveProgress();
         },
         // 下一组或全部学完处理
         async nextGroupOrFinish() {
             // 如果本组学完，进入下一组或全部学完
             if (this.usr_learned_no_arr.length >= this.words.length) {
-                this.saveProgress();
+                // this.saveProgress();
                 await this.openAllFinishModal();
                 return;
             }
             // 当前组学完，显示询问是否继续的模态框
-            this.saveProgress();
+            // this.saveProgress();
             await this.openGroupFinishModal();
         },
         async openAllFinishModal() {
@@ -287,7 +294,7 @@ export default {
         restartLearning() {
             this.currentGroup = 0;
             // this.usr_learned_no_arr = [];
-            this.saveProgress();
+            // this.saveProgress();
             this.initLearningQueue();
             this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
         },
