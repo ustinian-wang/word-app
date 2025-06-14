@@ -4,7 +4,7 @@ export default {
         showDictionary: false,
         autoPlayAudio: false,
         enableShortcuts: false,
-        fontSize: 28
+        groupSize: 10
     },
     mutations: {
         setShowDictionary(state, show) {
@@ -15,6 +15,12 @@ export default {
         showDictionary: state => state.showDictionary,
         autoPlayAudio: state => state.autoPlayAudio,
         enableShortcuts: state => state.enableShortcuts,
-        fontSize: state => state.fontSize
+        // groupSize: state => state.groupSize,
+        setGroupSize(state) {
+            return size => {
+                console.log('[size]', size);
+                state.groupSize = size;
+            };
+        }
     }
 };

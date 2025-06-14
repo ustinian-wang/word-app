@@ -6,7 +6,6 @@ export default {
         // currentBookIdx: 0,
         wordBooks: getWordBooks(),
 
-        GROUP_SIZE: 10,
         progress: {
             // currentGroup: 0,
             learnedArr: []
@@ -15,7 +14,7 @@ export default {
     getters: {
         currentGroup: (state, getters, rootState, rootGetters) => {
             let learnedArr = rootGetters['cache/usr_learned_no_arr'];
-            return Math.floor(learnedArr.length / state.GROUP_SIZE);
+            return Math.floor(learnedArr.length / rootState.setting.groupSize);
         },
         words: (state, getters, rootState) => {
             return rootState.cache.wordBooks[getters.currentBookIdx]?.words || []; // 当前书本全部单词
@@ -34,8 +33,8 @@ export default {
         bookId: (state, getters, rootState, rootGetters) => {
             return rootState.cache.wordBooks[getters.currentBookIdx]?.id || 0;
         },
-        groupCount: (state, getters) => {
-            return Math.ceil(getters.words.length / state.GROUP_SIZE);
+        groupCount: (state, getters, rootState, rootGetters) => {
+            return Math.ceil(getters.words.length / rootState.setting.groupSize);
         },
         progressPercent: (state, getters, rootState, rootGetters) => {
             let learnedArr = rootGetters['cache/usr_learned_no_arr'];
@@ -50,26 +49,28 @@ export default {
                 : '';
         },
 
-        groupStart: (state, getters) => {
-            return getters.currentGroup * state.GROUP_SIZE;
+        groupStart: (state, getters, rootState, rootGetters) => {
+            return getters.currentGroup * rootState.setting.groupSize;
         },
-        groupEnd: (state, getters) => {
+        groupEnd: (state, getters, rootState, rootGetters) => {
             return Math.min(
-                getters.currentGroup * state.GROUP_SIZE + state.GROUP_SIZE,
+                getters.currentGroup * rootState.setting.groupSize + rootState.setting.groupSize,
                 getters.words.length
             );
         },
         getGroupWords: (state, getters, rootState, rootGetters) => {
             return () => {
+                let usr_learned_no_arr = rootGetters['cache/usr_learned_no_arr'];
                 const groupStart = getters.groupStart;
                 const groupEnd = getters.groupEnd;
                 const groupWords = [];
                 for (let i = groupStart; i < groupEnd; i++) {
                     // 找到目标组，然后过滤掉已经学习过的
-                    if (!rootGetters['cache/usr_learned_no_arr'].includes(i)){
+                    if (!usr_learned_no_arr.includes(i)){
                         groupWords.push(i);
                     }
                 }
+                console.log('[groupWords]', groupWords, groupStart, groupEnd, usr_learned_no_arr);
                 return groupWords;
             };
         },
@@ -90,12 +91,12 @@ export default {
         setWordBooks(state, books, rootState) {
             rootState.cache.wordBooks = books;
         },
-        setWords(state, words) {
-            // getters.words = words;
-        },
-        setGroupSize(state, size) {
-            state.GROUP_SIZE = size;
-        }
+        // setWords(state, words) {
+        //     // getters.words = words;
+        // },
+        // setGroupSize(state, size) {
+        //     state.groupSize = size;
+        // }
     },
     actions: {
         moveToNextGroup({ getters, state }) {

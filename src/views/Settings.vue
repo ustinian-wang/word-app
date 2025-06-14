@@ -2,7 +2,7 @@
     <div class="settings-page">
         <div class="settings-group">
             <div class="settings-title">通用</div>
-            <div class="setting-item">
+            <!-- <div class="setting-item">
                 <span class="setting-label">主题色</span>
                 <select v-model="theme" class="setting-control">
                     <option value="light">浅色</option>
@@ -24,17 +24,14 @@
             <div class="setting-item">
                 <span class="setting-label">启用快捷键</span>
                 <wa-switch v-model="enableShortcuts" />
-            </div>
+            </div> -->
             <div class="setting-item">
                 <span class="setting-label">主单词字号</span>
-                <input
-                    type="number"
-                    min="20"
-                    max="80"
-                    v-model.number="fontSize"
-                    class="setting-control input-number"
-                />
-                <span class="setting-unit">px</span>
+                <div class="setting-control">
+                    <wa-input-number v-model="currGroupSize" :min="10" :max="40" :step="1" />
+                </div>
+
+                <!-- <span class="setting-unit">px</span> -->
             </div>
         </div>
         <div class="settings-footer">更多设置即将开放…</div>
@@ -45,19 +42,34 @@
 </template>
 
 <script>
-import WaSwitch from '@/components/wa-switch.vue';
+import WaInputNumber from '@/components/wa-input-number.vue';
+// import WaSwitch from '@/components/wa-switch.vue';
+import { mapGetters, mapState } from 'vuex';
 export default {
     name: 'Settings',
-    components: { WaSwitch },
+    components: { WaInputNumber },
+    // components: { WaSwitch },
     data() {
         return {
             theme: 'light',
             showPhonetic: true,
             autoPlayAudio: false,
             showDictionary: true,
-            enableShortcuts: true,
-            fontSize: 40
+            enableShortcuts: true
         };
+    },
+    computed: {
+        ...mapState('setting', ['groupSize']),
+        ...mapGetters('setting', ['setGroupSize']),
+        currGroupSize: {
+            get() {
+                return this.groupSize;
+            },
+            set(value) {
+                console.log('[value]', value);
+                this.setGroupSize(value);
+            }
+        }
     },
     methods: {
         saveSettings() {
@@ -84,7 +96,7 @@ export default {
 .settings-group {
     background: #fff;
     border-radius: 18px;
-    box-shadow: 0 2px 12px rgba(60,60,60,0.06);
+    box-shadow: 0 2px 12px rgba(60, 60, 60, 0.06);
     width: 100%;
     max-width: 420px;
     margin: 32px 0 0 0;
@@ -126,14 +138,14 @@ export default {
     min-width: 60px;
     text-align: right;
 }
-.input-number {
+/* .input-number {
     width: 60px;
     border-radius: 6px;
     border: 1px solid #e0e0e0;
     background: #f7fafd;
     padding: 2px 8px;
     margin-left: 8px;
-}
+} */
 .setting-unit {
     color: #888;
     font-size: 13px;
@@ -160,7 +172,7 @@ button[type='button'] {
     font-size: 16px;
     cursor: pointer;
     transition: background 0.2s;
-    box-shadow: 0 1px 4px rgba(60,60,60,0.08);
+    box-shadow: 0 1px 4px rgba(60, 60, 60, 0.08);
 }
 button[type='button']:hover {
     background: #2256a5;
