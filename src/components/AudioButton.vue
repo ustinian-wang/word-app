@@ -1,14 +1,32 @@
 <template>
-    <div class="audio-btn" :class="{ 'is-playing': isPlaying, 'is-loading': isLoading }" @click="handleClick" :title="title">
-        <Icon v-if="!isLoading" icon="mdi:volume-high" width="32" height="32" :style="{ color: '#3578e5' }" />
-        <Icon v-else icon="mdi:loading" width="32" height="32" :style="{ color: '#3578e5' }" class="loading-icon" />
+    <div
+        class="audio-btn"
+        :class="{ 'is-playing': isPlaying, 'is-loading': isLoading }"
+        @click="handleClick"
+        :title="title"
+    >
+        <Icon
+            v-if="!isLoading"
+            icon="mdi:volume-high"
+            width="32"
+            height="32"
+            :style="{ color: '#3578e5' }"
+        />
+        <Icon
+            v-else
+            icon="mdi:loading"
+            width="32"
+            height="32"
+            :style="{ color: '#3578e5' }"
+            class="loading-icon"
+        />
     </div>
 </template>
 
 <script>
-import { Icon } from '@iconify/vue2'
-import { getAvailableAudioUrl } from '@/kits/words'
-import $message from '@/kits/toast'
+import { Icon } from '@iconify/vue2';
+import { getAvailableAudioUrl } from '@/kits/words';
+import $message from '@/kits/toast';
 
 export default {
     name: 'AudioButton',
@@ -28,54 +46,58 @@ export default {
             isPlaying: false,
             isLoading: false,
             audioPlayer: null
-        }
+        };
     },
     methods: {
+        play() {
+            // 暴露给外面通过this.$refs.audioButton.play()的方式调用
+            this.handleClick();
+        },
         async handleClick() {
-            console.log('jser click')
+            console.log('jser click');
             if (!this.word) {
-                return
+                return;
             }
 
             if (this.audioPlayer) {
-                this.audioPlayer.pause()
+                this.audioPlayer.pause();
             }
 
-            this.isLoading = true
+            this.isLoading = true;
             try {
-                let wordAudioUrl = await getAvailableAudioUrl(this.word)
+                let wordAudioUrl = await getAvailableAudioUrl(this.word);
                 if (!wordAudioUrl) {
-                    $message.error('网络异常，请稍后重试')
-                    return
+                    $message.error('网络异常，请稍后重试');
+                    return;
                 }
-                this.audioPlayer = new Audio(wordAudioUrl)
+                this.audioPlayer = new Audio(wordAudioUrl);
 
                 // 添加音频结束监听器
                 this.audioPlayer.addEventListener('ended', () => {
-                    this.isPlaying = false
-                })
+                    this.isPlaying = false;
+                });
 
-                await this.audioPlayer.play()
-                this.isPlaying = true
+                await this.audioPlayer.play();
+                this.isPlaying = true;
             } catch (err) {
-                console.error('Failed to play audio:', err)
-                this.isPlaying = false
-                $message.error('播放失败，请稍后重试')
+                console.error('Failed to play audio:', err);
+                this.isPlaying = false;
+                $message.error('播放失败，请稍后重试');
             } finally {
-                this.isLoading = false
+                this.isLoading = false;
             }
         }
     },
     beforeDestroy() {
         if (this.audioPlayer) {
-            this.audioPlayer.pause()
-            this.audioPlayer.src = ''
-            this.audioPlayer = null
+            this.audioPlayer.pause();
+            this.audioPlayer.src = '';
+            this.audioPlayer = null;
         }
-        this.isPlaying = false
-        this.isLoading = false
+        this.isPlaying = false;
+        this.isLoading = false;
     }
-}
+};
 </script>
 
 <style lang="less" scoped>

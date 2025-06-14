@@ -191,7 +191,7 @@ export default {
         /** @type {WordInfoResponse} */
         let res = await getRandomWordInfoApi();
         let data = res.data.data;
-        console.log(data);
+        // console.log(data);
         let dailyWord = {
             en: data.word,
             zh: data.translations

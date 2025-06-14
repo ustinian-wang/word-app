@@ -32,10 +32,12 @@ export default {
     methods: {
         getItemStyle(index) {
             const base = (index - 1) * 100;
-            const move = this.deltaX / window.innerWidth * 100;
+            const move = (this.deltaX / window.innerWidth) * 100;
             return {
                 transform: `translateX(calc(${base}% + ${move}vw))`,
-                transition: this.isAnimating ? 'transform 0.3s cubic-bezier(0.25, 0.8, 0.5, 1)' : 'none',
+                transition: this.isAnimating
+                    ? 'transform 0.3s cubic-bezier(0.25, 0.8, 0.5, 1)'
+                    : 'none',
                 zIndex: index === 1 ? 2 : 1,
                 opacity: index === 1 ? 1 : 0.5
             };

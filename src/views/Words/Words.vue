@@ -22,8 +22,22 @@
                 <!-- 英文单词 -->
                 <div class="word-en">{{ word.en }}</div>
 
-                <!-- 发音按钮 -->
-                <AudioButton :word="word?.en" title="播放发音" />
+                <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
+                    <div
+                        class="phonetic-text"
+                        style="
+                            min-width: 100px;
+                            cursor: pointer;
+                            color: #666;
+                            font-family: 'IPA', monospace;
+                        "
+                        @click="playCurrentWord"
+                    >
+                        {{ phonetic }}
+                    </div>
+                    <!-- 发音按钮 -->
+                    <AudioButton ref="audioButton" :word="currWord?.en" title="播放发音" />
+                </div>
 
                 <!-- 中文释义(点击显示) -->
                 <div class="word-zh" :class="{ mosaic: !isZhRevealed }" @click="revealZh">
@@ -44,7 +58,7 @@
 
 <script>
 // 导入所需的工具函数和组件
-import { getWordAudioUrl, splitTaggedText } from '@/kits/words';
+import { getWordAudioUrl, splitTaggedText, getPhonetic } from '@/kits/words';
 import { STUDY_STATUS_DEF } from '@/store';
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex';
 import WordsHeader from './components/WordsHeader.vue';
@@ -91,6 +105,7 @@ export default {
             // currentGroup: 0, // 当前组号
             // learnedArr: [] // 已学过的单词索引数组
             // groupCount: 1, // 总组数
+            phonetic: ''
         };
     },
     watch: {
@@ -114,6 +129,9 @@ export default {
             'groupEnd',
             'getGroupWords'
         ]),
+        currWord() {
+            return this.sliderWords[1];
+        },
         // 获取当前显示的三个单词(前一个、当前、后一个)
         sliderWords() {
             const prevIdx = this.learningQueue[this.currentIdx - 1];
@@ -155,7 +173,7 @@ export default {
             this.deltaX = moveX;
         },
         // 触摸结束事件处理
-        onTouchEnd() {
+        async onTouchEnd() {
             if (!this.isDragging) return;
             this.isDragging = false;
             const threshold = window.innerWidth / 4;
@@ -184,9 +202,14 @@ export default {
 
             // 平滑回弹
             this.deltaX = 0;
-            setTimeout(() => {
-                this.isAnimating = false;
-            }, 300);
+            await sleep(300);
+            this.isAnimating = false;
+            this.loadPhonetics();
+        },
+        async loadPhonetics() {
+            let word = this.currWord;
+            console.log('[loadPhonetics]', word, this.sliderWords);
+            this.phonetic = await getPhonetic(word?.en || '');
         },
         // 显示中文释义
         revealZh() {
@@ -308,6 +331,8 @@ export default {
             // this.currentGroup = progress.currentGroup || 0;
             // this.learnedArr = progress.learnedArr || [];
             this.initLearningQueue();
+
+            this.loadPhonetics();
         },
         // 停止学习
         stopLearning() {
@@ -316,6 +341,10 @@ export default {
         },
         async openBookModal() {
             this.$router.push('/wordbooks');
+        },
+        // 播放当前单词音频
+        async playCurrentWord() {
+            this.$refs.audioButton.play();
         }
     },
     // 组件挂载

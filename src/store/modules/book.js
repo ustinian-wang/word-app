@@ -71,8 +71,8 @@ export default {
     },
     mutations: {
         setCurrentBookIdx(state, idx) {
-            console.trace();
-            console.log('[setCurrentBookIdx]', idx);
+            // console.trace();
+            // console.log('[setCurrentBookIdx]', idx);
             state.currentBookIdx = idx;
             setCurrentBookIndex(idx);
         },

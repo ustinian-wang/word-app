@@ -1,8 +1,9 @@
 // import * as XLSX from 'xlsx';
 import { builtinWordBooks } from '@/wordbooks/builtin';
-import { cloneRequest } from '@ustinian-wang/kit';
+import { cloneRequest, memorize } from '@ustinian-wang/kit';
 import { isUrl404 } from './url';
 import { str2Int } from './cast';
+import { getDictApi } from '@/apis';
 
 const WORD_BOOKS_KEY = 'myWordBooks';
 const CURRENT_BOOK_IDX_KEY = 'currentWordBookIdx';
@@ -39,7 +40,7 @@ export function initDefaultWordBooks() {
  */
 export function getBookProgress(bookId) {
     const all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
-    console.log('[getBookProgress]', all, bookId, all[bookId]);
+    // console.log('[getBookProgress]', all, bookId, all[bookId]);
     return all[bookId] || { group: 0, learned: [], percent: 0 };
 }
 /**
@@ -85,18 +86,18 @@ export async function getAvailableAudioUrl(word) {
     while (count < 3) {
         let part = count > 0 ? '-' + count : '';
         let url = getWordUrl(word, part);
-        console.log(`jser [url]`, url);
+        // console.log(`jser [url]`, url);
         if (!(await isUrl404(url))) {
             // 添加新缓存
             word_cache[word] = url;
             cache_keys.push(word);
-            
+
             // 如果超出缓存大小限制，删除最旧的条目
             if (cache_keys.length > MAX_CACHE_SIZE) {
                 const oldestKey = cache_keys.shift();
                 delete word_cache[oldestKey];
             }
-            
+
             return url;
         }
         count++;
@@ -193,3 +194,15 @@ export function getRandomWordInfoApi() {
     return cloneRequest().get(`https://v2.xxapi.cn/api/randomenglishwords`);
 }
 
+const getDict = memorize(word => {
+    return getDictApi(word);
+});
+/**
+ * 获取单词的音标
+ * @param {string} word 单词
+ * @returns {Promise<string>} 音标
+ */
+export async function getPhonetic(word) {
+    let res = await getDict(word);
+    return res?.data?.[0]?.phonetic;
+}
