@@ -63,7 +63,6 @@ import { STUDY_STATUS_DEF } from '@/store';
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex';
 import WordsHeader from './components/WordsHeader.vue';
 import WordsProgress from './components/WordsProgress.vue';
-import { openBookSelectModal } from './components/bookSelectModal';
 import { openFinishModal } from '@/components/FinishModal/finishModal';
 import AudioButton from '@/components/AudioButton.vue';
 import CardActions from '@/components/CardActions.vue';
@@ -103,7 +102,7 @@ export default {
             currentIdx: 0, // 当前在 learningQueue 的位置
             revealedSet: new Set(), // 已揭示释义的索引集合
             // currentGroup: 0, // 当前组号
-            // learnedArr: [] // 已学过的单词索引数组
+            // usr_learned_no_arr: [] // 已学过的单词索引数组
             // groupCount: 1, // 总组数
             phonetic: ''
         };
@@ -114,13 +113,9 @@ export default {
         }
     },
     computed: {
-        ...mapState('book', ['currentBookIdx', 'wordBooks', 'words', 'GROUP_SIZE', 'progress']),
-        currentGroup() {
-            return this.progress.currentGroup;
-        },
-        learnedArr() {
-            return this.progress.learnedArr;
-        },
+        ...mapGetters('cache', ['add_usr_learned_no']),
+        ...mapState('book', ['currentBookIdx', 'wordBooks', 'words', 'GROUP_SIZE', 'currentGroup']),
+        ...mapGetters('cache', ['usr_learned_no_arr']),
         ...mapGetters('book', [
             'bookName',
             'bookId',
@@ -145,7 +140,7 @@ export default {
             };
             return [getWord(prevIdx), getWord(currIdx), getWord(nextIdx)];
         },
-        ...mapGetters('book', ['progressPercent', 'progressText']),
+        ...mapGetters('book', ['progressPercent', 'progressText', 'words']),
 
         // 当前单词是否已显示中文释义
         isZhRevealed() {
@@ -154,7 +149,7 @@ export default {
         ...mapGetters(['cacheWrapper'])
     },
     methods: {
-        ...mapMutations('book', ['setCurrentBookIdx', 'setWordBooks', 'setWords']),
+        ...mapMutations('book', ['setCurrentBookIdx']),
         ...mapMutations(['setStudyStatus']),
         getWordAudioUrl,
         // 将中文释义按词性分割成数组
@@ -208,7 +203,6 @@ export default {
         },
         async loadPhonetics() {
             let word = this.currWord;
-            console.log('[loadPhonetics]', word, this.sliderWords);
             this.phonetic = await getPhonetic(word?.en || '');
         },
         // 显示中文释义
@@ -219,12 +213,12 @@ export default {
         // 已掌握单词
         passWord() {
             if (this.learningQueue.length <= 1) {
-                this.learnedArr.push(this.learningQueue[this.currentIdx]);
+                this.add_usr_learned_no(this.learningQueue[this.currentIdx]);
                 this.saveProgress();
                 this.nextGroupOrFinish();
                 return;
             }
-            this.learnedArr.push(this.learningQueue[this.currentIdx]);
+            this.add_usr_learned_no(this.learningQueue[this.currentIdx]);
             this.learningQueue.splice(this.currentIdx, 1);
             if (this.currentIdx >= this.learningQueue.length) {
                 this.currentIdx = this.learningQueue.length - 1;
@@ -246,7 +240,7 @@ export default {
         // 下一组或全部学完处理
         async nextGroupOrFinish() {
             // 如果本组学完，进入下一组或全部学完
-            if (this.learnedArr.length >= this.words.length) {
+            if (this.usr_learned_no_arr.length >= this.words.length) {
                 this.saveProgress();
                 await this.openAllFinishModal();
                 return;
@@ -292,7 +286,7 @@ export default {
         // 重新开始学习
         restartLearning() {
             this.currentGroup = 0;
-            this.learnedArr = [];
+            // this.usr_learned_no_arr = [];
             this.saveProgress();
             this.initLearningQueue();
             this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
@@ -326,10 +320,10 @@ export default {
         ...mapActions('book', ['loadBook', 'saveProgress', 'moveToNextGroup']),
         // 加载学习进度
         loadProgress() {
-            this.loadBook(this.currentBookIdx);
+            // this.loadBook(this.currentBookIdx);
             // const progress = this.progress;
             // this.currentGroup = progress.currentGroup || 0;
-            // this.learnedArr = progress.learnedArr || [];
+            // this.usr_learned_no_arr = progress.usr_learned_no_arr || [];
             this.initLearningQueue();
 
             this.loadPhonetics();
@@ -350,15 +344,16 @@ export default {
     // 组件挂载
     mounted() {
         this.loadProgress();
+        console.log('[this.learningQueue mounted]', this.learningQueue);
         if (this.learningQueue.length === 0) {
             this.nextGroupOrFinish();
         }
-        this.cacheHandler = this.cacheWrapper(this.loadProgress);
-        window.addEventListener('storage', this.cacheHandler);
+        // this.cacheHandler = this.cacheWrapper(this.loadProgress);
+        // window.addEventListener('storage', this.cacheHandler);
     },
     // 组件销毁
     beforeDestroy() {
-        window.removeEventListener('storage', this.cacheHandler);
+        // window.removeEventListener('storage', this.cacheHandler);
     }
 };
 </script>

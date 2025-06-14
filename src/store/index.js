@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import book from './modules/book';
 import { enterFullscreen, exitFullscreen } from '@/kits/fullscreen';
+import cache from './modules/cache';
 
 Vue.use(Vuex);
 /**
@@ -59,6 +60,7 @@ export default new Vuex.Store({
 
     modules: {
         // 在这里定义你的模块
-        book
+        book,
+        cache
     }
 });

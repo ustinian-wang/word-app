@@ -5,40 +5,15 @@
         </header>
         <div v-if="wordBooks.length === 0" class="empty-tip">暂无词库，请导入或添加新词库</div>
         <ul class="book-list">
-            <li
+            <WordBookItem
                 v-for="(book, idx) in wordBooks"
                 :key="book.id"
-                :class="{ active: idx === currentBookIdx }"
-            >
-                <div class="book-info">
-                    <span class="book-name">{{ book.name }}</span>
-                    <span class="book-count">{{ book.words.length }}词</span>
-                    <span v-if="progressMap[book.id] !== undefined" class="book-progress">
-                        {{ progressMap[book.id].percent }}% 已学{{ progressMap[book.id].learned }}词
-                    </span>
-                </div>
-                <div class="book-actions">
-                    <button
-                        v-if="idx !== currentBookIdx"
-                        class="switch-btn"
-                        @click="selectBook(idx)"
-                    >
-                        切换
-                    </button>
-                    <span v-else class="current-label">当前</span>
-                    <button v-if="false" class="delete-btn" @click="removeBook(idx)">
-                        <svg width="16" height="16" viewBox="0 0 24 24">
-                            <path
-                                d="M6 6l12 12M6 18L18 6"
-                                stroke="#e55"
-                                stroke-width="2"
-                                fill="none"
-                                stroke-linecap="round"
-                            />
-                        </svg>
-                    </button>
-                </div>
-            </li>
+                :book-name="book.name"
+                :word-total="book.words.length"
+                :learned-count="usr_progress[book.id]?.learned_no_arr?.length || 0"
+                :is-active="idx === usr_bookIdx"
+                @select="selectBook(idx)"
+            />
         </ul>
         <div v-if="false" class="add-button-container">
             <button class="upload-btn" @click="$refs.excelInput.click()">
@@ -71,41 +46,31 @@
 
 <script>
 // import * as XLSX from 'xlsx'; // 需安装 xlsx: yarn add xlsx
-import { getBookProgress } from '@/kits/words';
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import $message from '@/kits/toast';
+import WordBookItem from './components/WordBookItem.vue';
 
 export default {
     name: 'WordBooks',
+    components: {
+        WordBookItem
+    },
     data() {
         return {};
     },
     computed: {
-        ...mapState('book', ['wordBooks', 'currentBookIdx', 'progress']),
-        progressMap() {
-            let map = {};
-            this.wordBooks.forEach(book => {
-                const progress = getBookProgress(book.id);
-                let learned = progress.learned?.length || 0;
-                let percent = (learned / book.words.length).toFixed(4);
-                map[book.id] = {
-                    learned,
-                    percent
-                };
-            });
-            return map;
-        }
+        ...mapState('cache', ['wordBooks', 'usr_bookIdx']),
+        ...mapGetters('cache', ['usr_bookIdx', 'usr_progress']),
+        ...mapGetters('cache', ['set_usr_bookIdx'])
     },
     methods: {
-        ...mapMutations('book', ['setCurrentBookIdx']),
-        ...mapActions('book', ['loadBook']),
         selectBook(idx) {
-            this.setCurrentBookIdx(idx);
+            this.set_usr_bookIdx(idx);
             $message.success('已切换词库');
         }
     },
     mounted() {
-        this.loadBook(this.currentBookIdx);
+        console.log('[this.usr_progress]', this.usr_progress);
     }
 };
 </script>

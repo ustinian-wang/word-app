@@ -1,21 +1,22 @@
 import Vue from 'vue';
 import Toast from '../components/Toast.vue';
 
-let toastQueue = [];
-let isProcessing = false;
+let ToastConstructor = Vue.extend(Toast);
+let toastInstance = null;
 let timer = null;
 
-function processQueue() {
-    if (isProcessing || toastQueue.length === 0) return;
-    
-    isProcessing = true;
-    const { message, type, duration } = toastQueue.shift();
-    
-    let instance = new Vue.extend(Toast)({
+function showToast({ message, type = 'success', duration = 2000 }) {
+    if (toastInstance) {
+        toastInstance.$destroy();
+        document.body.removeChild(toastInstance.$el);
+        toastInstance = null;
+    }
+    let instance = new ToastConstructor({
         propsData: { message, type, visible: true },
     });
     instance.$mount();
     document.body.appendChild(instance.$el);
+    toastInstance = instance;
 
     if (type !== 'loading') {
         timer = setTimeout(() => {
@@ -25,25 +26,22 @@ function processQueue() {
                 if (document.body.contains(instance.$el)) {
                     document.body.removeChild(instance.$el);
                 }
-                isProcessing = false;
-                processQueue();
+                toastInstance = null;
             }, 300);
         }, duration);
     }
 }
 
-function showToast({ message, type = 'success', duration = 2000 }) {
-    toastQueue.push({ message, type, duration });
-    processQueue();
-}
-
 function hideToast() {
-    if (timer) {
-        clearTimeout(timer);
-        timer = null;
+    if (toastInstance) {
+        toastInstance.visible = false;
+        setTimeout(() => {
+            toastInstance.$destroy();
+            document.body.removeChild(toastInstance.$el);
+            toastInstance = null;
+            if (timer) clearTimeout(timer);
+        }, 300);
     }
-    toastQueue = [];
-    isProcessing = false;
 }
 
 const $message = {

@@ -1,69 +1,74 @@
-import {
-    getBookProgress,
-    getCurrentWords,
-    getWordBooks,
-    setBookProgress,
-    setCurrentBookIndex
-} from '@/kits/words';
+import { getWordBooks, setCurrentBookIndex } from '@/kits/words';
 
 export default {
     namespaced: true,
     state: {
-        currentBookIdx: 0,
-        wordBooks: [],
-        words: [],
+        // currentBookIdx: 0,
+        wordBooks: getWordBooks(),
 
         GROUP_SIZE: 10,
         progress: {
-            currentGroup: 0,
+            // currentGroup: 0,
             learnedArr: []
         }
     },
     getters: {
-        bookName: state => {
-            return state.wordBooks[state.currentBookIdx]?.name || '';
+        currentGroup: (state, getters, rootState, rootGetters) => {
+            let learnedArr = rootGetters['cache/usr_learned_no_arr'];
+            return Math.floor(learnedArr.length / state.GROUP_SIZE);
         },
-        bookId: state => {
-            return state.wordBooks[state.currentBookIdx]?.id || 0;
+        words: (state, getters, rootState) => {
+            return rootState.cache.wordBooks[getters.currentBookIdx]?.words || []; // 当前书本全部单词
         },
-        groupCount: state => {
-            return Math.ceil(state.words.length / state.GROUP_SIZE);
+        currentBookIdx: (state, getters, rootState, rootGetters) => {
+            let bookId = rootGetters['cache/usr_bookId'];
+            let idx = rootState.cache.wordBooks.findIndex(book => book.id === bookId);
+            if (idx === -1) {
+                return 0;
+            }
+            return idx;
         },
-        // progress: (state, getters) => {
-        //     const progress = getBookProgress(getters.bookId)
-        //     return {
-        //         currentGroup: progress.group || 0,
-        //         learnedArr: progress.learned || []
-        //     }
-        // }
-        progressPercent: state => {
-            return state.progress.learnedArr.length > 0
-                ? Math.round((state.progress.learnedArr.length / state.words.length) * 100)
+        bookName: (state, getters, rootState, rootGetters) => {
+            return rootState.cache.wordBooks[getters.currentBookIdx]?.name || '';
+        },
+        bookId: (state, getters, rootState, rootGetters) => {
+            return rootState.cache.wordBooks[getters.currentBookIdx]?.id || 0;
+        },
+        groupCount: (state, getters) => {
+            return Math.ceil(getters.words.length / state.GROUP_SIZE);
+        },
+        progressPercent: (state, getters, rootState, rootGetters) => {
+            let learnedArr = rootGetters['cache/usr_learned_no_arr'];
+            return learnedArr.length > 0
+                ? Math.round((learnedArr.length / getters.words.length) * 100)
                 : 0;
         },
         // 当前学习进度文本
         progressText: (state, getters) => {
-            return state.words.length > 0
-                ? `${state.progress.currentGroup + 1} / ${getters.groupCount}`
+            return getters.words.length > 0
+                ? `${getters.currentGroup + 1} / ${getters.groupCount}`
                 : '';
         },
 
         groupStart: (state, getters) => {
-            return state.progress.currentGroup * state.GROUP_SIZE;
+            return getters.currentGroup * state.GROUP_SIZE;
         },
         groupEnd: (state, getters) => {
             return Math.min(
-                state.progress.currentGroup * state.GROUP_SIZE + state.GROUP_SIZE,
-                state.words.length
+                getters.currentGroup * state.GROUP_SIZE + state.GROUP_SIZE,
+                getters.words.length
             );
         },
-        getGroupWords: (state, getters) => {
+        getGroupWords: (state, getters, rootState, rootGetters) => {
             return () => {
                 const groupStart = getters.groupStart;
                 const groupEnd = getters.groupEnd;
                 const groupWords = [];
                 for (let i = groupStart; i < groupEnd; i++) {
-                    if (!state.progress.learnedArr.includes(i)) groupWords.push(i);
+                    // 找到目标组，然后过滤掉已经学习过的
+                    if (!rootGetters['cache/usr_learned_no_arr'].includes(i)){
+                        groupWords.push(i);
+                    }
                 }
                 return groupWords;
             };
@@ -73,14 +78,14 @@ export default {
         setCurrentBookIdx(state, idx) {
             // console.trace();
             // console.log('[setCurrentBookIdx]', idx);
-            state.currentBookIdx = idx;
-            setCurrentBookIndex(idx);
+            // state.currentBookIdx = idx;
+            // setCurrentBookIndex(idx);
         },
-        setWordBooks(state, books) {
-            state.wordBooks = books;
+        setWordBooks(state, books, rootState) {
+            rootState.cache.wordBooks = books;
         },
         setWords(state, words) {
-            state.words = words;
+            // getters.words = words;
         },
         setGroupSize(state, size) {
             state.GROUP_SIZE = size;
@@ -88,33 +93,12 @@ export default {
     },
     actions: {
         moveToNextGroup({ getters, state }) {
-            state.progress.currentGroup = state.progress.currentGroup + 1;
-            setBookProgress(getters.bookId, {
-                group: state.progress.currentGroup,
-                learned: state.progress.learnedArr,
-                percent: getters.progressPercent / 100
-            });
-        },
-        loadBook({ commit, getters, state }, bookIdx) {
-            let wordBooks = getWordBooks();
-            commit('setCurrentBookIdx', bookIdx);
-            commit('setWordBooks', wordBooks);
-            commit('setWords', wordBooks[bookIdx]?.words || []);
-
-            const progress = getBookProgress(getters.bookId);
-            state.progress.currentGroup = progress.group || 0;
-            state.progress.learnedArr = progress.learned || [];
-        },
-        saveProgress({ getters, state }) {
-            const bookId = getters.bookId;
-            if (!bookId) {
-                return;
-            }
-            setBookProgress(bookId, {
-                group: state.progress.currentGroup,
-                learned: state.progress.learnedArr,
-                percent: getters.progressPercent / 100
-            });
+            // state.progress.currentGroup = state.progress.currentGroup + 1;
+            // setBookProgress(getters.bookId, {
+            //     group: state.progress.currentGroup,
+            //     learned: state.progress.learnedArr,
+            //     percent: getters.progressPercent / 100
+            // });
         }
     }
 };
