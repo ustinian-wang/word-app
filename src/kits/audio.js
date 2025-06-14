@@ -14,3 +14,6 @@ export function playNice() {
 export function playOhno() {
     playAudio(import.meta.env.BASE_URL + '/audio/ohno.wav');
 }
+export function playRight() {
+    playAudio(import.meta.env.BASE_URL + '/audio/right.wav');
+}
