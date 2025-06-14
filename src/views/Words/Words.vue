@@ -683,4 +683,12 @@ export default {
         min-width: 50px;
     }
 }
+.phonetic-text {
+    font-size: 18px;
+    color: #888;
+    margin-bottom: 8px;
+    background: #f0f4fa;
+    border-radius: 8px;
+    padding: 2px 12px;
+}
 </style>

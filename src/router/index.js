@@ -6,6 +6,7 @@ import ReviewWords from '../views/Words/ReviewWords.vue';
 import WordBooks from '../views/WordBooks/WordBooks.vue';
 import Index from '../views/Index.vue';
 import Redirect from '@/views/Redirect.vue';
+import Settings from '@/views/Settings.vue';
 
 Vue.use(Router);
 
@@ -16,7 +17,8 @@ const router = new Router({
         { path: '/words', component: Words, name: '背单词' },
         { path: '/reviewWords', component: ReviewWords, name: '复习单词' },
         { path: '/wordbooks', component: WordBooks, name: '词库' },
-        { path: '/redirect/:path(.*)', component: Redirect }
+        { path: '/redirect/:path(.*)', component: Redirect },
+        { path: '/settings', component: Settings, name: '设置' }
     ]
 });
 
@@ -45,4 +47,8 @@ export function gotoRecognize() {
 
 export function gotoRedirect(path) {
     router.push(`/redirect/${path}`);
+}
+
+export function gotoSettings() {
+    router.push('/settings');
 }
