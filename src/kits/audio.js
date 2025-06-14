@@ -4,13 +4,13 @@ export function playAudio(url) {
 }
 
 export function playHandsup() {
-    playAudio('/word-app/audio/handsup.wav');
+    playAudio(import.meta.env.BASE_URL + '/audio/handsup.wav');
 }
 
 export function playNice() {
-    playAudio('/word-app/audio/nice.wav');
+    playAudio(import.meta.env.BASE_URL + '/audio/nice.wav');
 }
 
 export function playOhno() {
-    playAudio('/word-app/audio/ohno.wav');
+    playAudio(import.meta.env.BASE_URL + '/audio/ohno.wav');
 }
