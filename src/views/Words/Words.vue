@@ -1,6 +1,12 @@
 <template>
     <!-- 单词学习页面容器 -->
     <div
+        v-keyboard="[
+            { key: 'ArrowLeft', handler: handlePrevWord },
+            { key: 'ArrowRight', handler: handleNextWord },
+            { key: 'Enter', handler: passWord },
+            { key: 'Escape', handler: failWord }
+        ]"
         @click="clicked = true"
         class="words-page"
         @touchstart="onTouchStart"
@@ -73,6 +79,7 @@ import { sleep } from '@ustinian-wang/kit';
 import { passReview, failReview } from '@/kits/idb';
 import { playNice, playHandsup, playOhno, playRight } from '@/kits/audio';
 import { gotoIndex, gotoWordBooks } from '@/router';
+import { keyboard } from '@/directives/keyboard';
 // 滑动相关常量
 const MOVE_SCALE = 1;
 const MoveDef = {
@@ -91,6 +98,9 @@ export default {
         CardActions,
         DictionaryLinks,
         SliderContainer
+    },
+    directives: {
+        keyboard
     },
     data() {
         return {
@@ -204,7 +214,6 @@ export default {
                 this.revealedSet.clear();
 
                 this.afterChange();
-
             }
 
             // 平滑回弹
@@ -356,9 +365,35 @@ export default {
         },
         // 播放当前单词音频
         async playCurrentWord() {
-            if (this.clicked){
+            if (this.clicked) {
+                await sleep(1000);
                 this.$refs.audioButton.play();
             }
+        },
+        // 处理上一个单词
+        handlePrevWord() {
+            if (this.isAnimating || this.learningQueue.length === 0) return;
+
+            if (this.currentIdx > 0) {
+                this.currentIdx--;
+            } else {
+                this.currentIdx = this.learningQueue.length - 1;
+            }
+            this.revealedSet.clear();
+            this.afterChange();
+        },
+
+        // 处理下一个单词
+        handleNextWord() {
+            if (this.isAnimating || this.learningQueue.length === 0) return;
+
+            if (this.currentIdx < this.learningQueue.length - 1) {
+                this.currentIdx++;
+            } else {
+                this.currentIdx = 0;
+            }
+            this.revealedSet.clear();
+            this.afterChange();
         }
     },
     // 组件挂载
