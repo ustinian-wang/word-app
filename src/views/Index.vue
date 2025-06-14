@@ -32,6 +32,7 @@
 import { mapState, mapMutations } from 'vuex';
 import { STUDY_STATUS_DEF } from '@/store/index.js';
 import { getRandomWordInfoApi } from '@/kits/words';
+import { gotoWords, gotoReviewWords } from '@/router';
 
 export default {
     name: 'Index',
@@ -45,10 +46,6 @@ export default {
     },
     methods: {
         ...mapMutations(['setStudyStatus']),
-        goWords() {
-            this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
-            this.$router.push('/words');
-        },
         goNext(status) {},
         handleButtonClick(option) {
             if (this.buttonLoading) return;
@@ -73,7 +70,7 @@ export default {
                         type: 'primary',
                         action: () => {
                             this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
-                            this.$router.push('/words');
+                            gotoWords();
                         }
                     },
                     {
@@ -82,7 +79,7 @@ export default {
                         type: 'secondary',
                         action: () => {
                             this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
-                            this.$router.push('/words');
+                            gotoReviewWords();
                         }
                     }
                 ];
@@ -94,7 +91,7 @@ export default {
                         type: 'primary',
                         action: () => {
                             this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
-                            this.$router.push('/words');
+                            gotoWords();
                         }
                     }
                 ];
@@ -106,7 +103,7 @@ export default {
                         type: 'primary',
                         action: () => {
                             this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
-                            this.$router.push('/words');
+                            gotoWords();
                         }
                     },
                     {
@@ -115,7 +112,7 @@ export default {
                         type: 'secondary',
                         action: () => {
                             this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
-                            this.$router.push('/words');
+                            gotoReviewWords();
                         }
                     }
                 ];
@@ -127,7 +124,7 @@ export default {
                         type: 'primary',
                         action: () => {
                             this.setStudyStatus(STUDY_STATUS_DEF.LEARNING);
-                            this.$router.push('/words');
+                            gotoWords();
                         }
                     },
                     {
@@ -136,7 +133,7 @@ export default {
                         type: 'secondary',
                         action: () => {
                             this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
-                            this.$router.push('/words');
+                            gotoReviewWords();
                         }
                     }
                 ];
@@ -148,7 +145,7 @@ export default {
                         type: 'primary',
                         action: () => {
                             this.setStudyStatus(STUDY_STATUS_DEF.DEFAULT);
-                            this.$router.push('/words');
+                            gotoWords();
                         }
                     },
                     {
@@ -157,7 +154,7 @@ export default {
                         type: 'secondary',
                         action: () => {
                             this.setStudyStatus(STUDY_STATUS_DEF.REVIEWING);
-                            this.$router.push('/words');
+                            gotoReviewWords();
                         }
                     }
                 ];
@@ -170,7 +167,7 @@ export default {
                     type: 'primary',
                     action: () => {
                         this.setStudyStatus(STUDY_STATUS_DEF.DEFAULT);
-                        this.$router.push('/words');
+                        gotoWords();
                     }
                 }
             ];

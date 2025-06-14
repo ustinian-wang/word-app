@@ -95,6 +95,14 @@ export default {
             console.log('[progress]', progress);
             return progress[getters.usr_bookId]?.learned_no_arr || [];
         },
+        usr_learned_words(state, getters) {
+            let learned_no_arr = getters.usr_learned_no_arr;
+            let bookId = getters.usr_bookId;
+            let book = state.wordBooks.find(book => book.id === bookId);
+            let learned_words = book.words.filter((word, index) => learned_no_arr.includes(index));
+            console.log('[cache learned_words]', learned_words, bookId, book, learned_no_arr, state.wordBooks);
+            return learned_words;
+        },
         set_usr_bookId(state, getters) {
             return bookId => {
                 setter(state.usr_data, USR_BOOK_ID, bookId);

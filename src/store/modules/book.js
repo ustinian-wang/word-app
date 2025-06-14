@@ -72,6 +72,12 @@ export default {
                 }
                 return groupWords;
             };
+        },
+        getRvGroupWords: (state, getters, rootState, rootGetters) => {
+            return () => {
+                // 这里先不分组，有多少复习多少
+                return rootGetters['cache/usr_learned_no_arr'];
+            };
         }
     },
     mutations: {

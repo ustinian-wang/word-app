@@ -13,9 +13,9 @@ function createBook(id, name, source) {
     const words = source
         .split('\n')
         .filter(Boolean)
-        .map(line => {
+        .map((line, idx) => {
             const [en, zh] = line.split('	');
-            return { en, zh };
+            return { en, zh, idx };
         });
     return {
         id,

@@ -23,11 +23,15 @@ class WordReviewDB {
         this.dbName = 'wordReviewDB';
         this.storeName = 'words';
         this.db = null;
+        this.version = 3;
     }
 
     // 初始化数据库
     async init() {
-        this.db = await openDB(this.dbName, 1, {
+        if(this.db){
+            return;
+        }
+        this.db = await openDB(this.dbName, this.version, {
             upgrade(db) {
                 if (!db.objectStoreNames.contains('words')) {
                     const store = db.createObjectStore('words', { keyPath: DATA_FIELD.WORD });
@@ -59,6 +63,7 @@ class WordReviewDB {
 
     // 获取需要复习的单词
     async getWordsToReview() {
+        await this.init();
         const tx = this.db.transaction(this.storeName, 'readonly');
         const index = tx.store.index(DATA_FIELD.NEXT_REVIEW);
         return index.getAll(IDBKeyRange.upperBound(Date.now()));
@@ -103,16 +108,24 @@ class WordReviewDB {
 
     // 获取单个单词数据
     async getWord(word) {
+        await this.init();
         return this.db.get(this.storeName, word);
+    }
+
+    async getWords(words) {
+        await this.init();
+        return await Promise.all(words.map(word => this.getWord(word)));
     }
 
     // 获取所有单词
     async getAllWords() {
+        await this.init();
         return this.db.getAll(this.storeName);
     }
 
     // 删除单词
     async deleteWord(word) {
+        await this.init();
         return this.db.delete(this.storeName, word);
     }
 }

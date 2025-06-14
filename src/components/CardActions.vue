@@ -6,14 +6,6 @@
         <div class="action-btn fail-btn" @click="handleFail" title="再看一次">
             <Icon icon="mdi:close" width="28" height="28" :style="{ color: '#e55' }" />
         </div>
-        <div
-            v-if="showIframeBtn"
-            class="action-btn iframe-btn"
-            @click="handleIframe"
-            title="打开网页"
-        >
-            <Icon icon="mdi:web" width="28" height="28" :style="{ color: '#3578e5' }" />
-        </div>
     </div>
 </template>
 
