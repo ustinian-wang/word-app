@@ -71,6 +71,7 @@ import DictionaryLinks from '@/components/DictionaryLinks.vue';
 import SliderContainer from '@/components/SliderContainer.vue';
 import { sleep } from '@ustinian-wang/kit';
 import { passReview, failReview } from '@/kits/idb';
+import { playNice, playHandsup, playOhno } from '@/kits/audio';
 // 滑动相关常量
 const MOVE_SCALE = 1;
 const MoveDef = {
@@ -229,6 +230,7 @@ export default {
                 this.nextGroupOrFinish();
                 return;
             }
+            playNice();
             this.add_usr_learned_no(this.learningQueue[this.currentIdx]);
             this.learningQueue.splice(this.currentIdx, 1);
             if (this.currentIdx >= this.learningQueue.length) {
@@ -246,6 +248,7 @@ export default {
             } else {
                 this.currentIdx = 0;
             }
+            playOhno();
             this.revealedSet.clear();
             // this.saveProgress();
         },
@@ -259,6 +262,7 @@ export default {
             }
             // 当前组学完，显示询问是否继续的模态框
             // this.saveProgress();
+            playHandsup();
             await this.openGroupFinishModal();
         },
         async openAllFinishModal() {
