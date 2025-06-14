@@ -1,6 +1,7 @@
 <template>
     <!-- 单词学习页面容器 -->
     <div
+        @click="clicked = true"
         class="words-page"
         @touchstart="onTouchStart"
         @touchmove="onTouchMove"
@@ -105,7 +106,8 @@ export default {
             // currentGroup: 0, // 当前组号
             // usr_learned_no_arr: [] // 已学过的单词索引数组
             // groupCount: 1, // 总组数
-            phonetic: ''
+            phonetic: '',
+            clicked: false
         };
     },
     watch: {
@@ -198,17 +200,20 @@ export default {
                     }
                 }
                 this.revealedSet.clear();
+
+                this.afterChange();
+
             }
 
             // 平滑回弹
             this.deltaX = 0;
             await sleep(300);
             this.isAnimating = false;
-            this.loadPhonetics();
         },
-        async loadPhonetics() {
+        async afterChange() {
             let word = this.currWord;
             this.phonetic = await getPhonetic(word?.en || '');
+            this.playCurrentWord();
         },
         // 显示中文释义
         revealZh() {
@@ -333,7 +338,7 @@ export default {
             // this.usr_learned_no_arr = progress.usr_learned_no_arr || [];
             this.initLearningQueue();
 
-            this.loadPhonetics();
+            this.afterChange();
         },
         // 停止学习
         stopLearning() {
@@ -345,7 +350,9 @@ export default {
         },
         // 播放当前单词音频
         async playCurrentWord() {
-            this.$refs.audioButton.play();
+            if (this.clicked){
+                this.$refs.audioButton.play();
+            }
         }
     },
     // 组件挂载
