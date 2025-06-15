@@ -30,20 +30,7 @@
                 <div class="word-en">{{ word.en }}</div>
 
                 <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
-                    <div
-                        class="phonetic-text"
-                        style="
-                            min-width: 100px;
-                            cursor: pointer;
-                            color: #666;
-                            font-family: 'IPA', monospace;
-                        "
-                        @click="playCurrentWord"
-                    >
-                        {{ phonetic }}
-                    </div>
-                    <!-- 发音按钮 -->
-                    <AudioButton ref="audioButton" :word="currWord?.en" title="播放发音" />
+                    <WaPhoneticAudio :word="currWord?.en" :phonetic="phonetic" />
                 </div>
 
                 <!-- 中文释义(点击显示) -->
@@ -71,7 +58,7 @@ import { mapGetters, mapMutations, mapState, mapActions } from 'vuex';
 import WordsHeader from './components/WordsHeader.vue';
 import WordsProgress from './components/WordsProgress.vue';
 import { openFinishModal } from '@/components/FinishModal/finishModal';
-import AudioButton from '@/components/AudioButton.vue';
+import WaPhoneticAudio from '@/components/wa-phonetic-audio.vue';
 import CardActions from '@/components/CardActions.vue';
 import DictionaryLinks from '@/components/DictionaryLinks.vue';
 import SliderContainer from '@/components/SliderContainer.vue';
@@ -94,7 +81,7 @@ export default {
     components: {
         WordsHeader,
         WordsProgress,
-        AudioButton,
+        WaPhoneticAudio,
         CardActions,
         DictionaryLinks,
         SliderContainer
@@ -222,6 +209,7 @@ export default {
             this.isAnimating = false;
         },
         async afterChange() {
+            this.phonetic = '';
             let word = this.currWord;
             this.phonetic = await getPhonetic(word?.en || '');
             this.playCurrentWord();
@@ -367,7 +355,6 @@ export default {
         async playCurrentWord() {
             if (this.clicked) {
                 await sleep(1000);
-                this.$refs.audioButton.play();
             }
         },
         // 处理上一个单词
@@ -687,8 +674,5 @@ export default {
     font-size: 18px;
     color: #888;
     margin-bottom: 8px;
-    background: #f0f4fa;
-    border-radius: 8px;
-    padding: 2px 12px;
 }
 </style>
