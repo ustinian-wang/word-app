@@ -7,7 +7,6 @@
             { key: 'Enter', handler: passWord },
             { key: 'Escape', handler: failWord }
         ]"
-        @click="clicked = true"
         class="words-page"
         @touchstart="onTouchStart"
         @touchmove="onTouchMove"
@@ -106,7 +105,6 @@ export default {
             // usr_learned_no_arr: [] // 已学过的单词索引数组
             // groupCount: 1, // 总组数
             phonetic: '',
-            clicked: false
         };
     },
     watch: {
@@ -212,6 +210,7 @@ export default {
             this.phonetic = '';
             let word = this.currWord;
             this.phonetic = await getPhonetic(word?.en || '');
+            console.log('this.phonetic', this.phonetic);
             this.playCurrentWord();
         },
         // 显示中文释义
@@ -246,8 +245,9 @@ export default {
             } else {
                 this.currentIdx = 0;
             }
-            playOhno();
+            // playOhno();
             this.revealedSet.clear();
+            this.afterChange();
             // this.saveProgress();
         },
         // 下一组或全部学完处理
@@ -353,10 +353,8 @@ export default {
         },
         // 播放当前单词音频
         async playCurrentWord() {
-            if (this.clicked) {
-                await sleep(1000);
-                this.$refs.phonetic.playAudio();
-            }
+            console.log('playCurrentWord', this.$refs.phonetic);    
+            this.$refs.phonetic.playAudio();
         },
         // 处理上一个单词
         handlePrevWord() {

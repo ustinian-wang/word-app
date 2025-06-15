@@ -1,6 +1,19 @@
-export function playAudio(url) {
-    const audio = new Audio(url);
+let clicked = false;
+let clickHandler = () => {
+    clicked = true;
+    document.removeEventListener('mousedown', clickHandler);
+};
+document.addEventListener('mousedown', clickHandler);
+
+export function callAudioPlay(audio) {
+    if (!clicked) {
+        return;
+    }
     audio.play();
+}
+
+export function playAudio(url) {
+    createAudioPlay(url);
 }
 
 export function playHandsup() {
@@ -16,4 +29,28 @@ export function playOhno() {
 }
 export function playRight() {
     playAudio(import.meta.env.BASE_URL + '/audio/right.wav');
+}
+let lastAudio = null;
+export function createAudioPlay(url) {
+
+    if (!clicked) {
+        return Promise.resolve(true);
+    }
+
+    return new Promise((resolve, reject) => {
+        const audio = new Audio(url);
+        if (lastAudio) {
+            lastAudio?.pause();
+            lastAudio?.remove();
+        }
+        lastAudio = audio;
+        audio.onended = () => {
+            resolve(true);
+        };
+        audio.onerror = err => {
+            console.error(err);
+            reject(false);
+        };
+        audio.play();
+    });
 }

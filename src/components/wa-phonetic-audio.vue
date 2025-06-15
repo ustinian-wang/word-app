@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import { callAudioPlay, createAudioPlay } from '@/kits/audio';
 export default {
     name: 'WaPhoneticAudio',
     props: {
@@ -59,21 +60,13 @@ export default {
         }
     },
     methods: {
-        playAudio() {
-            console.log('playAudio', this.disabled, this.isAudioUnavailable);
+        async playAudio() {
+            console.log('playAudio', this.disabled, this.isAudioUnavailable, this.realAudioUrl);
             if (this.disabled || this.isAudioUnavailable) return;
-            const audio = new Audio(this.realAudioUrl);
             this.isPlaying = true;
-            
-            audio.onended = () => {
-                this.isPlaying = false;
-            };
-            
-            audio.onerror = () => {
-                this.isPlaying = false;
-            };
-            
-            audio.play();
+            await createAudioPlay(this.realAudioUrl);
+            this.isPlaying = false;
+            console.log('playAudio end', this.disabled, this.isAudioUnavailable);
         }
     }
 };
