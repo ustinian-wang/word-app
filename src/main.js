@@ -5,6 +5,7 @@ import store from './store';
 import { Icon } from '@iconify/vue2';
 import { registerSW } from 'virtual:pwa-register';
 import VConsole from 'vconsole';
+// import './kits/monitor.js';
 
 // 导入Less样式
 import './styles/main.less';
@@ -30,6 +31,7 @@ let _debug = urlObj.searchParams.get('_debug') === 'true';
 if (_debug) {
     new VConsole();
 }
+
 
 new Vue({
     router,

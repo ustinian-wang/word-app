@@ -89,7 +89,7 @@ export default defineConfig({
         host: true,
         port: VITE_PORT,
         open: true,
-        allowedHosts: ['371ct917zs52.vicp.fun', 'photosvr.w1.luyouxia.net'],
+        allowedHosts: ['371ct917zs52.vicp.fun', 'photosvr.w1.luyouxia.net', 'qyapi.weixin.qq.com'],
         proxy: {
             '/api': {
                 target: 'http://localhost:8080',
