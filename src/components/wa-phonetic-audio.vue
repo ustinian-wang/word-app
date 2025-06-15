@@ -60,13 +60,14 @@ export default {
         }
     },
     methods: {
-        async playAudio() {
+        playAudio() {
             console.log('playAudio', this.disabled, this.isAudioUnavailable, this.realAudioUrl);
             if (this.disabled || this.isAudioUnavailable) return;
             this.isPlaying = true;
-            await createAudioPlay(this.realAudioUrl);
-            this.isPlaying = false;
-            console.log('playAudio end', this.disabled, this.isAudioUnavailable);
+            createAudioPlay(this.realAudioUrl, () => {
+                this.isPlaying = false;
+                console.log('playAudio end', this.disabled, this.isAudioUnavailable);
+            });
         }
     }
 };
@@ -168,4 +169,4 @@ export default {
         min-height: 32px;
     }
 }
-</style> 
+</style>

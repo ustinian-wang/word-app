@@ -229,7 +229,7 @@ export default {
         async afterChange() {
             let word = this.currWord;
             this.phonetic = await getPhonetic(word?.en || '');
-            this.playCurrentWord();
+            this.playCurrentWord(); // 如果要优化手机无法自动播放，那么只能词典元数据添加音标了。
         },
         // 显示中文释义
         revealZh() {

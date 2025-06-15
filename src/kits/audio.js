@@ -31,26 +31,23 @@ export function playRight() {
     playAudio(import.meta.env.BASE_URL + '/audio/right.wav');
 }
 let lastAudio = null;
-export function createAudioPlay(url) {
-
+export function createAudioPlay(url, resolve) {
     if (!clicked) {
-        return Promise.resolve(true);
+        resolve(true);
+        return;
     }
-
-    return new Promise((resolve, reject) => {
-        const audio = new Audio(url);
-        if (lastAudio) {
-            lastAudio?.pause();
-            lastAudio?.remove();
-        }
-        lastAudio = audio;
-        audio.onended = () => {
-            resolve(true);
-        };
-        audio.onerror = err => {
-            console.error(err);
-            reject(false);
-        };
-        audio.play();
-    });
+    const audio = new Audio(url);
+    if (lastAudio) {
+        lastAudio?.pause();
+        lastAudio?.remove();
+    }
+    lastAudio = audio;
+    audio.onended = () => {
+        resolve(true);
+    };
+    audio.onerror = err => {
+        console.error(err);
+        resolve(false);
+    };
+    audio.play();
 }
