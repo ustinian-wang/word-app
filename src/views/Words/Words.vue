@@ -30,7 +30,7 @@
                 <div class="word-en">{{ word.en }}</div>
 
                 <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
-                    <WaPhoneticAudio :word="currWord?.en" :phonetic="phonetic" />
+                    <WaPhoneticAudio :word="currWord?.en" :phonetic="phonetic" ref="phonetic"/>
                 </div>
 
                 <!-- 中文释义(点击显示) -->
@@ -355,6 +355,7 @@ export default {
         async playCurrentWord() {
             if (this.clicked) {
                 await sleep(1000);
+                this.$refs.phonetic.playAudio();
             }
         },
         // 处理上一个单词
@@ -390,6 +391,7 @@ export default {
         if (this.learningQueue.length === 0) {
             this.nextGroupOrFinish();
         }
+        this.playCurrentWord();
         // this.cacheHandler = this.cacheWrapper(this.loadProgress);
         // window.addEventListener('storage', this.cacheHandler);
     },

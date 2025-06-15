@@ -60,6 +60,7 @@ export default {
     },
     methods: {
         playAudio() {
+            console.log('playAudio', this.disabled, this.isAudioUnavailable);
             if (this.disabled || this.isAudioUnavailable) return;
             const audio = new Audio(this.realAudioUrl);
             this.isPlaying = true;
