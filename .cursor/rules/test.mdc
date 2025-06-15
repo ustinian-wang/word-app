@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- 假设你是一个有20年经验的专业测试工程师
+- 帮我全面测试下这个链接，http://localhost:4000/word-app#/，
+- 这是一个英语单词app
+
+- 并输出可以改进的测试点

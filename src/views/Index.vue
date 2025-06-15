@@ -5,6 +5,24 @@
             <div class="daily-word-block">
                 <div class="daily-label">每日精选单词</div>
                 <div class="daily-word">{{ dailyWord.en }}</div>
+                <div style="display: flex; gap: 4px; align-items: center; justify-content: center">
+                    <template v-if="dailyWord.ukspeech">
+                        <wa-phonetic-audio
+                            :phonetic="dailyWord.ukphone"
+                            :audioUrl="dailyWord.ukspeech"
+                        />
+                    </template>
+                    <template v-if="dailyWord.usspeech">
+                        <wa-phonetic-audio
+                            :phonetic="dailyWord.usphone"
+                            :audioUrl="dailyWord.usspeech"
+                        />
+                    </template>
+                    <!-- <template v-else>
+                        <wa-phonetic-audio :word="dailyWord.en" />
+                    </template> -->
+                </div>
+
                 <div class="daily-zh">{{ dailyWord.zh }}</div>
             </div>
             <div class="daily-sentence-block">
@@ -33,9 +51,13 @@ import { mapState, mapMutations } from 'vuex';
 import { STUDY_STATUS_DEF } from '@/store/index.js';
 import { getRandomWordInfoApi } from '@/kits/words';
 import { gotoWords, gotoReviewWords } from '@/router';
+import WaPhoneticAudio from '@/components/wa-phonetic-audio.vue';
 
 export default {
     name: 'Index',
+    components: {
+        WaPhoneticAudio
+    },
     data() {
         return {
             dailyWord: null,
@@ -198,6 +220,10 @@ export default {
                 .join('\n'),
             sentence_en: data?.sentences?.[0]?.s_content,
             sentence_zh: data?.sentences?.[0]?.s_cn,
+            ukphone: `/${data?.ukphone}/`,
+            ukspeech: data?.ukspeech,
+            // usphone: `/${data?.usphone}/`,
+            // usspeech: data?.usspeech,
             bg: `https://image.pollinations.ai/prompt/${data.word}`
         };
         this.dailyWord = dailyWord;
@@ -248,19 +274,24 @@ export default {
     width: 100%;
     text-align: center;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
 }
 .daily-label {
     color: #3578e5;
     font-size: 15px;
     font-weight: 600;
-    margin-bottom: 8px;
+    /* margin-bottom: 8px; */
     letter-spacing: 1px;
 }
 .daily-word {
     font-size: 32px;
     font-weight: bold;
     color: #222;
-    margin-bottom: 8px;
+    /* margin-bottom: 8px; */
 }
 .daily-zh {
     font-size: 18px;
@@ -315,7 +346,9 @@ export default {
     min-width: 120px;
     box-shadow: 0 2px 12px rgba(79, 140, 255, 0.12);
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    transition:
+        background 0.2s,
+        transform 0.1s;
     letter-spacing: 2px;
     outline: none;
     position: relative;
