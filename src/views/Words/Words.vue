@@ -29,7 +29,7 @@
                 <div class="word-en">{{ word.en }}</div>
 
                 <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
-                    <WaPhoneticAudio :word="currWord?.en" :phonetic="phonetic" ref="phonetic"/>
+                    <WaPhoneticAudio :word="currWord?.en" :phonetic="phonetic" ref="phonetic" />
                 </div>
 
                 <!-- 中文释义(点击显示) -->
@@ -104,7 +104,7 @@ export default {
             // currentGroup: 0, // 当前组号
             // usr_learned_no_arr: [] // 已学过的单词索引数组
             // groupCount: 1, // 总组数
-            phonetic: '',
+            phonetic: ''
         };
     },
     watch: {
@@ -220,6 +220,11 @@ export default {
         },
         // 已掌握单词
         passWord() {
+            if (!this.isZhRevealed) {
+                this.revealZh();
+                this.playCurrentWord();
+                return;
+            }
             passReview(this.curr_learning_word);
             if (this.learningQueue.length <= 1) {
                 this.add_usr_learned_no(this.learningQueue[this.currentIdx]);
@@ -243,6 +248,12 @@ export default {
         },
         // 再看一次
         failWord() {
+            if (!this.isZhRevealed) {
+                this.revealZh();
+                this.playCurrentWord();
+                return;
+            }
+
             failReview(this.curr_learning_word);
             // 保留当前单词，切换到下一个
             if (this.currentIdx < this.learningQueue.length - 1) {
@@ -358,7 +369,7 @@ export default {
         },
         // 播放当前单词音频
         async playCurrentWord() {
-            console.log('playCurrentWord', this.$refs.phonetic);    
+            console.log('playCurrentWord', this.$refs.phonetic);
             this.$refs.phonetic.playAudio();
         },
         // 处理上一个单词
