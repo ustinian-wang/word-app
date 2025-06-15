@@ -31,7 +31,7 @@ export function playRight() {
     playAudio(import.meta.env.BASE_URL + '/audio/right.wav');
 }
 let lastAudio = null;
-export function createAudioPlay(url, resolve) {
+export function createAudioPlay(url, resolve=()=>{}) {
     if (!clicked) {
         resolve(true);
         return;

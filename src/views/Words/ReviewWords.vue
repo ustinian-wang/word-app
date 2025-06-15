@@ -245,13 +245,18 @@ export default {
                 this.nextGroupOrFinish();
                 return;
             }
-            playNice();
+            // playNice();
             // this.add_usr_learned_no(this.learningQueue[this.currentIdx]);
             this.learningQueue.splice(this.currentIdx, 1); //remove word
+            if (this.learningQueue.length === 0) {
+                this.nextGroupOrFinish();
+                return;
+            }
             if (this.currentIdx >= this.learningQueue.length) {
                 this.currentIdx = this.learningQueue.length - 1;
             }
             this.revealedSet.clear();
+            this.afterChange();
             // this.saveProgress();
         },
         // 再看一次
