@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- git status看下有没有文件没有添加到暂存区
+- 帮我git add . 所有内容进入暂存区
+- 帮我分析下git暂存区的内容
+
+- 根据修改的内容帮我提交git

@@ -44,7 +44,7 @@ export default {
             return [
                 { label: '图片识别', icon: '📷', route: '/recognize?auto=true' },
                 // { label: '背单词', icon: '📖', route: '/words' },
-                { label: '词库', icon: '📚', route: '/wordbooks' },
+                // { label: '词库', icon: '📚', route: '/wordbooks' },
                 { label: '学习记录', icon: '📊', route: '/records' },
                 // { label: '清理缓存', icon: '🧹', action: 'clearCache' },
                 { label: '全屏', icon: this.fullscreenIcon, action: 'toggleFullscreen' },

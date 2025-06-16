@@ -1,31 +1,34 @@
 <template>
     <div class="record-view">
-      <div class="date-range-picker">
-        <select v-model="selectedRange" @change="handleRangeChange">
-          <option value="7">最近7天</option>
-          <option value="14">最近14天</option>
-          <option value="30">最近30天</option>
-          <option value="90">最近90天</option>
-          <option value="all">全部</option>
-        </select>
-      </div>
-      <div v-if="loading" class="loading">
-        <div class="loading-spinner"></div>
-        <span>加载中...</span>
-      </div>
-      <div v-else-if="!hasData" class="empty-state">
-        <div class="empty-icon">📊</div>
-        <p>暂无学习记录</p>
-        <p class="empty-tip">开始学习单词后，这里会显示您的学习进度</p>
-        <button class="generate-btn" @click="generateTestData">生成测试数据</button>
-      </div>
-      <div v-else class="chart-container" ref="chartContainer"></div>
+        <div class="date-range-picker">
+            <select v-model="selectedRange" @change="handleRangeChange">
+                <option value="7">最近7天</option>
+                <option value="14">最近14天</option>
+                <option value="30">最近30天</option>
+                <option value="90">最近90天</option>
+                <option value="all">全部</option>
+            </select>
+        </div>
+        <div v-if="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <span>加载中...</span>
+        </div>
+        <div v-else-if="!hasData" class="empty-state">
+            <div class="empty-icon">📊</div>
+            <p>暂无学习记录</p>
+            <p class="empty-tip">开始学习单词后，这里会显示您的学习进度</p>
+            <button v-if="isDebugMode" class="generate-btn" @click="generateTestData">
+                生成测试数据
+            </button>
+        </div>
+        <div v-else class="chart-container" ref="chartContainer"></div>
     </div>
 </template>
 
 <script>
 import * as echarts from 'echarts';
 import { wordRecordService, WORD_RECORD_STATUS, WORD_RECORD_TYPE } from '../kits/idb/idbWordRecord';
+import { mapGetters } from 'vuex';
 
 export default {
     name: 'RecordView',
@@ -41,6 +44,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters('setting', ['isDebugMode']),
         hasData() {
             return this.filteredRecords.length > 0;
         }
@@ -58,7 +62,7 @@ export default {
         getDateRange() {
             const today = new Date();
             today.setHours(23, 59, 59, 999);
-            
+
             if (this.selectedRange === 'all') {
                 return { start: new Date(0), end: today };
             }
@@ -66,7 +70,7 @@ export default {
             const start = new Date();
             start.setDate(today.getDate() - parseInt(this.selectedRange));
             start.setHours(0, 0, 0, 0);
-            
+
             return { start, end: today };
         },
 
@@ -143,7 +147,7 @@ export default {
             if (!this.$refs.chartContainer) return;
 
             this.chart = echarts.init(this.$refs.chartContainer);
-            
+
             const option = {
                 tooltip: {
                     trigger: 'axis',
@@ -324,7 +328,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .record-view {
     padding: 76px 20px;
     height: 100vh;
@@ -335,9 +339,12 @@ export default {
 
 .date-range-picker {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    // bottom: 20px;
+    // right: 20px;
     z-index: 1;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .date-range-picker select {

@@ -16,7 +16,7 @@ function getLocalIp() {
     return 'localhost';
 }
 const LOCAL_IP = getLocalIp();
-const VITE_PORT = 8080;
+const VITE_PORT = 4000;
 const API_PORT = 3001;
 
 export default defineConfig({
@@ -95,7 +95,7 @@ export default defineConfig({
         allowedHosts: ['371ct917zs52.vicp.fun', 'photosvr.w1.luyouxia.net', 'qyapi.weixin.qq.com'],
         proxy: {
             '/api': {
-                target: 'http://localhost:8080',
+                target: 'http://localhost:4000',
                 changeOrigin: true,
                 rewrite: path => path.replace(/^\/api/, '')
             }
