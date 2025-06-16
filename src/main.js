@@ -4,7 +4,6 @@ import router from './router';
 import store from './store';
 import { Icon } from '@iconify/vue2';
 import { registerSW } from 'virtual:pwa-register';
-import VConsole from 'vconsole';
 // import './kits/monitor.js';
 
 // 导入Less样式
@@ -28,10 +27,7 @@ const updateSW = registerSW({
 // eslint-disable-next-line no-undef
 let urlObj = new URL(location.href);
 let _debug = urlObj.searchParams.get('_debug') === 'true';
-if (_debug) {
-    new VConsole();
-}
-
+store.getters['setting/setDebug'](_debug);
 
 new Vue({
     router,

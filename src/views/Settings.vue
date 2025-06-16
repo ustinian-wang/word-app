@@ -26,6 +26,10 @@
                 <wa-switch v-model="enableShortcuts" />
             </div> -->
             <div class="setting-item">
+                <span class="setting-label">调试模式</span>
+                <wa-switch v-model="currDebug" />
+            </div>
+            <div class="setting-item">
                 <span class="setting-label">主单词字号</span>
                 <div class="setting-control">
                     <wa-input-number v-model="currGroupSize" :min="10" :max="40" :step="1" />
@@ -47,11 +51,11 @@
 <script>
 import { clearSysCache } from '@/kits/sysCache';
 import WaInputNumber from '@/components/wa-input-number.vue';
-// import WaSwitch from '@/components/wa-switch.vue';
+import WaSwitch from '@/components/wa-switch.vue';
 import { mapGetters, mapState } from 'vuex';
 export default {
     name: 'Settings',
-    components: { WaInputNumber },
+    components: { WaInputNumber, WaSwitch },
     // components: { WaSwitch },
     data() {
         return {
@@ -64,7 +68,7 @@ export default {
     },
     computed: {
         ...mapState('setting', ['groupSize']),
-        ...mapGetters('setting', ['setGroupSize']),
+        ...mapGetters('setting', ['setGroupSize', 'setDebug']),
         currGroupSize: {
             get() {
                 return this.groupSize;
@@ -72,6 +76,14 @@ export default {
             set(value) {
                 console.log('[value]', value);
                 this.setGroupSize(value);
+            }
+        },
+        currDebug: {
+            get() {
+                return this.debug;
+            },
+            set(value) {
+                this.setDebug(value);
             }
         }
     },
