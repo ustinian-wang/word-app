@@ -1,15 +1,26 @@
 import { openDB } from 'idb';
-
+/**
+ * @description 单词记录状态
+ */
 export const WORD_RECORD_STATUS = {
-    FAIL: 0,
-    PASS: 1
+    FAIL: 0, // 打岔
+    PASS: 1 // 打勾
+};
+
+/**
+ * @description 单词记录类型
+ */
+export const WORD_RECORD_TYPE = {
+    LEARNING: 0, // 学习
+    REVIEW: 1 // 复习
 };
 
 export const WORD_RECORD_FIELD = {
     WORD: 'word',
     TIMESTAMP: 'timestamp',
     STATUS: 'status',
-    UID: 'uid'
+    UID: 'uid',
+    TYPE: 'type'
 };
 
 class WordRecordService {
