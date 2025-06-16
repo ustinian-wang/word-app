@@ -1,5 +1,6 @@
 import { openDB } from 'idb';
 import { updateBinarySM2, getDefaultSM2 } from './sm2';
+import { addFailWordRecord, addPassWordRecord } from './idb/idbWordRecord';
 
 // SM-2 算法参数
 const SM2_PARAMS = {
@@ -136,9 +137,11 @@ export const wordReviewDB = new WordReviewDB();
 wordReviewDB.init();
 
 export async function passReview(word) {
+    addPassWordRecord(word);
     return await wordReviewDB.processReview(word, 1);
 }
 
 export async function failReview(word) {
+    addFailWordRecord(word);
     return await wordReviewDB.processReview(word, 0);
 }
