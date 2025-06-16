@@ -50,12 +50,13 @@ class WordRecordService {
     }
 
     // 添加新记录
-    addNewRecord(word, status, uid = 0) {
+    addNewRecord(word, status, uid = 0, type = WORD_RECORD_TYPE.LEARNING) {
         const record = {
             [WORD_RECORD_FIELD.WORD]: word,
             [WORD_RECORD_FIELD.TIMESTAMP]: Date.now(),
             [WORD_RECORD_FIELD.STATUS]: status,
-            [WORD_RECORD_FIELD.UID]: uid
+            [WORD_RECORD_FIELD.UID]: uid,
+            [WORD_RECORD_FIELD.TYPE]: type
         };
         return this.addRecord(record);
     }
@@ -110,60 +111,82 @@ class WordRecordService {
         const db = await this.initDB();
         return db.put(this.storeName, record);
     }
+
+    // 生成测试数据
+    async generateTestData() {
+        // 清空现有数据
+        await this.clearAllRecords();
+
+        // 测试单词列表
+        const testWords = [
+            'apple', 'banana', 'orange', 'grape', 'watermelon',
+            'computer', 'phone', 'laptop', 'tablet', 'keyboard',
+            'book', 'pen', 'pencil', 'notebook', 'dictionary',
+            'student', 'teacher', 'school', 'university', 'classroom',
+            'house', 'building', 'apartment', 'room', 'kitchen'
+        ];
+
+        // 生成过去30天的数据
+        const today = new Date();
+        const records = [];
+
+        for (let i = 0; i < 30; i++) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+
+            // 每天生成5-15个单词的学习记录
+            const wordCount = Math.floor(Math.random() * 11) + 5;
+            const selectedWords = testWords.sort(() => Math.random() - 0.5).slice(0, wordCount);
+
+            for (const word of selectedWords) {
+                // 学习记录
+                const learningStatus = Math.random() > 0.3 ? WORD_RECORD_STATUS.PASS : WORD_RECORD_STATUS.FAIL;
+                const learningTimestamp = new Date(date);
+                learningTimestamp.setHours(Math.floor(Math.random() * 12) + 8); // 8:00 - 20:00
+                records.push({
+                    [WORD_RECORD_FIELD.WORD]: word,
+                    [WORD_RECORD_FIELD.TIMESTAMP]: learningTimestamp.getTime(),
+                    [WORD_RECORD_FIELD.STATUS]: learningStatus,
+                    [WORD_RECORD_FIELD.UID]: 0,
+                    [WORD_RECORD_FIELD.TYPE]: WORD_RECORD_TYPE.LEARNING
+                });
+
+                // 如果学习通过，添加复习记录
+                if (learningStatus === WORD_RECORD_STATUS.PASS) {
+                    const reviewTimestamp = new Date(learningTimestamp);
+                    reviewTimestamp.setHours(reviewTimestamp.getHours() + Math.floor(Math.random() * 4) + 1); // 1-4小时后
+                    const reviewStatus = Math.random() > 0.2 ? WORD_RECORD_STATUS.PASS : WORD_RECORD_STATUS.FAIL;
+                    records.push({
+                        [WORD_RECORD_FIELD.WORD]: word,
+                        [WORD_RECORD_FIELD.TIMESTAMP]: reviewTimestamp.getTime(),
+                        [WORD_RECORD_FIELD.STATUS]: reviewStatus,
+                        [WORD_RECORD_FIELD.UID]: 0,
+                        [WORD_RECORD_FIELD.TYPE]: WORD_RECORD_TYPE.REVIEW
+                    });
+                }
+            }
+        }
+
+        // 按时间排序
+        records.sort((a, b) => a.timestamp - b.timestamp);
+
+        // 批量添加记录
+        const db = await this.initDB();
+        const tx = db.transaction(this.storeName, 'readwrite');
+        const store = tx.objectStore(this.storeName);
+
+        for (const record of records) {
+            await store.add(record);
+        }
+
+        await tx.done;
+        console.log('测试数据生成完成，共生成', records.length, '条记录');
+    }
 }
 
 // 创建单例实例
 const wordRecordService = new WordRecordService();
 
-// // 使用示例
-// async function addWordRecord(word, status, uid) {
-//     try {
-//         await wordRecordService.addRecord({
-//             word,
-//             timestamp: Date.now(),
-//             status,
-//             uid
-//         });
-//         console.log('记录添加成功');
-//     } catch (error) {
-//         console.error('添加记录失败:', error);
-//     }
-// }
-
-// 导出服务实例
-export { wordRecordService };
-
-// // 使用示例
-// const wordRecordService = new WordRecordService();
-
-// // 添加记录
-// async function addWordRecord(word, status, uid) {
-//     try {
-//         await wordRecordService.addRecord({
-//             word,
-//             timestamp: Date.now(),
-//             status,
-//             uid
-//         });
-//         console.log('记录添加成功');
-//     } catch (error) {
-//         console.error('添加记录失败:', error);
-//     }
-// }
-
-// // 获取用户记录
-// async function getUserRecords(uid) {
-//     try {
-//         const records = await wordRecordService.getRecordsByUid(uid);
-//         console.log('用户记录:', records);
-//         return records;
-//     } catch (error) {
-//         console.error('获取记录失败:', error);
-//         return [];
-//     }
-// }
-
-// // 导出服务实例
 /**
  * @description 添加打勾记录
  * @param {string} word 单词
@@ -183,3 +206,6 @@ export function addFailWordRecord(word) {
     console.log('addFailWordRecord', word);
     return wordRecordService.addNewRecord(word, WORD_RECORD_STATUS.FAIL);
 }
+
+// 导出服务实例
+export { wordRecordService };

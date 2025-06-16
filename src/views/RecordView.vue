@@ -8,6 +8,7 @@
       <div class="empty-icon">📊</div>
       <p>暂无学习记录</p>
       <p class="empty-tip">开始学习单词后，这里会显示您的学习进度</p>
+      <button class="generate-btn" @click="generateTestData">生成测试数据</button>
     </div>
     <div v-else class="chart-container" ref="chartContainer"></div>
   </div>
@@ -236,6 +237,19 @@ export default {
       }
     };
 
+    // 生成测试数据
+    const generateTestData = async () => {
+      try {
+        loading.value = true;
+        await wordRecordService.generateTestData();
+        await loadData();
+      } catch (error) {
+        console.error('生成测试数据失败:', error);
+      } finally {
+        loading.value = false;
+      }
+    };
+
     // 处理窗口大小变化
     const handleResize = () => {
       chart && chart.resize();
@@ -263,7 +277,8 @@ export default {
     return {
       chartContainer,
       loading,
-      hasData
+      hasData,
+      generateTestData
     };
   }
 };
@@ -327,5 +342,26 @@ export default {
   font-size: 14px;
   color: #999;
   margin-top: 8px;
+  margin-bottom: 24px;
+}
+
+.generate-btn {
+  background: #3578e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.generate-btn:hover {
+  background: #2d6ad9;
+}
+
+.generate-btn:active {
+  background: #2256a5;
 }
 </style> 
