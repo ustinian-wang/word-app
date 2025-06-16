@@ -82,6 +82,9 @@ export default defineConfig({
                         type: 'image/png'
                     }
                 ]
+            },
+            injectManifest: {
+                maximumFileSizeToCacheInBytes: 8 * 1024 * 1024 // 设置为 8MB
             }
         })
     ],
@@ -110,7 +113,15 @@ export default defineConfig({
     },
     base: '/word-app',
     build: {
-        outDir: 'dist'
+        outDir: 'dist',
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['vue', 'vue-router'],
+                    utils: ['lodash', 'echarts']
+                }
+            }
+        }
     },
     publicDir: 'public'
 });
