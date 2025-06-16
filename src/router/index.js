@@ -7,6 +7,7 @@ import WordBooks from '../views/WordBooks/WordBooks.vue';
 import Index from '../views/Index.vue';
 import Redirect from '@/views/Redirect.vue';
 import Settings from '@/views/Settings.vue';
+import RecordView from '@/views/RecordView.vue';
 
 Vue.use(Router);
 
@@ -17,6 +18,7 @@ const router = new Router({
         { path: '/words', component: Words, name: '背单词' },
         { path: '/reviewWords', component: ReviewWords, name: '复习单词' },
         { path: '/wordbooks', component: WordBooks, name: '词库' },
+        { path: '/records', component: RecordView, name: '学习记录' },
         { path: '/redirect/:path(.*)', component: Redirect },
         { path: '/settings', component: Settings, name: '设置' }
     ]
@@ -51,4 +53,8 @@ export function gotoRedirect(path) {
 
 export function gotoSettings() {
     router.push('/settings');
+}
+
+export function gotoRecords() {
+    router.push('/records');
 }
