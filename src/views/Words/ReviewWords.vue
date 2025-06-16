@@ -54,6 +54,9 @@
 
         <!-- 底部操作按钮 -->
         <CardActions @pass="passWord" @fail="failWord" />
+
+        <!-- SM2测试面板 -->
+        <Sm2TestPanel v-if="isDebugMode" />
     </div>
 </template>
 
@@ -74,6 +77,7 @@ import { passReview, failReview, wordReviewDB } from '@/kits/idb';
 import { playNice, playHandsup, playOhno, playRight } from '@/kits/audio';
 import { set_session_cache, get_session_cache } from '@/kits/sessionCache';
 import { gotoIndex, gotoWordBooks } from '@/router';
+import Sm2TestPanel from './components/Sm2TestPanel.vue';
 // 滑动相关常量
 const MOVE_SCALE = 1;
 const MoveDef = {
@@ -102,7 +106,8 @@ export default {
         AudioButton,
         CardActions,
         DictionaryLinks,
-        SliderContainer
+        SliderContainer,
+        Sm2TestPanel
     },
     data() {
         return {
@@ -170,7 +175,7 @@ export default {
         isZhRevealed() {
             return this.revealedSet.has(this.learningQueue[this.currentIdx]);
         },
-        ...mapGetters(['cacheWrapper'])
+        ...mapGetters(['cacheWrapper', 'isDebugMode'])
     },
     methods: {
         ...mapMutations('book', ['setCurrentBookIdx']),
@@ -345,14 +350,14 @@ export default {
         },
         // 初始化学习队列
         async initLearningQueue() {
-            let word_no_arr = this.getRvGroupWords();
-            let words = word_no_arr.map(no => {
-                return this.words[no].en;
-            });
-            let words_data = (await wordReviewDB.getWords(words))
-                .filter(w => w)
-                .sort((a, b) => a.next_review - b.next_review)
-                .map(item => item.idx);
+            // let word_no_arr = this.getRvGroupWords();
+            // let words = word_no_arr.map(no => {
+            //     return this.words[no].en;
+            // });
+            let reviewWords = await wordReviewDB.getTodayWords();
+            let words_data = reviewWords
+                .map(item => this.words.findIndex(w => w.en === item.word))
+                .filter(no => no !== -1);
 
             this.learningQueue = words_data;
             console.log('[this.learningQueue initLearningQueue]', this.learningQueue);

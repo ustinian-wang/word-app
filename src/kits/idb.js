@@ -62,12 +62,27 @@ class WordReviewDB {
         return this.db.put(this.storeName, wordData);
     }
 
-    // 获取需要复习的单词
-    async getWordsToReview() {
+    async getTodayWords() {
+        return this.getWordsToReview(new Date());
+    }
+
+    // 获取指定日期需要复习的单词（next_review在该天0点~23:59:59之间）
+    async getWordsToReview(date = null) {
         await this.init();
         const tx = this.db.transaction(this.storeName, 'readonly');
         const index = tx.store.index(DATA_FIELD.NEXT_REVIEW);
-        return index.getAll(IDBKeyRange.upperBound(Date.now()));
+        if (!date) {
+            // 没有传参，返回空数组
+            return [];
+        } else {
+            // 计算当天0点和23:59:59的时间戳
+            const d = date;
+            d.setHours(0, 0, 0, 0);
+            const start = d.getTime();
+            d.setHours(23, 59, 59, 999);
+            const end = d.getTime();
+            return index.getAll(window.IDBKeyRange.bound(start, end));
+        }
     }
 
     // 处理复习结果

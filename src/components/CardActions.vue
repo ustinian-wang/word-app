@@ -40,11 +40,12 @@ export default {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 15vh;
+    bottom: calc(15vh + 56px);
     display: flex;
     justify-content: center;
     gap: 38px;
     z-index: 30;
+    height: 0;
 }
 
 .action-btn {

@@ -7,3 +7,4 @@ alwaysApply: true
 - 这个项目结构查看 [package.json](mdc:package.json)
 
 - 构建工具用的是yarn
+- 使用vue2实现

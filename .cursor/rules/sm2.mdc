@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+- [ReviewWords.vue](mdc:src/views/Words/ReviewWords.vue) 使用了sm2算法进行单词的推荐
+- sm2对应算法实现在 [sm2.js](mdc:src/kits/sm2.js)
+- db逻辑在 [idb.js](mdc:src/kits/idb.js)
+- 请在对应页面提供一个按钮，让我生成模拟数据进行测试。
+
+- 提供另外一个按钮，点击后查询db里面所有数据，并在页面弹窗展示，格式用表格的方式，并做好移动端的兼容展示
