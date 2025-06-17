@@ -1,0 +1,6 @@
+{
+    "USER": "demo",
+    "HOST": "1.2.3.4",
+    "TARGET_DIR": "/home/demo/wordApp",
+    "PORT": 22
+}
