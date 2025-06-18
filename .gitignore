@@ -42,3 +42,5 @@ coverage/
 build/
 
 /etc/
+
+/scripts/.deployrc.json
