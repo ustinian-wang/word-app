@@ -65,8 +65,24 @@ async function deployWithSSH(config) {
                 }
             }
         });
+        // 上传Dockerfile
+        await ssh.putFile('./Dockerfile', `${config.TARGET_DIR}/Dockerfile`);
 
         console.log(chalk.green('文件上传完成！'));
+
+        // 远程构建并启动docker
+        console.log(chalk.blue('正在远程构建并启动 Docker 容器...'));
+        const { stdout, stderr } = await ssh.execCommand(`
+            cd ${config.TARGET_DIR} && \
+            docker stop word-app || true && \
+            docker rm word-app || true && \
+            docker build -t word-app . && \
+            docker run -d -p 80:80 --name word-app word-app
+        `);
+        if (stdout) console.log(stdout);
+        if (stderr) console.error(stderr);
+        console.log('重启结束');
+
         ssh.dispose();
         return true;
     } catch (error) {
