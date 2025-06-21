@@ -63,6 +63,8 @@ const browserGlobals = {
     client: 'readonly',
     __LOCAL_IP__: 'readonly',
     __API_PORT__: 'readonly',
+    VITE_API: 'readonly',
+    VITE_PROXY_API: 'readonly'
 };
 
 // Node.js环境全局变量
