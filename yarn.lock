@@ -1461,14 +1461,14 @@
   resolved "https://registry.npmmirror.com/@types/trusted-types/-/trusted-types-2.0.7.tgz"
   integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
 
-"@ustinian-wang/js-monitor@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.npmjs.org/@ustinian-wang/js-monitor/-/js-monitor-0.0.7.tgz"
-  integrity sha512-rkNswmuScOgXlzlhUukdXRAQ+POa02bjolyqaADfvCsi4ntrrcOBHwPUYgp54cm7IYu+iSwcmpWTyhzuAVnkrw==
+"@ustinian-wang/js-monitor@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@ustinian-wang/js-monitor/-/js-monitor-0.0.10.tgz#91be938af8229ac1d786ceae39dea427cf3ff8dd"
+  integrity sha512-/TUlWs4DcDnB1TPHe5/blbRx/jt/5QYzHYFLqjTvTpGWjvFHBL1VN9x+TzpqLHZgV9DBq/+ng1aoZFvclkT8lg==
 
 "@ustinian-wang/kit@^1.0.9":
   version "1.0.9"
-  resolved "https://registry.npmjs.org/@ustinian-wang/kit/-/kit-1.0.9.tgz"
+  resolved "https://registry.yarnpkg.com/@ustinian-wang/kit/-/kit-1.0.9.tgz#51e26162efebb8c883df4ce3564da45c951eb634"
   integrity sha512-B1icA/WCtFMgFxg5TuDrXKXLek5g0Ba/WJJsRXiRA1L5cRm7o3CWLvEsAgHmrzoxmkklCP4SZzVR5o9f068rYA==
   dependencies:
     axios "^1.7.2"

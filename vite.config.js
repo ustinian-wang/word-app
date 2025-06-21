@@ -19,9 +19,11 @@ import { VitePWA } from 'vite-plugin-pwa';
 // const VITE_PORT = 4000;
 
 export default ({ mode }) => {
+    // console.log(mode, process.cwd(), '');
     const env = loadEnv(mode, process.cwd(), '');
     const VITE_API = env.VITE_API;
     const VITE_PROXY_API = env.VITE_PROXY_API;
+    // console.log(env);
 
     return defineConfig({
         plugins: [

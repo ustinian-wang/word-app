@@ -4,11 +4,12 @@ import router from './router';
 import store from './store';
 import { Icon } from '@iconify/vue2';
 import { registerSW } from 'virtual:pwa-register';
-// import './kits/monitor.js';
+
+import './kits/monitor.js'; // 加载监控
+window.Vue = Vue;
 
 // 导入Less样式
 import './styles/main.less';
-
 Vue.component('Icon', Icon);
 
 // 注册 service worker
