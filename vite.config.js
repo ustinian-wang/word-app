@@ -18,7 +18,7 @@ function getLocalIp() {
 }
 const LOCAL_IP = getLocalIp();
 const VITE_PORT = 4000;
-const API_PORT = 3001;
+const API_PORT = 3000;
 
 const argv = minimist(process.argv.slice(2));
 const base = argv.base || '/word-app';

@@ -4,7 +4,7 @@ let request = cloneRequest();
 const API_BASE =
     typeof __LOCAL_IP__ !== 'undefined'
         ? `http://${__LOCAL_IP__}:${typeof __API_PORT__ !== 'undefined' ? __API_PORT__ : 3001}/`
-        : 'http://localhost:3001/';
+        : 'http://localhost:3000/';
 request.defaults.baseURL = API_BASE;
 request.defaults.timeout = 60000;
 
