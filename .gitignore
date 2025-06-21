@@ -44,3 +44,9 @@ build/
 /etc/
 
 /scripts/.deployrc.json
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
