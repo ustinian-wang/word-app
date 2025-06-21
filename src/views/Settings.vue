@@ -38,13 +38,35 @@
                 <!-- <span class="setting-unit">px</span> -->
             </div>
             <div class="setting-item" @click="clearSysCache">
-                <span class="setting-label" style="color: #3578e5;">清理缓存</span>
+                <span class="setting-label" style="color: #3578e5">清理缓存</span>
             </div>
         </div>
+
+        <!-- 新增的数据同步设置组 -->
+        <div class="settings-group">
+            <div class="settings-title">数据同步</div>
+            <div class="setting-item">
+                <span class="setting-label">学习记录</span>
+                <div class="setting-actions">
+                    <button type="button" class="wa-button" @click="handleExport">导出</button>
+                    <button type="button" class="wa-button" @click="showImportModal = true">
+                        导入
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="settings-footer">更多设置即将开放…</div>
-        <!-- <div class="settings-actions">
-            <button type="button" @click="saveSettings">保存设置</button>
-        </div> -->
+
+        <!-- 导入弹窗 -->
+        <wa-modal :visible.sync="showImportModal" title="导入学习记录" @confirm="handleImport">
+            <p class="import-description">请将之前导出的学习记录文本粘贴到下方文本框中。</p>
+            <textarea
+                v-model="importData"
+                class="import-textarea"
+                placeholder="请在此处粘贴学习记录..."
+            ></textarea>
+        </wa-modal>
     </div>
 </template>
 
@@ -52,18 +74,24 @@
 import { clearSysCache } from '@/kits/sysCache';
 import WaInputNumber from '@/components/wa-input-number.vue';
 import WaSwitch from '@/components/wa-switch.vue';
+import WaModal from '@/components/wa-modal/wa-modal.vue';
+import { wordRecordDB } from '@/kits/idb/WordRecordDB';
 import { mapGetters, mapState } from 'vuex';
+import { exportAppData2Clipboard } from '@/kits/idb/idbExport';
+import { importAppData2DB } from '@/kits/idb/idbExport';
+
 export default {
     name: 'Settings',
-    components: { WaInputNumber, WaSwitch },
-    // components: { WaSwitch },
+    components: { WaInputNumber, WaSwitch, WaModal },
     data() {
         return {
             theme: 'light',
             showPhonetic: true,
             autoPlayAudio: false,
             showDictionary: true,
-            enableShortcuts: true
+            enableShortcuts: true,
+            showImportModal: false,
+            importData: ''
         };
     },
     computed: {
@@ -92,6 +120,23 @@ export default {
         saveSettings() {
             // 这里可以扩展为保存到本地存储或全局store
             alert('设置已保存（仅本地演示，未持久化）');
+        },
+        async handleExport() {
+            await exportAppData2Clipboard();
+        },
+        async handleImport() {
+            if (!this.importData.trim()) {
+                alert('粘贴内容不能为空！');
+                return;
+            }
+            try {
+                await importAppData2DB(JSON.parse(this.importData));
+                this.showImportModal = false;
+                this.importData = '';
+            } catch (error) {
+                console.error('导入失败:', error);
+                alert(`导入失败: ${error.message}`);
+            }
         }
     }
 };
@@ -207,5 +252,34 @@ button[type='button']:hover {
         height: 48px;
         font-size: 15px;
     }
+}
+
+/* 为新按钮和弹窗添加一些样式 */
+.setting-actions .wa-button {
+    background: #e9f2ff;
+    color: #3578e5;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+.setting-actions .wa-button:hover {
+    background: #dceaff;
+}
+.import-description {
+    margin-bottom: 12px;
+    color: #666;
+    font-size: 14px;
+}
+.import-textarea {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: monospace;
 }
 </style> 

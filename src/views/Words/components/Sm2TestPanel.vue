@@ -81,7 +81,7 @@
 
 <script setup>
 // 中文注释：引入SM2和IDB相关API
-import { wordReviewDB } from '@/kits/idb';
+import { wordReviewDB } from '@/kits/idb/WordReviewDB';
 import { getDefaultSM2 } from '@/kits/sm2';
 import { ref, watch, onMounted, onBeforeUnmount, computed, getCurrentInstance } from 'vue';
 

@@ -3,7 +3,7 @@ description:
 globs: 
 alwaysApply: false
 ---
-- 帮我加一个学习记录展示页面，查询 [idbWordRecord.js](mdc:src/kits/idb/idbWordRecord.js) db里面的数据进行展示
+- 帮我加一个学习记录展示页面，查询 [WordRecordDB.js](mdc:src/kits/idb/WordRecordDB.js) db里面的数据进行展示
 - 按照天数进行展示，
 - y轴展示单词数量
 - x轴可以选：

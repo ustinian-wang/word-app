@@ -1,6 +1,6 @@
 import { openDB } from 'idb';
-import { updateBinarySM2, getDefaultSM2 } from './sm2';
-import { addFailWordRecord, addPassWordRecord } from './idb/idbWordRecord';
+import { updateBinarySM2, getDefaultSM2 } from '../sm2';
+import { addFailWordRecord, addPassWordRecord } from './WordRecordDB';
 
 // SM-2 算法参数
 const SM2_PARAMS = {
@@ -29,8 +29,8 @@ class WordReviewDB {
 
     // 初始化数据库
     async init() {
-        if(this.db){
-            return;
+        if (this.db) {
+            return this.db;
         }
         this.db = await openDB(this.dbName, this.version, {
             upgrade(db) {
@@ -42,6 +42,7 @@ class WordReviewDB {
                 }
             }
         });
+        return this.db;
     }
 
     // 添加新单词
@@ -53,16 +54,18 @@ class WordReviewDB {
             [DATA_FIELD.REPETITIONS]: 0,
             [DATA_FIELD.NEXT_REVIEW]: Date.now()
         };
-
+        await this.init();
         return this.putWord(wordData);
     }
 
     // 更新单词数据
     async putWord(wordData) {
+        await this.init();  
         return this.db.put(this.storeName, wordData);
     }
 
     async getTodayWords() {
+        await this.init();
         return this.getWordsToReview(new Date());
     }
 
@@ -87,7 +90,8 @@ class WordReviewDB {
 
     // 处理复习结果
     async processReview(word, quality) {
-        let wordData = await this.getWord(word) || getDefaultSM2();
+        await this.init();
+        let wordData = (await this.getWord(word)) || getDefaultSM2();
 
         // SM-2 算法实现
         const {
@@ -122,7 +126,21 @@ class WordReviewDB {
         return updatedWordData;
     }
 
-    // 获取单个单词数据
+    async importWord(wordData) {
+        await this.init();
+        let oldWord = await this.getWord(wordData[DATA_FIELD.WORD]);
+        if (oldWord) {
+            return await this.putWord(wordData);
+        } else {
+            return await this.addWord(wordData[DATA_FIELD.WORD]);
+        }
+    }
+
+    /**
+     * @description 获取单个单词数据
+     * @param {string} word 单词
+     * @returns {Promise<Object>} 单词数据
+     */
     async getWord(word) {
         await this.init();
         return this.db.get(this.storeName, word);

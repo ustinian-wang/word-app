@@ -23,7 +23,7 @@ export const WORD_RECORD_FIELD = {
     TYPE: 'type'
 };
 
-class WordRecordService {
+class WordRecordDB {
     constructor() {
         this.dbName = 'wordAppRecordDB';
         this.storeName = 'wordRecords';
@@ -50,7 +50,7 @@ class WordRecordService {
     }
 
     // 添加新记录
-    addNewRecord(word, status, uid = 0, type = WORD_RECORD_TYPE.LEARNING) {
+    async addNewRecord(word, status, uid = 0, type = WORD_RECORD_TYPE.LEARNING) {
         const record = {
             [WORD_RECORD_FIELD.WORD]: word,
             [WORD_RECORD_FIELD.TIMESTAMP]: Date.now(),
@@ -58,58 +58,75 @@ class WordRecordService {
             [WORD_RECORD_FIELD.UID]: uid,
             [WORD_RECORD_FIELD.TYPE]: type
         };
-        return this.addRecord(record);
+        return await this.addRecord(record);
     }
 
     // 添加记录
     async addRecord(record) {
         const db = await this.initDB();
-        return db.add(this.storeName, record);
+        return await db.add(this.storeName, record);
     }
 
     // 获取用户的所有记录
     async getRecordsByUid(uid) {
         const db = await this.initDB();
         const index = db.transaction(this.storeName).store.index('uid');
-        return index.getAll(uid);
+        return await index.getAll(uid);
     }
 
     // 获取特定单词的记录
     async getRecordsByWord(word) {
         const db = await this.initDB();
         const index = db.transaction(this.storeName).store.index('word');
-        return index.getAll(word);
+        return await index.getAll(word);
     }
 
     // 获取时间范围内的记录
     async getRecordsByTimeRange(startTime, endTime) {
         const db = await this.initDB();
         const index = db.transaction(this.storeName).store.index('timestamp');
-        return index.getAll(IDBKeyRange.bound(startTime, endTime));
+        return await index.getAll(IDBKeyRange.bound(startTime, endTime));
     }
 
     // 删除记录
     async deleteRecord(id) {
         const db = await this.initDB();
-        return db.delete(this.storeName, id);
+        return await db.delete(this.storeName, id);
     }
 
     // 清空所有记录
     async clearAllRecords() {
         const db = await this.initDB();
-        return db.clear(this.storeName);
+        return await db.clear(this.storeName);
     }
 
-    // 获取所有记录
+    /**
+     * @description 获取所有记录
+     * @returns {Promise<Array>} 所有记录
+     */
     async getAllRecords() {
         const db = await this.initDB();
-        return db.getAll(this.storeName);
+        return await db.getAll(this.storeName);
     }
 
     // 更新记录
     async updateRecord(record) {
         const db = await this.initDB();
-        return db.put(this.storeName, record);
+        return await db.put(this.storeName, record);
+    }
+    /**
+     * @description 导入记录
+     * @param {Object} record 记录
+     * @returns {Promise<IDBRequest>} 导入结果
+     */
+    async importRecord(record) {
+        await this.initDB();
+        let oldRecords = await this.getRecordsByWord(record[WORD_RECORD_FIELD.WORD]);
+        if (oldRecords.length > 0) {
+            return await this.updateRecord(record);
+        } else {
+            return await this.addRecord(record);
+        }
     }
 
     // 生成测试数据
@@ -185,7 +202,7 @@ class WordRecordService {
 }
 
 // 创建单例实例
-const wordRecordService = new WordRecordService();
+const wordRecordDB = new WordRecordDB();
 
 /**
  * @description 添加打勾记录
@@ -194,7 +211,7 @@ const wordRecordService = new WordRecordService();
  */
 export function addPassWordRecord(word) {
     console.log('addPassWordRecord', word);
-    return wordRecordService.addNewRecord(word, WORD_RECORD_STATUS.PASS);
+    return wordRecordDB.addNewRecord(word, WORD_RECORD_STATUS.PASS);
 }
 
 /**
@@ -204,8 +221,8 @@ export function addPassWordRecord(word) {
  */
 export function addFailWordRecord(word) {
     console.log('addFailWordRecord', word);
-    return wordRecordService.addNewRecord(word, WORD_RECORD_STATUS.FAIL);
+    return wordRecordDB.addNewRecord(word, WORD_RECORD_STATUS.FAIL);
 }
 
 // 导出服务实例
-export { wordRecordService };
+export { wordRecordDB };

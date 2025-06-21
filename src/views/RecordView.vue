@@ -27,7 +27,7 @@
 
 <script>
 import * as echarts from 'echarts';
-import { wordRecordService, WORD_RECORD_STATUS, WORD_RECORD_TYPE } from '../kits/idb/idbWordRecord';
+import { wordRecordDB, WORD_RECORD_STATUS, WORD_RECORD_TYPE } from '@/kits/idb/WordRecordDB';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -282,7 +282,7 @@ export default {
         async loadData() {
             try {
                 this.loading = true;
-                this.records = await wordRecordService.getAllRecords();
+                this.records = await wordRecordDB.getAllRecords();
                 this.filterRecords();
                 const processedData = this.processData(this.filteredRecords);
                 this.loading = false;
@@ -299,7 +299,7 @@ export default {
         async generateTestData() {
             try {
                 this.loading = true;
-                await wordRecordService.generateTestData();
+                await wordRecordDB.generateTestData();
                 await this.loadData();
             } catch (error) {
                 console.error('生成测试数据失败:', error);

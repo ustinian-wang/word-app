@@ -62,7 +62,7 @@ import CardActions from '@/components/CardActions.vue';
 import DictionaryLinks from '@/components/DictionaryLinks.vue';
 import SliderContainer from '@/components/SliderContainer.vue';
 import { sleep } from '@ustinian-wang/kit';
-import { passReview, failReview } from '@/kits/idb';
+import { passReview, failReview } from '@/kits/idb/WordReviewDB';
 import { playNice, playHandsup, playOhno, playRight } from '@/kits/audio';
 import { gotoIndex, gotoWordBooks } from '@/router';
 import { keyboard } from '@/directives/keyboard';

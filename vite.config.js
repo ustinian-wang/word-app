@@ -22,6 +22,7 @@ export default ({ mode }) => {
     // console.log(mode, process.cwd(), '');
     const env = loadEnv(mode, process.cwd(), '');
     const VITE_API = env.VITE_API;
+    const VITE_PORT = env.VITE_PORT;
     const VITE_PROXY_API = env.VITE_PROXY_API;
     // console.log(env);
 
@@ -101,7 +102,7 @@ export default ({ mode }) => {
         ],
         server: {
             host: true,
-            port: 80,
+            port: VITE_PORT,
             open: true,
             allowedHosts: [
                 '371ct917zs52.vicp.fun',

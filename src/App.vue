@@ -11,7 +11,8 @@
             <router-link to="/words" exact-active-class="active">背单词</router-link>
             <router-link to="/wordbooks" exact-active-class="active">词库</router-link>
         </nav>
-        <FabMenu v-if="$route.path !== '/settings'" />
+        <FabMenu />
+        <div id="vconsole"></div>
     </div>
 </template>
 

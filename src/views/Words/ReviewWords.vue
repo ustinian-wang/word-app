@@ -73,7 +73,7 @@ import CardActions from '@/components/CardActions.vue';
 import DictionaryLinks from '@/components/DictionaryLinks.vue';
 import SliderContainer from '@/components/SliderContainer.vue';
 import { sleep } from '@ustinian-wang/kit';
-import { passReview, failReview, wordReviewDB } from '@/kits/idb';
+import { passReview, failReview, wordReviewDB } from '@/kits/idb/WordReviewDB';
 import { playNice, playHandsup, playOhno, playRight } from '@/kits/audio';
 import { set_session_cache, get_session_cache } from '@/kits/sessionCache';
 import { gotoIndex, gotoWordBooks } from '@/router';
