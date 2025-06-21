@@ -13,7 +13,7 @@
     "format:check": "prettier --check \"src/**/*.{js,vue,css,less,scss,json,md}\"",
     "deploy": "yarn build:production && node ./scripts/deploy.mjs",
     "docs:gen": "jsdoc -c jsdoc.conf.json",
-    "test:e2e": "playwright test"
+    "test": "playwright test"
   },
   "homepage": "https://your-username.github.io/word-app",
   "dependencies": {
