@@ -1,5 +1,9 @@
 import { displayVConsole } from '@/kits/vconsole';
 
+const orginDebugSetting = {
+    clipboardFail: false
+};
+
 export default {
     namespaced: true,
     state: {
@@ -8,11 +12,13 @@ export default {
         enableShortcuts: false,
         groupSize: 10,
         debug: false,
-        
+        debugSetup: false,
         /**
          * debug value start
          */
-        debugClipboardFail: false
+        debugSetting: {
+            ...orginDebugSetting
+        }
         /**
          * debug value end
          */
@@ -33,19 +39,37 @@ export default {
                 state.groupSize = size;
             };
         },
-        setDebug(state) {
+        setDebug(state, getters) {
             return debug => {
                 state.debug = debug;
                 displayVConsole(debug);
+                if (!debug) {
+                    getters.rollDbgSetting();
+                }
             };
         },
         isDebugMode(state) {
             // 加多一个中间层, 以后可以扩展
             return state.debug;
         },
-        setDebugClipboardFail(state) {
-            return debugClipboardFail => {
-                state.debugClipboardFail = debugClipboardFail;
+        setDebugSetup(state) {
+            return value => {
+                state.debugSetup = value;
+            };
+        },
+        dbgClipboardFail(state) {
+            return state.debugSetting.clipboardFail;
+        },
+        setDbgClipboardFail(state) {
+            return value => {
+                state.debugSetting.clipboardFail = value;
+            };
+        },
+        rollDbgSetting(state) {
+            return () => {
+                state.debugSetting = {
+                    ...orginDebugSetting
+                };
             };
         }
     }

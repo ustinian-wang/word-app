@@ -28,7 +28,7 @@ const updateSW = registerSW({
 // eslint-disable-next-line no-undef
 let urlObj = new URL(location.href);
 let _debug = urlObj.searchParams.get('_debug') === 'true';
-store.getters['setting/setDebug'](_debug);
+store.getters['setting/setDebugSetup'](_debug);
 
 new Vue({
     router,

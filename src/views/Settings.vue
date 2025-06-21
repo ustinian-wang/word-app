@@ -25,7 +25,7 @@
                 <span class="setting-label">启用快捷键</span>
                 <wa-switch v-model="enableShortcuts" />
             </div> -->
-            <div class="setting-item">
+            <div class="setting-item" v-if="debugSetup">
                 <span class="setting-label">调试模式</span>
                 <wa-switch v-model="currDebug" />
             </div>
@@ -42,7 +42,7 @@
             </div>
             <div class="setting-item" v-if="currDebug">
                 <span class="setting-label">测试剪切板复制失败</span>
-                <wa-switch v-model="currDebugClipboardFail" />
+                <wa-switch v-model="currDbgClipboardFail" />
             </div>
         </div>
 
@@ -53,9 +53,7 @@
                 <span class="setting-label">学习记录</span>
                 <div class="setting-actions">
                     <button type="button" class="wa-button" @click="handleExport">导出</button>
-                    <button type="button" class="wa-button" @click="showImportModal = true">
-                        导入
-                    </button>
+                    <button type="button" class="wa-button" @click="showImportModal = true">导入</button>
                 </div>
             </div>
         </div>
@@ -82,7 +80,6 @@ import { clearSysCache } from '@/kits/sysCache';
 import WaInputNumber from '@/components/wa-input-number.vue';
 import WaSwitch from '@/components/wa-switch.vue';
 import WaModal from '@/components/wa-modal/wa-modal.vue';
-import { wordRecordDB } from '@/kits/idb/WordRecordDB';
 import { mapGetters, mapState } from 'vuex';
 import { exportAppData2Clipboard } from '@/kits/idb/idbExport';
 import { importAppData2DB } from '@/kits/idb/idbExport';
@@ -103,8 +100,8 @@ export default {
         };
     },
     computed: {
-        ...mapState('setting', ['groupSize', 'debug', 'debugClipboardFail']),
-        ...mapGetters('setting', ['setGroupSize', 'setDebug', 'setDebugClipboardFail']),
+        ...mapState('setting', ['groupSize', 'debug', 'dbgClipboardFail', 'debugSetup']),
+        ...mapGetters('setting', ['setGroupSize', 'setDebug', 'setDbgClipboardFail']),
         currGroupSize: {
             get() {
                 return this.groupSize;
@@ -122,12 +119,12 @@ export default {
                 this.setDebug(value);
             }
         },
-        currDebugClipboardFail: {
+        currDbgClipboardFail: {
             get() {
-                return this.debugClipboardFail;
+                return this.dbgClipboardFail;
             },
             set(value) {
-                this.setDebugClipboardFail(value);
+                this.setDbgClipboardFail(value);
             }
         }
     },
@@ -298,4 +295,4 @@ button[type='button']:hover {
     resize: vertical;
     font-family: monospace;
 }
-</style> 
+</style>

@@ -28,7 +28,7 @@ export async function exportAppData2Clipboard() {
     }
     const dataStr = JSON.stringify(data);
     try {
-        if (store.state.setting.debugClipboardFail) {
+        if (store.state.setting.dbgClipboardFail) {
             throw new Error('测试剪切板复制失败');
         }
         await navigator.clipboard.writeText(dataStr);
