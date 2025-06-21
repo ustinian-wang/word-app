@@ -37,6 +37,7 @@
                     class="start-btn"
                     :class="option.type || 'primary'"
                     :disabled="buttonLoading"
+                    v-test="`${option.type}`"
                     @click="handleButtonClick(option)"
                 >
                     {{ option.text }}
@@ -208,25 +209,39 @@ export default {
     },
     async mounted() {
         /** @type {WordInfoResponse} */
-        let res = await getRandomWordInfoApi();
-        let data = res.data.data;
-        // console.log(data);
-        let dailyWord = {
-            en: data.word,
-            zh: data.translations
-                .map(item => {
-                    return `${item.pos}. ${item.tran_cn}`;
-                })
-                .join('\n'),
-            sentence_en: data?.sentences?.[0]?.s_content,
-            sentence_zh: data?.sentences?.[0]?.s_cn,
-            ukphone: `/${data?.ukphone}/`,
-            ukspeech: data?.ukspeech,
-            // usphone: `/${data?.usphone}/`,
-            // usspeech: data?.usspeech,
-            bg: `https://image.pollinations.ai/prompt/${data.word}`
-        };
-        this.dailyWord = dailyWord;
+        try {
+            let res = await getRandomWordInfoApi();
+            let data = res.data.data;
+            // console.log(data);
+            let dailyWord = {
+                en: data.word,
+                zh: data.translations
+                    .map(item => {
+                        return `${item.pos}. ${item.tran_cn}`;
+                    })
+                    .join('\n'),
+                sentence_en: data?.sentences?.[0]?.s_content,
+                sentence_zh: data?.sentences?.[0]?.s_cn,
+                ukphone: `/${data?.ukphone}/`,
+                ukspeech: data?.ukspeech,
+                // usphone: `/${data?.usphone}/`,
+                // usspeech: data?.usspeech,
+                bg: `https://image.pollinations.ai/prompt/${data.word}`
+            };
+            this.dailyWord = dailyWord;
+            console.log(this.dailyWord);
+        } catch (e) {
+            this.dailyWord = {
+                en: 'fickleness',
+                zh: 'n.  浮躁； 变化无常',
+                sentence_en: 'His story became a parable for the fickleness of art and life.',
+                sentence_zh: '他的故事成为一个说明艺术与生活变化无常的寓言。',
+                ukphone: "/'fɪklnəs/",
+                ukspeech: 'https://dict.youdao.com/dictvoice?audio=fickleness&type=1',
+                bg: 'https://image.pollinations.ai/prompt/fickleness'
+            };
+            console.error(e);
+        }
     }
 };
 </script>
@@ -346,9 +361,7 @@ export default {
     min-width: 120px;
     box-shadow: 0 2px 12px rgba(79, 140, 255, 0.12);
     cursor: pointer;
-    transition:
-        background 0.2s,
-        transform 0.1s;
+    transition: background 0.2s, transform 0.1s;
     letter-spacing: 2px;
     outline: none;
     position: relative;

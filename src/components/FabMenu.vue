@@ -5,7 +5,7 @@
         @touchstart="onDragStart"
         @mousedown="onDragStart"
     >
-        <button class="fab-main" @click="toggleMenu">
+        <button class="fab-main" @click="toggleMenu" v-test="'fabMenu'">
             <Icon icon="mdi:plus" width="28" height="28" />
         </button>
         <transition name="fab-menu-fade">
@@ -15,6 +15,7 @@
                     :key="item.action"
                     class="fab-menu-item"
                     @click="goMenu(item)"
+                    v-test="item.test"
                 >
                     <span class="icon">{{ item.icon }}</span>
                     <span class="label">{{ item.label }}</span>
@@ -42,14 +43,14 @@ export default {
         ...mapState(['isFullscreen']),
         menuItems() {
             return [
-                { label: '图片识别', icon: '📷', route: '/recognize?auto=true' },
-                // { label: '背单词', icon: '📖', route: '/words' },
-                // { label: '词库', icon: '📚', route: '/wordbooks' },
-                { label: '学习记录', icon: '📊', route: '/records' },
-                // { label: '清理缓存', icon: '🧹', action: 'clearCache' },
-                { label: '全屏', icon: this.fullscreenIcon, action: 'toggleFullscreen' },
-                { label: '设置', icon: '⚙️', route: '/settings' }
-                // { label: '首页', icon: '🏠', route: '/' }
+                { test: "recognize", label: '图片识别', icon: '📷', route: '/recognize?auto=true' },
+                // { test: "words", label: '背单词', icon: '📖', route: '/words' },
+                // { test: "wordbooks", label: '词库', icon: '📚', route: '/wordbooks' },
+                { test: "records", label: '学习记录', icon: '📊', route: '/records' },
+                // { test: "clearCache", label: '清理缓存', icon: '🧹', action: 'clearCache' },
+                { test: "fullscreen", label: '全屏', icon: this.fullscreenIcon, action: 'toggleFullscreen' },
+                { test: "settings", label: '设置', icon: '⚙️', route: '/settings' }
+                // { test: "index", label: '首页', icon: '🏠', route: '/' }
             ];
         },
         fullscreenIcon() {

@@ -33,7 +33,7 @@
                 </div>
 
                 <!-- 中文释义(点击显示) -->
-                <div class="word-zh" :class="{ mosaic: !isZhRevealed }" @click="revealZh">
+                <div class="word-zh" :class="{ mosaic: !isZhRevealed }" v-test="word-zh" @click="revealZh">
                     <div v-for="item in splitTaggedText(word.zh)" :key="item" class="word-zh-item">
                         {{ item }}
                     </div>

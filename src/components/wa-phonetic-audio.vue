@@ -1,5 +1,10 @@
 <template>
-    <div class="wa-phonetic-audio" :class="{ disabled: isAudioUnavailable }" @click="playAudio">
+    <div
+        class="wa-phonetic-audio"
+        :class="{ disabled: isAudioUnavailable }"
+        v-test
+        @click="playAudio"
+    >
         <span class="phonetic-text">{{ phonetic }}</span>
         <button
             class="audio-btn"

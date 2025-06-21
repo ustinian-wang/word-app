@@ -26,9 +26,10 @@ export default ({ mode }) => {
     const VITE_PROXY_API = env.VITE_PROXY_API;
     // console.log(env);
 
-    return defineConfig({
-        plugins: [
-            vue2(),
+    const plugins = [vue2()];
+    // 在Cypress测试中禁用PWA
+    if (!process.env.CYPRESS) {
+        plugins.push(
             VitePWA({
                 strategies: 'injectManifest',
                 srcDir: 'src',
@@ -99,7 +100,11 @@ export default ({ mode }) => {
                     maximumFileSizeToCacheInBytes: 8 * 1024 * 1024 // 设置为 8MB
                 }
             })
-        ],
+        );
+    }
+
+    return defineConfig({
+        plugins,
         server: {
             host: true,
             port: VITE_PORT,

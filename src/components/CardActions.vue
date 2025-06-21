@@ -1,9 +1,9 @@
 <template>
     <div class="card-actions">
-        <div class="action-btn pass-btn" @click="handlePass" title="已掌握">
+        <div class="action-btn pass-btn" v-test="'pass-btn'" @click="handlePass" title="已掌握">
             <Icon icon="mdi:check" width="28" height="28" :style="{ color: '#4caf50' }" />
         </div>
-        <div class="action-btn fail-btn" @click="handleFail" title="再看一次">
+        <div class="action-btn fail-btn" v-test="'fail-btn'" @click="handleFail" title="再看一次">
             <Icon icon="mdi:close" width="28" height="28" :style="{ color: '#e55' }" />
         </div>
     </div>

@@ -3,6 +3,7 @@ const vue = require('eslint-plugin-vue');
 const vueParser = require('vue-eslint-parser');
 const prettier = require('eslint-plugin-prettier');
 const prettierConfig = require('eslint-config-prettier');
+const cypress = require('eslint-plugin-cypress');
 
 // 浏览器环境全局变量
 const browserGlobals = {
@@ -177,5 +178,19 @@ module.exports = [
             'prettier/prettier': 'error'
         }
     },
-    prettierConfig
+    prettierConfig,
+    {
+        files: ['cypress/e2e/**/*.js', 'cypress/e2e/**/*.cy.js'],
+        languageOptions: {
+            globals: {
+                ...allGlobals
+            }
+        },
+        plugins: {
+            cypress
+        },
+        rules: {
+            ...cypress.configs.recommended.rules
+        }
+    }
 ];
