@@ -2,6 +2,9 @@ import { wordRecordDB } from '@/kits/idb/WordRecordDB';
 import { wordReviewDB } from '@/kits/idb/WordReviewDB';
 import { getErrRst, getOkRst } from '@/types/comm';
 import { isJSON, isObject, isString } from '@ustinian-wang/kit';
+import { openCopyModal } from '@/components/CopyModal';
+import { $message } from '../toast';
+import store from '@/store';
 
 /**
  * @typedef {import("@/types/comm.js").Result} Result
@@ -24,8 +27,24 @@ export async function exportAppData2Clipboard() {
         return getErrRst('没有需要导出的学习记录。');
     }
     const dataStr = JSON.stringify(data);
-    await navigator.clipboard.writeText(dataStr);
-    return getOkRst('学习记录已成功导出到剪贴板！');
+    try {
+        if (store.state.setting.debugClipboardFail) {
+            throw new Error('测试剪切板复制失败');
+        }
+        await navigator.clipboard.writeText(dataStr);
+        return getOkRst('学习记录已成功导出到剪贴板！');
+    } catch (err) {
+        console.error('Failed to copy to clipboard', err);
+        let copied = await openCopyModal({
+            title: '请手动复制导出的内容',
+            content: dataStr
+        });
+        if (copied) {
+            $message.success('已复制到剪贴板');
+            return getOkRst('已复制到剪贴板');
+        }
+        return getOkRst('');
+    }
 }
 
 /**

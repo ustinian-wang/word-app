@@ -7,7 +7,15 @@ export default {
         autoPlayAudio: false,
         enableShortcuts: false,
         groupSize: 10,
-        debug: false
+        debug: false,
+        
+        /**
+         * debug value start
+         */
+        debugClipboardFail: false
+        /**
+         * debug value end
+         */
     },
     mutations: {
         setShowDictionary(state, show) {
@@ -34,6 +42,11 @@ export default {
         isDebugMode(state) {
             // 加多一个中间层, 以后可以扩展
             return state.debug;
+        },
+        setDebugClipboardFail(state) {
+            return debugClipboardFail => {
+                state.debugClipboardFail = debugClipboardFail;
+            };
         }
     }
 };

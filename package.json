@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "upus": "yarn upgrade @ustinian-wang/kit@latest @ustinian-wang/js-monitor@latest",
-    "build:production": "vite build --base=/",
+    "build:production": "vite build --mode production",
     "lint": "eslint src --ext .js,.vue --fix",
     "lint:check": "eslint src --ext .js,.vue",
     "format": "prettier --write \"src/**/*.{js,vue,css,less,scss,json,md}\"",

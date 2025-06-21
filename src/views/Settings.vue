@@ -40,6 +40,10 @@
             <div class="setting-item" @click="clearSysCache">
                 <span class="setting-label" style="color: #3578e5">清理缓存</span>
             </div>
+            <div class="setting-item" v-if="currDebug">
+                <span class="setting-label">测试剪切板复制失败</span>
+                <wa-switch v-model="currDebugClipboardFail" />
+            </div>
         </div>
 
         <!-- 新增的数据同步设置组 -->
@@ -99,8 +103,8 @@ export default {
         };
     },
     computed: {
-        ...mapState('setting', ['groupSize']),
-        ...mapGetters('setting', ['setGroupSize', 'setDebug']),
+        ...mapState('setting', ['groupSize', 'debug', 'debugClipboardFail']),
+        ...mapGetters('setting', ['setGroupSize', 'setDebug', 'setDebugClipboardFail']),
         currGroupSize: {
             get() {
                 return this.groupSize;
@@ -116,6 +120,14 @@ export default {
             },
             set(value) {
                 this.setDebug(value);
+            }
+        },
+        currDebugClipboardFail: {
+            get() {
+                return this.debugClipboardFail;
+            },
+            set(value) {
+                this.setDebugClipboardFail(value);
             }
         }
     },
