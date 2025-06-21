@@ -71,6 +71,9 @@
 </template>
 
 <script>
+/**
+ * @typedef {import("@/types/comm").Result} Result
+ */
 import { clearSysCache } from '@/kits/sysCache';
 import WaInputNumber from '@/components/wa-input-number.vue';
 import WaSwitch from '@/components/wa-switch.vue';
@@ -79,6 +82,7 @@ import { wordRecordDB } from '@/kits/idb/WordRecordDB';
 import { mapGetters, mapState } from 'vuex';
 import { exportAppData2Clipboard } from '@/kits/idb/idbExport';
 import { importAppData2DB } from '@/kits/idb/idbExport';
+import $message from '@/kits/toast';
 
 export default {
     name: 'Settings',
@@ -122,20 +126,20 @@ export default {
             alert('设置已保存（仅本地演示，未持久化）');
         },
         async handleExport() {
-            await exportAppData2Clipboard();
+            let res = await exportAppData2Clipboard();
+            if (res.success) {
+                $message.success('导出成功');
+            } else {
+                $message.error(res.msg || '导出失败');
+            }
         },
         async handleImport() {
-            if (!this.importData.trim()) {
-                alert('粘贴内容不能为空！');
-                return;
-            }
-            try {
-                await importAppData2DB(JSON.parse(this.importData));
+            let res = await importAppData2DB(this.importData);
+            if (res.success) {
                 this.showImportModal = false;
                 this.importData = '';
-            } catch (error) {
-                console.error('导入失败:', error);
-                alert(`导入失败: ${error.message}`);
+            } else {
+                $message.error(res.msg || '导入失败');
             }
         }
     }

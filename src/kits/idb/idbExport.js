@@ -1,6 +1,16 @@
 import { wordRecordDB } from '@/kits/idb/WordRecordDB';
 import { wordReviewDB } from '@/kits/idb/WordReviewDB';
+import { getErrRst, getOkRst } from '@/types/comm';
+import { isJSON, isObject, isString } from '@ustinian-wang/kit';
 
+/**
+ * @typedef {import("@/types/comm.js").Result} Result
+ */
+
+/**
+ * @description 导出学习记录到剪贴板
+ * @returns {Promise<Result>}
+ */
 export async function exportAppData2Clipboard() {
     const wordRecords = await wordRecordDB.getAllRecords();
     const wordReviews = await wordReviewDB.getAllWords();
@@ -11,20 +21,27 @@ export async function exportAppData2Clipboard() {
 
     console.log(data);
     if (isDataEmpty(data)) {
-        alert('没有需要导出的学习记录。');
-        return;
+        return getErrRst('没有需要导出的学习记录。');
     }
     const dataStr = JSON.stringify(data);
     await navigator.clipboard.writeText(dataStr);
-    alert('学习记录已成功导出到剪贴板！');
+    return getOkRst('学习记录已成功导出到剪贴板！');
 }
 
-export async function exportAppData2File(data) {
-    Object.assign();
+/**
+ * @description 导出学习记录到文件
+ * @returns {Promise<Result>}
+ */
+export async function exportAppData2File() {
+    const wordRecords = await wordRecordDB.getAllRecords();
+    const wordReviews = await wordReviewDB.getAllWords();
+    let data = {
+        wordRecords,
+        wordReviews
+    };
 
     if (isDataEmpty(data)) {
-        alert('没有需要导出的学习记录。');
-        return;
+        return getErrRst('没有需要导出的学习记录。');
     }
     const dataStr = JSON.stringify(data);
     const blob = new window.Blob([dataStr], { type: 'application/json' });
@@ -34,6 +51,7 @@ export async function exportAppData2File(data) {
     a.download = `word-app-data-${Date.now()}.json`;
     a.click();
     window.URL.revokeObjectURL(url);
+    return getOkRst('学习记录已成功导出到文件！');
 }
 
 function isDataEmpty(data) {
@@ -42,11 +60,34 @@ function isDataEmpty(data) {
     return wordRecords.length === 0 && wordReviews.length === 0;
 }
 
+/**
+ * @description 导入学习记录到数据库
+ * @async
+ * @param {Object | string} data
+ * @returns {Promise<Result>}
+ */
 export async function importAppData2DB(data) {
+    if (isString(data)) {
+        data = data.trim();
+        if (data === '') {
+            return getErrRst('粘贴内容不能为空！');
+        }
+        if (isJSON(data)) {
+            data = JSON.parse(data);
+        }
+    }
+
+    if (isObject(data)) {
+        if (isDataEmpty(data)) {
+            return getErrRst('没有需要导入的学习记录。');
+        }
+    } else {
+        return getErrRst('粘贴内容格式错误！');
+    }
+
     let { wordRecords = [], wordReviews = [] } = data;
     if (isDataEmpty(data)) {
-        alert('没有需要导入的学习记录。');
-        return;
+        return getErrRst('没有需要导入的学习记录。');
     }
 
     for (const wordRecord of wordRecords) {
@@ -56,5 +97,5 @@ export async function importAppData2DB(data) {
     for (const wordReview of wordReviews) {
         await wordReviewDB.importWord(wordReview);
     }
-    alert('导入成功！');
+    return getOkRst('导入成功！');
 }

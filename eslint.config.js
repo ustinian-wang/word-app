@@ -83,7 +83,7 @@ const nodeGlobals = {
     setTimeout: 'readonly',
     clearTimeout: 'readonly',
     setInterval: 'readonly',
-    clearInterval: 'readonly',
+    clearInterval: 'readonly'
 };
 
 // 合并所有全局变量
@@ -96,20 +96,20 @@ module.exports = [
         languageOptions: {
             ecmaVersion: 'latest',
             sourceType: 'module',
-            globals: allGlobals,
+            globals: allGlobals
         },
         plugins: {
-            prettier,
+            prettier
         },
         rules: {
             indent: ['error', 4],
             quotes: ['error', 'single'],
             semi: ['error', 'always'],
             'no-unused-vars': 'warn',
-            'no-console': 'warn',
+            'no-console': ['warn', { allow: ['warn', 'error'] }],
             'no-debugger': 'warn',
-            'prettier/prettier': 'error',
-        },
+            'prettier/prettier': 'error'
+        }
     },
     {
         files: ['**/*.vue'],
@@ -122,13 +122,13 @@ module.exports = [
                 sourceType: 'module',
                 parser: require.resolve('@babel/eslint-parser'),
                 requireConfigFile: false,
-                extraFileExtensions: ['.vue'],
+                extraFileExtensions: ['.vue']
             },
-            globals: allGlobals,
+            globals: allGlobals
         },
         plugins: {
             vue,
-            prettier,
+            prettier
         },
         rules: {
             // 基础规则
@@ -138,7 +138,7 @@ module.exports = [
             'no-unused-vars': 'warn',
             'no-console': 'warn',
             'no-debugger': 'warn',
-            
+
             // Vue 模板规则
             'vue/html-indent': ['error', 4],
             'vue/script-indent': [
@@ -147,8 +147,8 @@ module.exports = [
                 {
                     baseIndent: 0,
                     switchCase: 1,
-                    ignores: [],
-                },
+                    ignores: []
+                }
             ],
             'vue/valid-template-root': 'error',
             'vue/no-unused-vars': 'warn',
@@ -172,10 +172,10 @@ module.exports = [
             'vue/valid-v-pre': 'error',
             'vue/valid-v-cloak': 'error',
             'vue/valid-v-memo': 'error',
-            
+
             // Prettier集成
-            'prettier/prettier': 'error',
-        },
+            'prettier/prettier': 'error'
+        }
     },
-    prettierConfig,
+    prettierConfig
 ];

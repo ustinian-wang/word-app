@@ -12,7 +12,7 @@ function showToast({ message, type = 'success', duration = 2000 }) {
         toastInstance = null;
     }
     let instance = new ToastConstructor({
-        propsData: { message, type, visible: true },
+        propsData: { message, type, visible: true }
     });
     instance.$mount();
     document.body.appendChild(instance.$el);
@@ -57,8 +57,27 @@ const $message = {
     loading(msg) {
         showToast({ message: msg, type: 'loading', duration: 999999 });
     },
-    hide: hideToast,
+    hide: hideToast
 };
+
+/**
+ * @description 显示返回结果的toast
+ * @param {Result} rst
+ */
+export function showRstToast(rst) {
+    let { success, msg } = rst;
+
+
+    if (success) {
+        if (msg) {
+            $message.success(msg);
+        }
+    } else {
+        if (msg) {
+            $message.error(msg);
+        }
+    }
+}
 
 export default $message;
 
