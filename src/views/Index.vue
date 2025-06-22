@@ -207,7 +207,21 @@ export default {
             }
         }
     },
+    beforeMount() {
+        
+        this.dailyWord = {
+                en: 'fickleness',
+                zh: 'n.  浮躁； 变化无常',
+                sentence_en: 'His story became a parable for the fickleness of art and life.',
+                sentence_zh: '他的故事成为一个说明艺术与生活变化无常的寓言。',
+                ukphone: "/'fɪklnəs/",
+                ukspeech: 'https://dict.youdao.com/dictvoice?audio=fickleness&type=1',
+                bg: 'https://image.pollinations.ai/prompt/fickleness'
+            };
+    },
     async mounted() {
+
+
         /** @type {WordInfoResponse} */
         try {
             let res = await getRandomWordInfoApi();
@@ -231,15 +245,6 @@ export default {
             this.dailyWord = dailyWord;
             console.log(this.dailyWord);
         } catch (e) {
-            this.dailyWord = {
-                en: 'fickleness',
-                zh: 'n.  浮躁； 变化无常',
-                sentence_en: 'His story became a parable for the fickleness of art and life.',
-                sentence_zh: '他的故事成为一个说明艺术与生活变化无常的寓言。',
-                ukphone: "/'fɪklnəs/",
-                ukspeech: 'https://dict.youdao.com/dictvoice?audio=fickleness&type=1',
-                bg: 'https://image.pollinations.ai/prompt/fickleness'
-            };
             console.error(e);
         }
     }

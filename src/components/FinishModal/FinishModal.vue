@@ -1,13 +1,23 @@
 <template>
-    <div v-if="visible" class="finish-mask">
+    <div v-if="visible" class="finish-mask" data-test="finish-modal">
         <div class="finish-modal">
             <div class="finish-title">🎉 恭喜你！</div>
             <div class="finish-desc">{{ subtitle || `本轮词库「${bookName}」已全部学完` }}</div>
             <div class="finish-actions">
-                <button v-if="restartText" class="finish-btn" @click="$emit('restart')">
+                <button
+                    v-if="restartText"
+                    v-test="'finish-btn'"
+                    class="finish-btn"
+                    @click="$emit('restart')"
+                >
                     {{ restartText || '再来一轮' }}
                 </button>
-                <button v-if="homeText" class="finish-btn home-btn" @click="$emit('returnHome')">
+                <button
+                    v-if="homeText"
+                    v-test="'home-btn'"
+                    class="finish-btn home-btn"
+                    @click="$emit('returnHome')"
+                >
                     {{ homeText || '休息一下' }}
                 </button>
             </div>

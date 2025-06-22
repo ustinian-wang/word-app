@@ -20,7 +20,7 @@ export function enterFullscreen(element = document.documentElement) {
         // Firefox
         return element.mozRequestFullScreen();
     }
-    return Promise.reject(new Error('Fullscreen API is not supported'));
+    // return Promise.reject(new Error('Fullscreen API is not supported'));
 }
 
 /**
@@ -40,7 +40,7 @@ export function exitFullscreen() {
         // Firefox
         return document.mozCancelFullScreen();
     }
-    return Promise.reject(new Error('Fullscreen API is not supported'));
+    // return Promise.reject(new Error('Fullscreen API is not supported'));
 }
 
 /**

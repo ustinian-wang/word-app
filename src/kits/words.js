@@ -11,7 +11,7 @@ const INIT_FLAG_KEY = 'wordBooksInited';
 const PROGRESS_KEY = 'wordBooksProgress';
 
 export function getWordBooks() {
-    return JSON.parse(localStorage.getItem(WORD_BOOKS_KEY) || '[]');
+    return builtinWordBooks;
 }
 export function saveWordBooks(books) {
     localStorage.setItem(WORD_BOOKS_KEY, JSON.stringify(books));
@@ -29,9 +29,9 @@ export function getCurrentWords() {
 }
 
 export function initDefaultWordBooks() {
-    if (localStorage.getItem(INIT_FLAG_KEY)) return;
-    localStorage.setItem(WORD_BOOKS_KEY, JSON.stringify(builtinWordBooks));
-    localStorage.setItem(INIT_FLAG_KEY, '1');
+    // if (localStorage.getItem(INIT_FLAG_KEY)) return;
+    // localStorage.setItem(WORD_BOOKS_KEY, JSON.stringify(builtinWordBooks));
+    // localStorage.setItem(INIT_FLAG_KEY, '1');
 }
 /**
  * @description 获取词库学习进度

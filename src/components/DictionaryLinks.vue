@@ -6,6 +6,7 @@
                 v-for="dictType in dictionaries"
                 :key="dictType"
                 class="dict-btn"
+                v-test="'dict-btn-' + dictType"
                 @click="handleDictionaryClick(dictType)"
                 :title="getDictionaryName(dictType)"
             >
@@ -128,7 +129,7 @@ export default {
     transition: all 0.18s;
     min-width: 72px;
     justify-content: center;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 
     &:hover {
         background: #e9ecef;

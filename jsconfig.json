@@ -4,6 +4,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
+    "types": ["cypress"],
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
@@ -13,6 +14,6 @@
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "cypress/**/*.js"],
   "exclude": ["node_modules", "dist"]
 }

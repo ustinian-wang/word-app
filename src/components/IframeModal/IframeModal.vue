@@ -1,7 +1,12 @@
 <template>
     <Transition name="modal-fade">
-        <div v-if="visible" class="iframe-modal-overlay" @click="handleOverlayClick">
-            <div class="iframe-modal-container" :style="containerStyle" @click.stop>
+        <div
+            v-if="visible"
+            class="iframe-modal-overlay"
+            v-test="'iframe-modal-overlay'"
+            @click="handleOverlayClick"
+        >
+            <div class="iframe-modal-container" :style="containerStyle" v-test @click.stop>
                 <!-- Loading 遮罩 -->
                 <div v-if="loading" class="iframe-loading-overlay">
                     <div class="loading-spinner">
@@ -13,7 +18,12 @@
                             </div>
                             <div class="progress-text">请稍候，这可能需要几秒钟</div>
                         </div>
-                        <button class="cancel-load-btn" @click="cancelLoading" title="取消加载">
+                        <button
+                            class="cancel-load-btn"
+                            v-test="'cancel-load-btn'"
+                            @click="cancelLoading"
+                            title="取消加载"
+                        >
                             <Icon icon="mdi:close" width="16" height="16" />
                             <span>取消加载</span>
                         </button>
@@ -48,7 +58,12 @@
                             class="url-input"
                             @keyup.enter="loadUrl"
                         />
-                        <button class="load-btn" @click="loadUrl" :disabled="!urlInput.trim()">
+                        <button
+                            class="load-btn"
+                            v-test="'load-btn'"
+                            @click="loadUrl"
+                            :disabled="!urlInput.trim()"
+                        >
                             加载
                         </button>
                     </div>
@@ -66,12 +81,18 @@
                         <button
                             v-if="showRefresh"
                             class="action-btn refresh-btn"
+                            v-test="'refresh-btn'"
                             @click="refreshIframe"
                             title="刷新页面"
                         >
                             <Icon icon="mdi:refresh" width="20" height="20" />
                         </button>
-                        <button class="action-btn close-btn" @click="closeModal" title="关闭">
+                        <button
+                            class="action-btn close-btn"
+                            v-test="'close-btn'"
+                            @click="closeModal"
+                            title="关闭"
+                        >
                             <Icon icon="mdi:close" width="20" height="20" />
                         </button>
                     </div>

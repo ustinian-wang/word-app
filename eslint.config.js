@@ -183,7 +183,8 @@ module.exports = [
         files: ['cypress/e2e/**/*.js', 'cypress/e2e/**/*.cy.js'],
         languageOptions: {
             globals: {
-                ...allGlobals
+                ...allGlobals,
+                ...cypress.configs.recommended.globals
             }
         },
         plugins: {

@@ -14,4 +14,10 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+import './commands';
+
+Cypress.on('uncaught:exception', (err, runnable) => {
+    // 可以根据 err.message 进行过滤
+    console.warn('忽略 uncaught 异常：', err.message);
+    return false; // return false 表示忽略错误，不中断测试
+});

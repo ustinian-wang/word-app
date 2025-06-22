@@ -15,5 +15,7 @@ module.exports = defineConfig({
             });
         },
         specPattern: 'cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}'
-    }
+    },
+    viewportWidth: 375, // iPhone 6/7/8 宽度
+    viewportHeight: 667, // iPhone 6/7/8 高度
 });

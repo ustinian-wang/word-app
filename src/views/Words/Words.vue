@@ -24,7 +24,7 @@
 
         <!-- 单词卡片滑动容器 -->
         <SliderContainer :items="sliderWords" :isAnimating="isAnimating" :deltaX="deltaX">
-            <template #default="{ item: word }">
+            <template #default="{ item: word, index: idx }">
                 <!-- 英文单词 -->
                 <div class="word-en">{{ word.en }}</div>
 
@@ -33,7 +33,12 @@
                 </div>
 
                 <!-- 中文释义(点击显示) -->
-                <div class="word-zh" :class="{ mosaic: !isZhRevealed }" v-test="word-zh" @click="revealZh">
+                <div
+                    class="word-zh"
+                    :class="{ mosaic: !isZhRevealed }"
+                    v-test="'word-zh'"
+                    @click="revealZh"
+                >
                     <div v-for="item in splitTaggedText(word.zh)" :key="item" class="word-zh-item">
                         {{ item }}
                     </div>
@@ -207,11 +212,15 @@ export default {
             this.isAnimating = false;
         },
         async afterChange() {
-            this.phonetic = '';
-            let word = this.currWord;
-            this.phonetic = await getPhonetic(word?.en || '');
-            console.log('this.phonetic', this.phonetic);
-            this.playCurrentWord();
+            try{
+                this.phonetic = '';
+                let word = this.currWord;
+                this.phonetic = await getPhonetic(word?.en || '');
+                console.log('this.phonetic', this.phonetic);
+                this.playCurrentWord();
+            } catch (error) {
+                console.error('afterChange error', error);
+            }
         },
         // 显示中文释义
         revealZh() {
@@ -219,7 +228,7 @@ export default {
             this.revealedSet = new Set(this.revealedSet);
         },
         // 已掌握单词
-        passWord() {
+        async passWord() {
             if (!this.isZhRevealed) {
                 this.revealZh();
                 this.playCurrentWord();
@@ -243,7 +252,7 @@ export default {
                 this.currentIdx = this.learningQueue.length - 1;
             }
             this.revealedSet.clear();
-            this.afterChange();
+            await this.afterChange();
             // this.saveProgress();
         },
         // 再看一次
@@ -447,10 +456,7 @@ export default {
 }
 .word-zh.mosaic {
     color: transparent;
-    text-shadow:
-        0 0 8px #bbb,
-        0 0 12px #bbb,
-        0 0 16px #bbb;
+    text-shadow: 0 0 8px #bbb, 0 0 12px #bbb, 0 0 16px #bbb;
     filter: blur(6px) brightness(0.1);
     pointer-events: auto;
     user-select: none;
