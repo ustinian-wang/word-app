@@ -1,5 +1,13 @@
 import { getWordBooks } from '@/kits/words';
-import { safeJsonParse, isJSON, getter, setter, debounce, deepAssign, cloneDeep } from '@ustinian-wang/kit';
+import {
+    safeJsonParse,
+    isJSON,
+    getter,
+    setter,
+    debounce,
+    deepAssign,
+    cloneDeep
+} from '@ustinian-wang/kit';
 
 const CACHE_PRE = 'wpv_';
 // 获取所有版本号
@@ -59,17 +67,32 @@ const USR_BOOK_ID = 'usr_bookId';
 const USR_PROGRESS = 'usr_progress';
 const USR_LEARNED_NO_ARR = 'learned_no_arr';
 
+let progress = {};
+let wordBooks = getWordBooks();
+wordBooks.forEach(book => {
+    progress[book.id] = {
+        learned_no_arr: []
+    };
+});
+let default_usr_data = {
+    usr_bookId: getWordBooks()[0].id,
+    progress
+};
+let curr_ver_key = get_curr_ver_key();
+let cache_usr_data = get_usr_data(curr_ver_key);
+let usr_data = deepAssign(default_usr_data, cache_usr_data);
+
 export default {
     namespaced: true,
     state: {
         ver_list: load_ver_list(),
-        curr_ver_key: get_curr_ver_key(),
-        usr_data: get_usr_data(get_curr_ver_key()),
-        wordBooks: getWordBooks()
+        curr_ver_key: curr_ver_key,
+        usr_data: usr_data,
+        wordBooks: wordBooks
     },
     getters: {
         usr_bookIdx: (state, getters) => {
-            let bookId = getters.usr_bookId;
+            let bookId = state.usr_data.usr_bookId;
             let idx = state.wordBooks.findIndex(book => book.id === bookId);
             if (idx === -1) {
                 return 0;
@@ -100,7 +123,14 @@ export default {
             let bookId = getters.usr_bookId;
             let book = state.wordBooks.find(book => book.id === bookId);
             let learned_words = book.words.filter((word, index) => learned_no_arr.includes(index));
-            console.log('[cache learned_words]', learned_words, bookId, book, learned_no_arr, state.wordBooks);
+            console.log(
+                '[cache learned_words]',
+                learned_words,
+                bookId,
+                book,
+                learned_no_arr,
+                state.wordBooks
+            );
             return learned_words;
         },
         set_usr_bookId(state, getters) {

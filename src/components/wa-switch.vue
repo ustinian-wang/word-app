@@ -4,6 +4,7 @@
       type="checkbox"
       :checked="modelValue"
       :disabled="disabled"
+      v-test="'wa-switch-input'"
       @change="onChange"
     />
     <span class="wa-slider"></span>

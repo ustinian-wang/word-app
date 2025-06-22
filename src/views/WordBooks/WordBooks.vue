@@ -1,10 +1,10 @@
 <template>
     <div class="wordbooks-page">
         <header class="wb-header">
-            <h2 class="title">词库管理</h2>
+            <h2 class="title">词库管理-{{usr_bookIdx}}</h2>
         </header>
         <div v-if="wordBooks.length === 0" class="empty-tip">暂无词库，请导入或添加新词库</div>
-        <ul class="book-list">
+        <ul class="book-list" v-test="'book-list'">
             <WordBookItem
                 v-for="(book, idx) in wordBooks"
                 :key="book.id"
@@ -15,32 +15,6 @@
                 @select="selectBook(idx)"
             />
         </ul>
-        <div v-if="false" class="add-button-container">
-            <button class="upload-btn" @click="$refs.excelInput.click()">
-                <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    style="vertical-align: middle; margin-right: 4px"
-                >
-                    <path
-                        d="M12 5v14m7-7H5"
-                        stroke="#3578e5"
-                        stroke-width="2"
-                        fill="none"
-                        stroke-linecap="round"
-                    />
-                </svg>
-                导入
-            </button>
-            <input
-                type="file"
-                accept=".xlsx,.xls"
-                @change="onExcelUpload"
-                style="display: none"
-                ref="excelInput"
-            />
-        </div>
     </div>
 </template>
 

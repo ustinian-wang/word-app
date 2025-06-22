@@ -27,7 +27,7 @@
             </div> -->
             <div class="setting-item" v-if="debugSetup">
                 <span class="setting-label">调试模式</span>
-                <wa-switch v-model="currDebug" />
+                <wa-switch v-test="'wa-switch-debug'" v-model="currDebug" />
             </div>
             <div class="setting-item">
                 <span class="setting-label">主单词字号</span>
@@ -42,7 +42,7 @@
             </div>
             <div class="setting-item" v-if="currDebug">
                 <span class="setting-label">测试剪切板复制失败</span>
-                <wa-switch v-model="currDbgClipboardFail" />
+                <wa-switch v-test="'wa-switch-dbgClipboardFail'" v-model="currDbgClipboardFail" />
             </div>
         </div>
 

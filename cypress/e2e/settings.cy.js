@@ -1,19 +1,55 @@
 context('设置页面', () => {
     beforeEach(() => {
-        cy.visit('/#/settings');
+        // 带上 _debug=true 参数以确保所有调试相关的设置项都可见
+        cy.visit('/?_debug=true#/settings');
     });
 
     it('应成功加载并显示设置项', () => {
         // 验证URL
         cy.location('hash').should('include', '/settings');
-
+        
         // 验证标题
-        cy.contains('.settings-title', '设置').should('be.visible');
+        cy.contains('.settings-title', '通用').should('be.visible');
 
         // 验证至少有一个设置项被渲染
         cy.get('.setting-item').should('have.length.greaterThan', 0);
     });
+
+    describe('开关组件测试', () => {
+        const debugSwitch = '[data-test="wa-switch-debug"]';
+        const clipboardFailSwitch = '[data-test="wa-switch-dbgClipboardFail"]';
+
+        it('应能正确开启和关闭调试模式', () => {
+            // 初始状态：调试模式关闭，剪切板失败开关不可见
+            cy.get(debugSwitch).should('have.attr', 'aria-checked', 'false');
+            cy.get(clipboardFailSwitch).should('not.exist');
+
+            // 开启调试模式
+            cy.get(debugSwitch).click();
+            cy.get(debugSwitch).should('have.attr', 'aria-checked', 'true');
+            cy.get(clipboardFailSwitch).should('be.visible');
+
+            // 关闭调试模式
+            cy.get(debugSwitch).click();
+            cy.get(debugSwitch).should('have.attr', 'aria-checked', 'false');
+            cy.get(clipboardFailSwitch).should('not.exist');
+        });
+
+        it('在调试模式下，应能切换"测试剪切板复制失败"开关', () => {
+            // 准备工作：先开启调试模式
+            cy.get(debugSwitch).click();
+            cy.get(debugSwitch).should('have.attr', 'aria-checked', 'true');
+
+            // 验证剪切板失败开关的初始状态并切换
+            cy.get(clipboardFailSwitch).should('be.visible').and('have.attr', 'aria-checked', 'false');
+            cy.get(clipboardFailSwitch).click();
+            cy.get(clipboardFailSwitch).should('have.attr', 'aria-checked', 'true');
+            cy.get(clipboardFailSwitch).click();
+            cy.get(clipboardFailSwitch).should('have.attr', 'aria-checked', 'false');
+        });
+    });
 });
+
 context('清理缓存', () => {
     beforeEach(() => {
         cy.visit('/?_debug=true#/settings');

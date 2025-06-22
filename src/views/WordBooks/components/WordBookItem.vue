@@ -1,26 +1,22 @@
 <template>
     <li :class="{ active: isActive }">
         <div class="book-info">
-            <span class="book-name">{{ bookName }}</span>
+            <span class="book-name" v-test="'book-name'">{{ bookName }}</span>
             <span class="book-count">{{ wordTotal }}词</span>
             <span class="book-progress">
                 {{ progress_percentage }}% 已学{{ progress_count }}词
             </span>
         </div>
         <div class="book-actions">
-            <button v-if="!isActive" class="switch-btn" @click="$emit('select')">切换</button>
-            <span v-else class="current-label">当前</span>
-            <button v-if="false" class="delete-btn" @click="$emit('delete')">
-                <svg width="16" height="16" viewBox="0 0 24 24">
-                    <path
-                        d="M6 6l12 12M6 18L18 6"
-                        stroke="#e55"
-                        stroke-width="2"
-                        fill="none"
-                        stroke-linecap="round"
-                    />
-                </svg>
+            <button
+                v-if="!isActive"
+                class="switch-btn"
+                v-test="'switch-btn'"
+                @click="$emit('select')"
+            >
+                切换
             </button>
+            <span v-else class="current-label">当前</span>
         </div>
     </li>
 </template>
