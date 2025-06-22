@@ -82,6 +82,7 @@
                 v-model="importData"
                 class="import-textarea"
                 placeholder="请在此处粘贴学习记录..."
+                v-test="'import-textarea'"
             ></textarea>
         </wa-modal>
     </div>
@@ -158,8 +159,13 @@ export default {
             }
         },
         async handleImport() {
+            if (!this.importData) {
+                $message.error('请输入导入内容');
+                return;
+            }
             let res = await importAppData2DB(this.importData);
             if (res.success) {
+                $message.success('导入成功');
                 this.showImportModal = false;
                 this.importData = '';
             } else {

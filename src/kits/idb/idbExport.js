@@ -76,7 +76,7 @@ export async function exportAppData2File() {
 
 function isDataEmpty(data) {
     let { wordRecords = [], wordReviews = [] } = data;
-
+    console.log(wordRecords, wordReviews);
     return wordRecords.length === 0 && wordReviews.length === 0;
 }
 
@@ -87,17 +87,21 @@ function isDataEmpty(data) {
  * @returns {Promise<Result>}
  */
 export async function importAppData2DB(data) {
+    console.log('[importAppData2DB] 111', data);
     if (isString(data)) {
         data = data.trim();
+        console.log('[importAppData2DB] 222', data);
         if (data === '') {
             return getErrRst('粘贴内容不能为空！');
         }
         if (isJSON(data)) {
             data = JSON.parse(data);
+            console.log('[importAppData2DB] 333', data);
         }
     }
 
     if (isObject(data)) {
+        console.log('[importAppData2DB] 444', data);
         if (isDataEmpty(data)) {
             return getErrRst('没有需要导入的学习记录。');
         }

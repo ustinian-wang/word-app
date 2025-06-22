@@ -1,20 +1,21 @@
 <template>
-    <div v-if="visible" class="wa-modal-mask" @click.self="onCancel">
-        <div class="wa-modal">
-            <div class="wa-modal-title" v-if="title">{{ title }}</div>
-            <div class="wa-modal-content">
-                <slot>{{ content }}</slot>
-            </div>
-            <div class="wa-modal-actions">
-                <button class="wa-btn wa-btn-cancel" v-test="'cancel'" @click="onCancel">
-                    {{ cancelText }}
-                </button>
-                <button class="wa-btn wa-btn-confirm" v-test="'confirm'" @click="onConfirm">
-                    {{ confirmText }}
-                </button>
+    <transition name="modal-fade">
+        <div v-if="visible" class="wa-modal-overlay" v-test="'wa-modal-overlay'" @click.self="$emit('update:visible', false)">
+            <div class="wa-modal" :style="{ width }">
+                <div v-if="title" class="wa-modal-header">
+                    {{ title }}
+                    <button class="wa-modal-close" v-test="'wa-modal-close'" @click="$emit('update:visible', false)">&times;</button>
+                </div>
+                <div class="wa-modal-body">
+                    <slot></slot>
+                </div>
+                <div class="wa-modal-footer">
+                    <button class="wa-button-cancel" v-test="'wa-modal-cancel'" @click="$emit('update:visible', false)">取消</button>
+                    <button class="wa-button-confirm" v-test="'wa-modal-confirm'" @click="handleConfirm">确认</button>
+                </div>
             </div>
         </div>
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -31,14 +32,18 @@ export default {
         cancelText: {
             type: String,
             default: '取消'
+        },
+        width: {
+            type: String,
+            default: '260px'
         }
     },
     methods: {
-        onConfirm() {
+        handleConfirm() {
             this.$emit('confirm');
         },
         onCancel() {
-            this.$emit('cancel');
+            this.$emit('update:visible', false);
         }
     }
 };

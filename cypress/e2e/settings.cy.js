@@ -7,7 +7,7 @@ describe('设置页面', () => {
     it('应成功加载并显示设置项', () => {
         // 验证URL
         cy.location('hash').should('include', '/settings');
-        
+
         // 验证标题
         cy.contains('.settings-title', '通用').should('be.visible');
 
@@ -19,17 +19,13 @@ describe('设置页面', () => {
         const groupSizeInput = '[data-test="setting-group-size"] input';
 
         // 验证初始值，这里假设默认值是10
-        cy.get(groupSizeInput)
-          .should('have.value', '10');
+        cy.get(groupSizeInput).should('have.value', '10');
 
         // 使用 .clear() 清空输入框，然后输入新值
-        cy.get(groupSizeInput)
-          .clear()
-          .type('15');
+        cy.get(groupSizeInput).clear().type('15');
 
         // 验证新值
-        cy.get(groupSizeInput)
-          .should('have.value', '15');
+        cy.get(groupSizeInput).should('have.value', '15');
     });
 
     const debugSwitch = '[data-test="wa-switch-debug"]';
@@ -64,7 +60,7 @@ describe('设置页面', () => {
         cy.get(clipboardFailSwitch).should('have.attr', 'aria-checked', 'false');
     });
 
-    it.only('每组学习单词数: 从10修改到11，单词对应的组数从10修改到11', () => {
+    it('每组学习单词数: 从10修改到11，单词对应的组数从10修改到11', () => {
         // 先访问words页面，
         cy.visit('/?_debug=true#/words');
         // 点击菜单展开
@@ -103,6 +99,12 @@ describe('清理缓存', () => {
         // // cy.get('[data-test="confirm"]').click({ force: true }); // 点击确认
         // cy.get('[data-test="toast-message"]').should('contain', '没有需要导出的学习记录。');
     });
+});
+
+describe('导出数据', () => {
+    beforeEach(() => {
+        cy.visit('/?_debug=true#/settings');
+    });
 
     it('导出数据： 没有需要导出的学习记录', () => {
         clearAllCache();
@@ -123,6 +125,75 @@ describe('清理缓存', () => {
     });
 });
 
+describe('数据导入功能', () => {
+    const importBtn = '[data-test="import"]';
+    const modal = '.wa-modal-overlay';
+    const confirmBtn = '[data-test="wa-modal-confirm"]';
+    const cancelBtn = '[data-test="wa-modal-cancel"]';
+    const closeBtn = '[data-test="wa-modal-close"]';
+    const textarea = '[data-test="import-textarea"]';
+    const toastMessage = '[data-test="toast-message"]';
+    beforeEach(() => {
+        // 跳转设置页面
+        cy.visit('/?_debug=true#/settings');
+        // 确保每次测试开始时弹窗都是关闭的
+        cy.get(modal).should('not.exist');
+    });
+
+    it('应能正确打开和关闭导入弹窗', () => {
+        // 点击导入按钮，弹窗出现
+        cy.get(importBtn).click();
+        cy.get(modal).should('be.visible');
+
+        // 点击取消按钮，弹窗关闭
+        cy.get(cancelBtn).click();
+        cy.get(modal).should('not.exist');
+
+        // 再次打开，点击关闭按钮，弹窗关闭
+        cy.get(importBtn).click();
+        cy.get(closeBtn).click();
+        cy.get(modal).should('not.exist');
+
+        // 再次打开，点击遮罩层，弹窗关闭
+        cy.get(importBtn).click();
+        cy.get('body').click(5, 5); // 点击左上角模拟点击遮罩层
+        cy.get(modal).should('not.exist');
+    });
+
+    it('当输入非法数据时，应提示错误且弹窗不关闭', () => {
+        cy.get(importBtn).click();
+
+        // 场景1: 输入非 JSON 字符串
+        cy.get(textarea).type('invalid data');
+        cy.get(confirmBtn).click();
+        cy.get(toastMessage).should('contain', '粘贴内容格式错误！');
+        cy.get(modal).should('be.visible'); // 弹窗不关闭
+
+        // // 场景2: 输入格式错误的 JSON
+        // cy.get(textarea).clear().type('{"wrong": "format"}');
+        // cy.get(confirmBtn).click();
+        // cy.get(toastMessage).should('contain', '粘贴内容格式错误！');
+        // cy.get(modal).should('be.visible'); // 弹窗不关闭
+    });
+
+    it.only('当输入合法数据时，应提示成功并关闭弹窗', () => {
+        const validData = JSON.stringify({
+            wordReviews: [
+                { word: 'computer', timestamp: 1748045055183, status: 1, uid: 0, type: 0, id: 1 }
+            ],
+            wordRecords: []
+        });
+        cy.get(importBtn).click();
+
+        cy.get(textarea).type(validData, {
+            parseSpecialCharSequences: false
+        });
+        cy.get(confirmBtn).click();
+
+        cy.get(toastMessage).should('contain', '导入成功');
+        cy.get(modal).should('not.exist'); // 弹窗关闭
+    });
+});
 
 async function clearAllCache() {
     // 清理所有浏览器缓存
