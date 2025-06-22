@@ -58,14 +58,6 @@ export default {
                 state.debug = value;
             };
         },
-        dbgClipboardFail(state) {
-            return state.debugSetting.clipboardFail;
-        },
-        setDbgClipboardFail(state) {
-            return value => {
-                state.debugSetting.clipboardFail = value;
-            };
-        },
         rollDbgSetting(state) {
             return () => {
                 state.debugSetting = {

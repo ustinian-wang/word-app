@@ -46,10 +46,6 @@
             <div class="setting-item" v-test="'clearCache'" @click="clearSysCache">
                 <span class="setting-label" style="color: #3578e5">清理缓存</span>
             </div>
-            <div class="setting-item" v-if="currDebug">
-                <span class="setting-label">测试剪切板复制失败</span>
-                <wa-switch v-test="'wa-switch-dbgClipboardFail'" v-model="currDbgClipboardFail" />
-            </div>
         </div>
 
         <!-- 新增的数据同步设置组 -->
@@ -116,8 +112,8 @@ export default {
         };
     },
     computed: {
-        ...mapState('setting', ['groupSize', 'debug', 'dbgClipboardFail', 'debugSetup']),
-        ...mapGetters('setting', ['setGroupSize', 'setDebug', 'setDbgClipboardFail']),
+        ...mapState('setting', ['groupSize', 'debug', 'debugSetup']),
+        ...mapGetters('setting', ['setGroupSize', 'setDebug']),
         currGroupSize: {
             get() {
                 return this.groupSize;
@@ -133,14 +129,6 @@ export default {
             },
             set(value) {
                 this.setDebug(value);
-            }
-        },
-        currDbgClipboardFail: {
-            get() {
-                return this.dbgClipboardFail;
-            },
-            set(value) {
-                this.setDbgClipboardFail(value);
             }
         }
     },
