@@ -44,6 +44,7 @@
                 </button>
             </div>
         </div>
+        <IcpRecord />
     </div>
 </template>
 
@@ -53,11 +54,13 @@ import { STUDY_STATUS_DEF } from '@/store/index.js';
 import { getRandomWordInfoApi } from '@/kits/words';
 import { gotoWords, gotoReviewWords } from '@/router';
 import WaPhoneticAudio from '@/components/wa-phonetic-audio.vue';
+import IcpRecord from '@/components/IcpRecord/IcpRecord.vue';
 
 export default {
     name: 'Index',
     components: {
-        WaPhoneticAudio
+        WaPhoneticAudio,
+        IcpRecord
     },
     data() {
         return {

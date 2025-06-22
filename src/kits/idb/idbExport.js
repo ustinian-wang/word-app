@@ -28,24 +28,9 @@ export async function exportAppData2Clipboard() {
         return getErrRst('没有需要导出的学习记录。');
     }
     const dataStr = JSON.stringify(data);
-    try {
-        if (store.state.setting.dbgClipboardFail) {
-            throw new Error('测试剪切板复制失败');
-        }
-        copyToClipboard(dataStr);
-        return getOkRst('学习记录已成功导出到剪贴板！');
-    } catch (err) {
-        console.error('Failed to copy to clipboard', err);
-        let copied = await openCopyModal({
-            title: '请手动复制导出的内容',
-            content: dataStr
-        });
-        if (copied) {
-            $message.success('已复制到剪贴板');
-            return getOkRst('已复制到剪贴板');
-        }
-        return getOkRst('');
-    }
+
+    copyToClipboard(dataStr);
+    return getOkRst('学习记录已成功导出到剪贴板！');
 }
 
 /**

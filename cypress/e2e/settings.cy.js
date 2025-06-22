@@ -1,3 +1,25 @@
+describe('设置页面：头部导航测试', () => {
+    it('返回首页', () => {
+        cy.visit('/?_debug=true#/settings');
+        cy.get('[data-test="back-btn"]').click();
+        cy.location('hash').should('equal', '');
+    });
+    it('返回上一页', () => {
+        // 先访问首页
+        cy.visit('/?_debug=true#/');
+        // 然后点击底部菜单
+        cy.get('[data-test="fabMenu"]').click();
+        // 点击【设置】项
+        cy.get('[data-test="settings"]').click();
+        // 这个时候已经在设置页面，检查url
+        cy.location('hash').should('include', '/settings');
+        // 点击返回按钮
+        cy.get('[data-test="back-btn"]').click();
+        // 此时在首页，检查url
+        cy.location('hash').should('equal', '#/');
+    });
+});
+
 describe('设置页面', () => {
     beforeEach(() => {
         // 带上 _debug=true 参数以确保所有调试相关的设置项都可见
@@ -167,7 +189,7 @@ describe('数据导入功能', () => {
         // cy.get(modal).should('be.visible'); // 弹窗不关闭
     });
 
-    it.only('当输入合法数据时，应提示成功并关闭弹窗', () => {
+    it('当输入合法数据时，应提示成功并关闭弹窗', () => {
         const validData = JSON.stringify({
             wordReviews: [
                 { word: 'computer', timestamp: 1748045055183, status: 1, uid: 0, type: 0, id: 1 }

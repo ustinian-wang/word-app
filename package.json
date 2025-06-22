@@ -46,6 +46,7 @@
     "@vitejs/plugin-vue2": "^2.3.3",
     "@vue/eslint-config-prettier": "^10.2.0",
     "cypress": "^14.5.0",
+    "cypress-file-upload": "^5.0.8",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-cypress": "^5.1.0",

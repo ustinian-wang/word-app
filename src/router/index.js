@@ -1,13 +1,15 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+// views start
 import Recognize from '../views/Recognize.vue';
-import Words from '../views/Words/Words.vue';
-import ReviewWords from '../views/Words/ReviewWords.vue';
-import WordBooks from '../views/WordBooks/WordBooks.vue';
-import Index from '../views/Index.vue';
+import Words from '../views/Words/Words.vue'; // test: ok
+import ReviewWords from '../views/Words/ReviewWords.vue'; // test: ok
+import WordBooks from '../views/WordBooks/WordBooks.vue'; // test: ok
+import Index from '../views/Index.vue'; // test: ok
 import Redirect from '@/views/Redirect.vue';
-import Settings from '@/views/Settings.vue';
+import Settings from '@/views/Settings.vue'; // test: ok
 import RecordView from '@/views/RecordView.vue';
+// views end
 
 Vue.use(Router);
 

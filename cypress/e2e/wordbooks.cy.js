@@ -1,4 +1,4 @@
-context('词库页面', () => {
+describe('词库页面', () => {
     beforeEach(() => {
         cy.visit('/#/wordbooks');
     });
