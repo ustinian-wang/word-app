@@ -29,10 +29,16 @@
                 <span class="setting-label">调试模式</span>
                 <wa-switch v-test="'wa-switch-debug'" v-model="currDebug" />
             </div>
-            <div class="setting-item">
+            <div class="setting-item" v-test="'setting-group-size'">
                 <span class="setting-label">主单词字号</span>
                 <div class="setting-control">
-                    <wa-input-number v-model="currGroupSize" :min="10" :max="40" :step="1" />
+                    <wa-input-number
+                        v-test="'setting-group-size'"
+                        v-model="currGroupSize"
+                        :min="10"
+                        :max="40"
+                        :step="1"
+                    />
                 </div>
 
                 <!-- <span class="setting-unit">px</span> -->

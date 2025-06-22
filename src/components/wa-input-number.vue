@@ -10,6 +10,7 @@
             :disabled="disabled"
             v-model="currValue"
             @change="onChange"
+            @blur="onBlur"
             class="wa-input"
         />
         <button class="wa-btn wa-btn-plus" :disabled="disabled || value >= max" @click="increment">
@@ -83,6 +84,15 @@ export default {
             let val = this.value - this.step;
             if (val < this.min) val = this.min;
             console.log('[decrement]', val);
+            this.$emit('input', val);
+            this.$emit('change', val);
+        },
+        onBlur(e) {
+            let val = Number(e.target.value);
+            if (isNaN(val)) val = this.min;
+            if (val < this.min) val = this.min;
+            if (val > this.max) val = this.max;
+            console.log('[blur]', val);
             this.$emit('input', val);
             this.$emit('change', val);
         }

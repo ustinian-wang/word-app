@@ -113,7 +113,9 @@ export default {
         };
     },
     watch: {
-        currentIdx() {
+        groupCount() {
+            console.log('[groupCount]', this.groupCount);
+            this.initLearningQueue();
             // this.saveProgress();
         }
     },
@@ -158,7 +160,6 @@ export default {
         ...mapGetters(['cacheWrapper'])
     },
     methods: {
-        ...mapMutations('book', ['setCurrentBookIdx']),
         ...mapMutations(['setStudyStatus']),
         getWordAudioUrl,
         // 将中文释义按词性分割成数组
@@ -345,10 +346,6 @@ export default {
         },
         // 初始化学习队列
         initLearningQueue() {
-            // this.setWordBooks(getWordBooks())
-            // this.setCurrentBookIdx(getCurrentBookIndex())
-            // this.setWords(getCurrentWords())
-            // 过滤掉已学过的单词，取当前组的10个
             this.learningQueue = this.getGroupWords();
             console.log('[this.learningQueue initLearningQueue]', this.learningQueue);
             this.currentIdx = 0;

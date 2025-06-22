@@ -1,4 +1,4 @@
-context('设置页面', () => {
+describe('设置页面', () => {
     beforeEach(() => {
         // 带上 _debug=true 参数以确保所有调试相关的设置项都可见
         cy.visit('/?_debug=true#/settings');
@@ -15,42 +15,74 @@ context('设置页面', () => {
         cy.get('.setting-item').should('have.length.greaterThan', 0);
     });
 
-    describe('开关组件测试', () => {
-        const debugSwitch = '[data-test="wa-switch-debug"]';
-        const clipboardFailSwitch = '[data-test="wa-switch-dbgClipboardFail"]';
+    it('应能修改每组单词数量', () => {
+        const groupSizeInput = '[data-test="setting-group-size"] input';
 
-        it('应能正确开启和关闭调试模式', () => {
-            // 初始状态：调试模式关闭，剪切板失败开关不可见
-            cy.get(debugSwitch).should('have.attr', 'aria-checked', 'false');
-            cy.get(clipboardFailSwitch).should('not.exist');
+        // 验证初始值，这里假设默认值是10
+        cy.get(groupSizeInput)
+          .should('have.value', '10');
 
-            // 开启调试模式
-            cy.get(debugSwitch).click();
-            cy.get(debugSwitch).should('have.attr', 'aria-checked', 'true');
-            cy.get(clipboardFailSwitch).should('be.visible');
+        // 使用 .clear() 清空输入框，然后输入新值
+        cy.get(groupSizeInput)
+          .clear()
+          .type('15');
 
-            // 关闭调试模式
-            cy.get(debugSwitch).click();
-            cy.get(debugSwitch).should('have.attr', 'aria-checked', 'false');
-            cy.get(clipboardFailSwitch).should('not.exist');
-        });
+        // 验证新值
+        cy.get(groupSizeInput)
+          .should('have.value', '15');
+    });
 
-        it('在调试模式下，应能切换"测试剪切板复制失败"开关', () => {
-            // 准备工作：先开启调试模式
-            cy.get(debugSwitch).click();
-            cy.get(debugSwitch).should('have.attr', 'aria-checked', 'true');
+    const debugSwitch = '[data-test="wa-switch-debug"]';
+    const clipboardFailSwitch = '[data-test="wa-switch-dbgClipboardFail"]';
 
-            // 验证剪切板失败开关的初始状态并切换
-            cy.get(clipboardFailSwitch).should('be.visible').and('have.attr', 'aria-checked', 'false');
-            cy.get(clipboardFailSwitch).click();
-            cy.get(clipboardFailSwitch).should('have.attr', 'aria-checked', 'true');
-            cy.get(clipboardFailSwitch).click();
-            cy.get(clipboardFailSwitch).should('have.attr', 'aria-checked', 'false');
-        });
+    it('应能正确开启和关闭调试模式', () => {
+        // 初始状态：调试模式关闭，剪切板失败开关不可见
+        cy.get(debugSwitch).should('have.attr', 'aria-checked', 'false');
+        cy.get(clipboardFailSwitch).should('not.exist');
+
+        // 开启调试模式
+        cy.get(debugSwitch).click();
+        cy.get(debugSwitch).should('have.attr', 'aria-checked', 'true');
+        cy.get(clipboardFailSwitch).should('be.visible');
+
+        // 关闭调试模式
+        cy.get(debugSwitch).click();
+        cy.get(debugSwitch).should('have.attr', 'aria-checked', 'false');
+        cy.get(clipboardFailSwitch).should('not.exist');
+    });
+
+    it('在调试模式下，应能切换"测试剪切板复制失败"开关', () => {
+        // 准备工作：先开启调试模式
+        cy.get(debugSwitch).click();
+        cy.get(debugSwitch).should('have.attr', 'aria-checked', 'true');
+
+        // 验证剪切板失败开关的初始状态并切换
+        cy.get(clipboardFailSwitch).should('be.visible').and('have.attr', 'aria-checked', 'false');
+        cy.get(clipboardFailSwitch).click();
+        cy.get(clipboardFailSwitch).should('have.attr', 'aria-checked', 'true');
+        cy.get(clipboardFailSwitch).click();
+        cy.get(clipboardFailSwitch).should('have.attr', 'aria-checked', 'false');
+    });
+
+    it.only('每组学习单词数: 从10修改到11，单词对应的组数从10修改到11', () => {
+        // 先访问words页面，
+        cy.visit('/?_debug=true#/words');
+        // 点击菜单展开
+        cy.get('[data-test="fabMenu"]').click();
+        // 点击设置跳转到设置中心，
+        cy.get('[data-test="settings"]').click();
+        // 修改每组学习单词数为11
+        cy.get('[data-test="setting-group-size"] input').clear().type('11');
+        // 点击左上角返回
+        cy.get('[data-test="back-btn"]').click();
+        // 返回到words页面, 检查url对不对
+        cy.location('hash').should('include', '/words');
+        // 看进度条文本progress-text，里面是否包含了 1/11
+        cy.get('.progress-text').should('contain', '11');
     });
 });
 
-context('清理缓存', () => {
+describe('清理缓存', () => {
     beforeEach(() => {
         cy.visit('/?_debug=true#/settings');
     });
@@ -80,7 +112,7 @@ context('清理缓存', () => {
         cy.get('[data-test="toast-message"]').should('contain', '没有需要导出的学习记录。');
     });
 
-    it.only('导出数据： 有需要导出的学习记录', () => {
+    it('导出数据： 有需要导出的学习记录', () => {
         clearAllCache();
         generateCache();
         cy.visit('/?_debug=true#/settings');
@@ -91,21 +123,6 @@ context('清理缓存', () => {
     });
 });
 
-function trigger_exportData() {
-    cy.get('[data-test="export"]').click({ force: true }); // 点击导出
-    cy.get('[data-test="confirm"]').click({ force: true }); // 点击确认
-}
-
-function expect_exportDataEmpty() {
-    cy.get('[data-test="export"]').click({ force: true }); // 点击导出
-    // cy.get('[data-test="confirm"]').click({ force: true }); // 点击确认
-    cy.get('[data-test="toast-message"]').should('contain', '没有需要导出的学习记录。');
-}
-function expect_exportDataSuccess() {
-    cy.get('[data-test="export"]').click(); // 点击导出
-    cy.get('[data-test="confirm"]').click(); // 点击确认
-    cy.get('[data-test="toast-message"]').should('contain', '导出成功');
-}
 
 async function clearAllCache() {
     // 清理所有浏览器缓存

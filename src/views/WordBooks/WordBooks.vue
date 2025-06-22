@@ -1,7 +1,7 @@
 <template>
     <div class="wordbooks-page">
         <header class="wb-header">
-            <h2 class="title">词库管理-{{usr_bookIdx}}</h2>
+            <h2 class="title">词库管理</h2>
         </header>
         <div v-if="wordBooks.length === 0" class="empty-tip">暂无词库，请导入或添加新词库</div>
         <ul class="book-list" v-test="'book-list'">

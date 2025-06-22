@@ -1,5 +1,5 @@
 <template>
-    <button v-if="canGoBack" class="back-btn" @click="goBack" title="返回上一页">
+    <button v-if="canGoBack" class="back-btn" v-test="'back-btn'" @click="goBack" title="返回上一页">
         <svg
             width="22"
             height="22"

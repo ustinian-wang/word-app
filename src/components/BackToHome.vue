@@ -1,5 +1,5 @@
 <template>
-    <button class="back-home-btn" @click="goHome" title="返回首页">
+    <button class="back-home-btn" v-test="'back-home-btn'" @click="goHome" title="返回首页">
         <svg
             width="22"
             height="22"
