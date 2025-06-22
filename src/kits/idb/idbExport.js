@@ -5,6 +5,7 @@ import { isJSON, isObject, isString } from '@ustinian-wang/kit';
 import { openCopyModal } from '@/components/CopyModal';
 import { $message } from '../toast';
 import store from '@/store';
+import { copyToClipboard } from '../copy';
 
 /**
  * @typedef {import("@/types/comm.js").Result} Result
@@ -31,7 +32,7 @@ export async function exportAppData2Clipboard() {
         if (store.state.setting.dbgClipboardFail) {
             throw new Error('测试剪切板复制失败');
         }
-        await navigator.clipboard.writeText(dataStr);
+        copyToClipboard(dataStr);
         return getOkRst('学习记录已成功导出到剪贴板！');
     } catch (err) {
         console.error('Failed to copy to clipboard', err);

@@ -2,9 +2,9 @@
     <div class="index-page">
         <div class="bg-img" :style="bgStyle"></div>
         <div class="content" v-if="dailyWord">
-            <div class="daily-word-block">
+            <div class="daily-word-block" v-test="'daily-word-block'">
                 <div class="daily-label">每日精选单词</div>
-                <div class="daily-word">{{ dailyWord.en }}</div>
+                <div class="daily-word" v-test="'daily-word-en'">{{ dailyWord.en }}</div>
                 <div style="display: flex; gap: 4px; align-items: center; justify-content: center">
                     <template v-if="dailyWord.ukspeech">
                         <wa-phonetic-audio
@@ -23,12 +23,12 @@
                     </template> -->
                 </div>
 
-                <div class="daily-zh">{{ dailyWord.zh }}</div>
+                <div class="daily-zh" v-test="'daily-word-zh'">{{ dailyWord.zh }}</div>
             </div>
-            <div class="daily-sentence-block">
+            <div class="daily-sentence-block" v-test="'daily-sentence-block'">
                 <div class="sentence-label">每日英文句子</div>
-                <div class="sentence-en">“{{ dailyWord.sentence_en }}”</div>
-                <div class="sentence-zh">{{ dailyWord.sentence_zh }}</div>
+                <div class="sentence-en" v-test="'daily-sentence-en'">“{{ dailyWord.sentence_en }}”</div>
+                <div class="sentence-zh" v-test="'daily-sentence-zh'">{{ dailyWord.sentence_zh }}</div>
             </div>
             <div class="f_button_group">
                 <button

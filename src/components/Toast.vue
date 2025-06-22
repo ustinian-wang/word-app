@@ -1,8 +1,8 @@
 <template>
     <transition name="fade">
-        <div v-if="visible" class="toast" :class="type">
+        <div v-if="visible" class="toast" :class="type" v-test="'toast'">
             <span v-if="type === 'loading'" class="spinner"></span>
-            <span>{{ message }}</span>
+            <span v-test="'toast-message'">{{ message }}</span>
         </div>
     </transition>
 </template>

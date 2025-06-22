@@ -6,8 +6,12 @@
                 <slot>{{ content }}</slot>
             </div>
             <div class="wa-modal-actions">
-                <button class="wa-btn wa-btn-cancel" @click="onCancel">{{ cancelText }}</button>
-                <button class="wa-btn wa-btn-confirm" @click="onConfirm">{{ confirmText }}</button>
+                <button class="wa-btn wa-btn-cancel" v-test="'cancel'" @click="onCancel">
+                    {{ cancelText }}
+                </button>
+                <button class="wa-btn wa-btn-confirm" v-test="'confirm'" @click="onConfirm">
+                    {{ confirmText }}
+                </button>
             </div>
         </div>
     </div>

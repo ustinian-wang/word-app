@@ -55,6 +55,7 @@ export default {
         setDebugSetup(state) {
             return value => {
                 state.debugSetup = value;
+                state.debug = value;
             };
         },
         dbgClipboardFail(state) {

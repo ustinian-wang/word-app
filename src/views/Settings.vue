@@ -37,7 +37,7 @@
 
                 <!-- <span class="setting-unit">px</span> -->
             </div>
-            <div class="setting-item" @click="clearSysCache">
+            <div class="setting-item" v-test="'clearCache'" @click="clearSysCache">
                 <span class="setting-label" style="color: #3578e5">清理缓存</span>
             </div>
             <div class="setting-item" v-if="currDebug">
@@ -52,8 +52,17 @@
             <div class="setting-item">
                 <span class="setting-label">学习记录</span>
                 <div class="setting-actions">
-                    <button type="button" class="wa-button" @click="handleExport">导出</button>
-                    <button type="button" class="wa-button" @click="showImportModal = true">导入</button>
+                    <button type="button" class="wa-button" v-test="'export'" @click="handleExport">
+                        导出
+                    </button>
+                    <button
+                        type="button"
+                        class="wa-button"
+                        v-test="'import'"
+                        @click="showImportModal = true"
+                    >
+                        导入
+                    </button>
                 </div>
             </div>
         </div>

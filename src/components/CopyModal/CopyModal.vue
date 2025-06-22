@@ -1,19 +1,21 @@
 <template>
-    <div v-if="visible" class="copy-modal-mask" @click.self="onCancel">
+    <div v-if="visible" class="copy-modal-mask" v-test="'copy-modal-mask'" @click.self="onCancel">
         <div class="copy-modal">
             <div class="copy-modal-title" v-if="title">{{ title }}</div>
             <div class="copy-modal-content">
                 <textarea readonly>{{ content }}</textarea>
             </div>
             <div class="copy-modal-actions">
-                <button class="wa-btn wa-btn-cancel" @click="onCancel">关闭</button>
-                <button class="wa-btn wa-btn-confirm" @click="onCopy">复制</button>
+                <button class="wa-btn wa-btn-cancel" v-test="'cancel'" @click="onCancel">关闭</button>
+                <button class="wa-btn wa-btn-confirm" v-test="'confirm'" @click="onCopy">复制</button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { copyToClipboard } from '@/kits/copy';
+
 export default {
     name: 'CopyModal',
     props: {
@@ -23,9 +25,8 @@ export default {
     },
     methods: {
         onCopy() {
-            navigator.clipboard.writeText(this.content).then(() => {
+                copyToClipboard(this.content);
                 this.$emit('copied');
-            });
         },
         onCancel() {
             this.$emit('cancel');
