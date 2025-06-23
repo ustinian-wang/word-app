@@ -17,6 +17,7 @@
   },
   "homepage": "https://your-username.github.io/word-app",
   "dependencies": {
+    "@iconify/icons-mdi": "^1.2.48",
     "@ustinian-wang/js-monitor": "^0.0.10",
     "@ustinian-wang/kit": "^1.0.9",
     "axios": "^0.27.2",
