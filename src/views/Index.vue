@@ -1,50 +1,68 @@
 <template>
     <div class="index-page">
         <div class="bg-img" :style="bgStyle"></div>
-        <div class="content" v-if="dailyWord">
-            <div class="daily-word-block" v-test="'daily-word-block'">
-                <div class="daily-label">每日精选单词</div>
-                <div class="daily-word" v-test="'daily-word-en'">{{ dailyWord.en }}</div>
-                <div style="display: flex; gap: 4px; align-items: center; justify-content: center">
-                    <template v-if="dailyWord.ukspeech">
-                        <wa-phonetic-audio
-                            :phonetic="dailyWord.ukphone"
-                            :audioUrl="dailyWord.ukspeech"
-                        />
-                    </template>
-                    <template v-if="dailyWord.usspeech">
-                        <wa-phonetic-audio
-                            :phonetic="dailyWord.usphone"
-                            :audioUrl="dailyWord.usspeech"
-                        />
-                    </template>
-                    <!-- <template v-else>
-                        <wa-phonetic-audio :word="dailyWord.en" />
-                    </template> -->
-                </div>
+        <div class="content" style="display: flex; flex-direction: column; gap: 24px">
+            <div style="padding-top: 10vh">
+                <template v-if="dailyWord">
+                    <div class="daily-word-block" v-test="'daily-word-block'">
+                        <div class="daily-label">每日精选单词</div>
+                        <div class="daily-word" v-test="'daily-word-en'">{{ dailyWord.en }}</div>
+                        <div
+                            style="
+                                display: flex;
+                                gap: 4px;
+                                align-items: center;
+                                justify-content: center;
+                            "
+                        >
+                            <template v-if="dailyWord.ukspeech">
+                                <wa-phonetic-audio
+                                    :phonetic="dailyWord.ukphone"
+                                    :audioUrl="dailyWord.ukspeech"
+                                />
+                            </template>
+                            <template v-if="dailyWord.usspeech">
+                                <wa-phonetic-audio
+                                    :phonetic="dailyWord.usphone"
+                                    :audioUrl="dailyWord.usspeech"
+                                />
+                            </template>
+                            <!-- <template v-else>
+                            <wa-phonetic-audio :word="dailyWord.en" />
+                        </template> -->
+                        </div>
 
-                <div class="daily-zh" v-test="'daily-word-zh'">{{ dailyWord.zh }}</div>
+                        <div class="daily-zh" v-test="'daily-word-zh'">{{ dailyWord.zh }}</div>
+                    </div>
+                    <div class="daily-sentence-block" v-test="'daily-sentence-block'">
+                        <div class="sentence-label">每日英文句子</div>
+                        <div class="sentence-en" v-test="'daily-sentence-en'">
+                            “{{ dailyWord.sentence_en }}”
+                        </div>
+                        <div class="sentence-zh" v-test="'daily-sentence-zh'">
+                            {{ dailyWord.sentence_zh }}
+                        </div>
+                    </div>
+                </template>
             </div>
-            <div class="daily-sentence-block" v-test="'daily-sentence-block'">
-                <div class="sentence-label">每日英文句子</div>
-                <div class="sentence-en" v-test="'daily-sentence-en'">“{{ dailyWord.sentence_en }}”</div>
-                <div class="sentence-zh" v-test="'daily-sentence-zh'">{{ dailyWord.sentence_zh }}</div>
-            </div>
-            <div class="f_button_group">
-                <button
-                    v-for="option in goOptions"
-                    :key="option.status"
-                    class="start-btn"
-                    :class="option.type || 'primary'"
-                    :disabled="buttonLoading"
-                    v-test="`${option.type}`"
-                    @click="handleButtonClick(option)"
-                >
-                    {{ option.text }}
-                </button>
+            <div style="padding: 32px 0">
+                <IcpRecord />
             </div>
         </div>
-        <IcpRecord />
+
+        <div class="f_button_group">
+            <button
+                v-for="option in goOptions"
+                :key="option.status"
+                class="start-btn"
+                :class="option.type || 'primary'"
+                :disabled="buttonLoading"
+                v-test="`${option.type}`"
+                @click="handleButtonClick(option)"
+            >
+                {{ option.text }}
+            </button>
+        </div>
     </div>
 </template>
 
@@ -211,20 +229,17 @@ export default {
         }
     },
     beforeMount() {
-        
         this.dailyWord = {
-                en: 'fickleness',
-                zh: 'n.  浮躁； 变化无常',
-                sentence_en: 'His story became a parable for the fickleness of art and life.',
-                sentence_zh: '他的故事成为一个说明艺术与生活变化无常的寓言。',
-                ukphone: "/'fɪklnəs/",
-                ukspeech: 'https://dict.youdao.com/dictvoice?audio=fickleness&type=1',
-                bg: 'https://image.pollinations.ai/prompt/fickleness'
-            };
+            en: 'fickleness',
+            zh: 'n.  浮躁； 变化无常',
+            sentence_en: 'His story became a parable for the fickleness of art and life.',
+            sentence_zh: '他的故事成为一个说明艺术与生活变化无常的寓言。',
+            ukphone: "/'fɪklnəs/",
+            ukspeech: 'https://dict.youdao.com/dictvoice?audio=fickleness&type=1',
+            bg: 'https://image.pollinations.ai/prompt/fickleness'
+        };
     },
     async mounted() {
-
-
         /** @type {WordInfoResponse} */
         try {
             let res = await getRandomWordInfoApi();
@@ -286,14 +301,17 @@ export default {
     flex-direction: column;
     align-items: center;
     position: absolute;
-    top: 10vh;
+    top: 0;
+    overflow: auto;
+    box-sizing: border-box;
+    justify-content: space-between;
+    height: 100vh;
 }
 .daily-word-block {
     /* background: #fff; */
     border-radius: 14px;
     /* box-shadow: 0 4px 24px rgba(60,60,60,0.08); */
     padding: 28px 24px 18px 24px;
-    margin-bottom: 24px;
     width: 100%;
     text-align: center;
     box-sizing: border-box;
@@ -324,10 +342,10 @@ export default {
     /* background: #f0f4fa; */
     border-radius: 12px;
     padding: 18px 18px 12px 18px;
-    margin-bottom: 32px;
     width: 100%;
     text-align: center;
     box-sizing: border-box;
+    padding-bottom: calc(10vh + 56px);
 }
 .sentence-label {
     color: #4f8cff;

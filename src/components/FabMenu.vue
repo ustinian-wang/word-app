@@ -43,13 +43,18 @@ export default {
         ...mapState(['isFullscreen']),
         menuItems() {
             return [
-                { test: "recognize", label: '图片识别', icon: '📷', route: '/recognize?auto=true' },
+                { test: 'recognize', label: 'AI识词', icon: '📷', route: '/recognize?auto=true' },
                 // { test: "words", label: '背单词', icon: '📖', route: '/words' },
                 // { test: "wordbooks", label: '词库', icon: '📚', route: '/wordbooks' },
-                { test: "records", label: '学习记录', icon: '📊', route: '/records' },
+                { test: 'records', label: '学习记录', icon: '📊', route: '/records' },
                 // { test: "clearCache", label: '清理缓存', icon: '🧹', action: 'clearCache' },
-                { test: "fullscreen", label: '全屏', icon: this.fullscreenIcon, action: 'toggleFullscreen' },
-                { test: "settings", label: '设置', icon: '⚙️', route: '/settings' }
+                // {
+                //     test: 'fullscreen',
+                //     label: '全屏',
+                //     icon: this.fullscreenIcon,
+                //     action: 'toggleFullscreen'
+                // },
+                { test: 'settings', label: '设置', icon: '⚙️', route: '/settings' }
                 // { test: "index", label: '首页', icon: '🏠', route: '/' }
             ];
         },
@@ -223,9 +228,7 @@ export default {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition:
-        box-shadow 0.2s,
-        background 0.2s;
+    transition: box-shadow 0.2s, background 0.2s;
 }
 
 .fab-main:active {

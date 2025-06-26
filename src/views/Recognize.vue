@@ -1,7 +1,7 @@
 <template>
     <div id="app" class="recognize-page">
         <div class="recognize-header">
-            <span class="recognize-title">图片识别</span>
+            <span class="recognize-title">{{ RouterDef.Recognize.title }}</span>
         </div>
         <div class="recognize-card-group">
             <div class="recognize-card upload-card">
@@ -45,11 +45,17 @@ import RecognitionResult from '../components/RecognitionResult.vue';
 import { recognizeApi } from '../apis';
 import { $message } from '../kits/toast';
 import { compressImage } from '../kits/img';
+import { RouterDef } from '@/router/RouterDef';
 
 export default {
     name: 'Recognize',
     components: {
         RecognitionResult
+    },
+    computed: {
+        RouterDef() {
+            return RouterDef;
+        }
     },
     data() {
         return {

@@ -22,8 +22,6 @@ export default {
     text-align: center;
     font-size: 14px;
     color: #888;
-    position: absolute;
-    bottom: 5vh;
 }
 
 .icp-container a {
