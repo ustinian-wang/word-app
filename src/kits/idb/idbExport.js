@@ -28,9 +28,16 @@ export async function exportAppData2Clipboard() {
         return getErrRst('没有需要导出的学习记录。');
     }
     const dataStr = JSON.stringify(data);
-
-    copyToClipboard(dataStr);
-    return getOkRst('学习记录已成功导出到剪贴板！');
+    let rst = await copyToClipboard(dataStr);
+    if (rst.success) {
+        return $message.success(rst.msg);
+    } else {
+        openCopyModal({
+            title: '全选复制内容',
+            content: dataStr
+        });
+        // return res;
+    }
 }
 
 /**

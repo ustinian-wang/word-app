@@ -144,12 +144,7 @@ export default {
             alert('设置已保存（仅本地演示，未持久化）');
         },
         async handleExport() {
-            let res = await exportAppData2Clipboard();
-            if (res.success) {
-                $message.success('导出成功');
-            } else {
-                $message.error(res.msg || '导出失败');
-            }
+            exportAppData2Clipboard();
         },
         async handleImport() {
             if (!this.importData) {

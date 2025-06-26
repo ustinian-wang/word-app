@@ -370,7 +370,7 @@ export default {
 
 .chart-container {
     width: 100%;
-    height: calc(100vh - 152px);
+    height: calc(70vh);
     min-height: 400px;
     margin-top: 20px;
 }

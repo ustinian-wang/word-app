@@ -6,17 +6,19 @@ let modalInstance = null;
 export function openCopyModal({ title = '复制内容', content = '' } = {}) {
     return new Promise(resolve => {
         const ModalConstructor = Vue.extend(CopyModal);
+        let propsData = {
+            visible: true,
+            title,
+            content
+        }
         modalInstance = new ModalConstructor({
-            propsData: {
-                visible: true,
-                title,
-                content
-            }
+            propsData
         });
         modalInstance.$mount();
         document.body.appendChild(modalInstance.$el);
 
         const cleanup = () => {
+            propsData.visible = false;
             if (modalInstance) {
                 modalInstance.$destroy();
                 if (modalInstance.$el && modalInstance.$el.parentNode) {

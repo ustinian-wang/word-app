@@ -13,6 +13,10 @@
         </nav>
         <FabMenu />
         <div id="vconsole"></div>
+        <div v-if="loading" class="global-loading">
+            <div class="spinner"></div>
+            <div class="loading-text">页面加载中...</div>
+        </div>
     </div>
 </template>
 
@@ -29,6 +33,11 @@ export default {
         BackButton,
         FabMenu
     },
+    data() {
+        return {
+            loading: false
+        };
+    },
     methods: {
         toggleFullscreen() {
             toggleFullscreen(this.$el);
@@ -36,6 +45,15 @@ export default {
     },
     beforeCreate() {
         initDefaultWordBooks();
+    },
+    created() {
+        this.$router.beforeEach((to, from, next) => {
+            this.loading = true;
+            next();
+        });
+        this.$router.afterEach(() => {
+            this.loading = false;
+        });
     }
 };
 </script>
@@ -79,5 +97,33 @@ body,
 .bottom-nav .active {
     color: #3578e5;
     font-weight: bold;
+}
+.global-loading {
+  position: fixed;
+  z-index: 99999;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #1890ff;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+.loading-text {
+  color: #1890ff;
+  font-size: 16px;
+  font-weight: bold;
 }
 </style>

@@ -3,19 +3,21 @@
         <div class="copy-modal">
             <div class="copy-modal-title" v-if="title">{{ title }}</div>
             <div class="copy-modal-content">
-                <textarea readonly>{{ content }}</textarea>
+                <textarea readonly :value="content"></textarea>
             </div>
             <div class="copy-modal-actions">
-                <button class="wa-btn wa-btn-cancel" v-test="'cancel'" @click="onCancel">关闭</button>
-                <button class="wa-btn wa-btn-confirm" v-test="'confirm'" @click="onCopy">复制</button>
+                <button class="wa-btn wa-btn-cancel" v-test="'cancel'" @click="onCancel">
+                    关闭
+                </button>
+                <!-- <button class="wa-btn wa-btn-confirm" v-test="'confirm'" @click="onCopy">
+                    复制
+                </button> -->
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import { copyToClipboard } from '@/kits/copy';
-
 export default {
     name: 'CopyModal',
     props: {
@@ -25,8 +27,7 @@ export default {
     },
     methods: {
         onCopy() {
-                copyToClipboard(this.content);
-                this.$emit('copied');
+            this.$emit('copied');
         },
         onCancel() {
             this.$emit('cancel');
@@ -107,4 +108,4 @@ export default {
 .wa-btn-confirm:hover {
     background: #2256a5;
 }
-</style> 
+</style>

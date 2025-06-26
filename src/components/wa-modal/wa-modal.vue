@@ -1,17 +1,40 @@
 <template>
     <transition name="modal-fade">
-        <div v-if="visible" class="wa-modal-overlay" v-test="'wa-modal-overlay'" @click.self="$emit('update:visible', false)">
+        <div
+            v-if="visible"
+            class="wa-modal-overlay"
+            v-test="'wa-modal-overlay'"
+            @click.self="$emit('update:visible', false)"
+        >
             <div class="wa-modal" :style="{ width }">
                 <div v-if="title" class="wa-modal-header">
                     {{ title }}
-                    <button class="wa-modal-close" v-test="'wa-modal-close'" @click="$emit('update:visible', false)">&times;</button>
+                    <button
+                        class="wa-modal-close"
+                        v-test="'wa-modal-close'"
+                        @click="$emit('update:visible', false)"
+                    >
+                        &times;
+                    </button>
                 </div>
                 <div class="wa-modal-body">
                     <slot></slot>
                 </div>
                 <div class="wa-modal-footer">
-                    <button class="wa-button-cancel" v-test="'wa-modal-cancel'" @click="$emit('update:visible', false)">取消</button>
-                    <button class="wa-button-confirm" v-test="'wa-modal-confirm'" @click="handleConfirm">确认</button>
+                    <button
+                        class="wa-button-cancel"
+                        v-test="'wa-modal-cancel'"
+                        @click="$emit('update:visible', false)"
+                    >
+                        取消
+                    </button>
+                    <button
+                        class="wa-button-confirm"
+                        v-test="'wa-modal-confirm'"
+                        @click="handleConfirm"
+                    >
+                        确认
+                    </button>
                 </div>
             </div>
         </div>
@@ -88,7 +111,14 @@ export default {
     justify-content: center;
     gap: 24px;
 }
-.wa-btn {
+.wa-modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 18px;
+}
+.wa-button-cancel,
+.wa-button-confirm {
     min-width: 64px;
     padding: 7px 0;
     border-radius: 8px;
@@ -98,18 +128,45 @@ export default {
     cursor: pointer;
     transition: background 0.18s;
 }
-.wa-btn-cancel {
+.wa-button-cancel {
     background: #f0f4fa;
     color: #888;
 }
-.wa-btn-cancel:hover {
+.wa-button-cancel:hover {
     background: #e0e7ef;
 }
-.wa-btn-confirm {
+.wa-button-confirm {
     background: #3578e5;
     color: #fff;
 }
-.wa-btn-confirm:hover {
+.wa-button-confirm:hover {
     background: #2256a5;
+}
+.wa-modal-overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.18);
+    z-index: 1000;
+}
+.wa-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.18s;
+    line-height: 1;
+}
+.wa-modal-close:hover {
+    color: #3578e5;
 }
 </style> 

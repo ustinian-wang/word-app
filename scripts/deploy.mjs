@@ -58,6 +58,7 @@ async function deployWithSSH(config, spinner) {
         // --- 修正前端文件上传逻辑 ---
         const localAppDistPath = path.join(config.SRC_APP_DIR, 'dist');
         const localAppDockerfile = path.join(config.SRC_APP_DIR, 'Dockerfile');
+        const localAppNginxConf = path.join(config.SRC_APP_DIR, 'etc/nginx.conf');
 
         // --- 新增：上传前置检查 ---
         if (!fs.existsSync(localAppDistPath)) {
@@ -72,6 +73,12 @@ async function deployWithSSH(config, spinner) {
             console.error(`   检查路径: ${path.resolve(localAppDockerfile)}`);
             console.error(chalk.yellow('   💡 解决方法：请确认 Dockerfile 文件在前端项目根目录下。\n'));
             throw new Error('Local Dockerfile not found');
+        }
+        if (!fs.existsSync(localAppNginxConf)) {
+            console.error(chalk.red.bold(`\n❌ 部署中止：在前端源码目录 "${config.SRC_APP_DIR}" 中找不到 nginx.conf！`));
+            console.error(`   检查路径: ${path.resolve(localAppNginxConf)}`);
+            console.error(chalk.yellow('   💡 解决方法：请确认 nginx.conf 文件在前端项目根目录下。\n'));
+            throw new Error('Local nginx.conf not found');
         }
         // --- 检查结束 ---
 
@@ -89,6 +96,8 @@ async function deployWithSSH(config, spinner) {
 
         await ssh.putFile(localAppDockerfile, `${config.TARGET_APP_DIR}/Dockerfile`);
         console.log(chalk.green('Dockerfile 上传完成。'));
+        await ssh.putFile(localAppNginxConf, `${config.TARGET_APP_DIR}/etc/nginx.conf`);
+        console.log(chalk.green('nginx.conf 上传完成。'));
         // --- 前端上传结束 ---
 
         // --- 修正后端项目上传逻辑 ---
