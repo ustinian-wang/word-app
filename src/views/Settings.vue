@@ -71,6 +71,11 @@
 
         <div class="settings-footer">更多设置即将开放…</div>
 
+        <!-- 意见反馈入口 -->
+        <div class="settings-feedback">
+            <button type="button" class="wa-button" @click="openFeedback">意见反馈</button>
+        </div>
+
         <!-- 导入弹窗 -->
         <wa-modal :visible.sync="showImportModal" title="导入学习记录" @confirm="handleImport">
             <p class="import-description">请将之前导出的学习记录文本粘贴到下方文本框中。</p>
@@ -159,6 +164,9 @@ export default {
             } else {
                 $message.error(res.msg || '导入失败');
             }
+        },
+        openFeedback() {
+            window.open('https://support.qq.com/product/741648', '_blank');
         }
     }
 };
@@ -303,5 +311,9 @@ button[type='button']:hover {
     border-radius: 4px;
     resize: vertical;
     font-family: monospace;
+}
+.settings-feedback {
+    margin: 16px 0 0 0;
+    text-align: center;
 }
 </style>
