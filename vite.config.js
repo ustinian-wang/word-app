@@ -24,6 +24,7 @@ export default ({ mode }) => {
     const VITE_API = env.VITE_API;
     const VITE_PORT = env.VITE_PORT;
     const VITE_PROXY_API = env.VITE_PROXY_API;
+    const VITE_BASE = env.VITE_BASE
     // console.log(env);
 
     const plugins = [vue2()];
@@ -131,7 +132,7 @@ export default ({ mode }) => {
                 '@': resolve(__dirname, 'src')
             }
         },
-        base: '/word-app',
+        base: VITE_BASE,
         build: {
             outDir: 'dist',
             rollupOptions: {

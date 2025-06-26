@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "vite --base /",
-    "build": "vite build",
+    "build": "vite build --mode=production",
+    "build:github": "vite build --mode=github",
     "upus": "yarn upgrade @ustinian-wang/kit@latest @ustinian-wang/js-monitor@latest",
     "build:production": "vite build --mode production",
     "lint": "eslint src --ext .js,.vue --fix",
