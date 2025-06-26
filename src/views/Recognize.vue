@@ -125,7 +125,7 @@ export default {
     left: 0;
     right: 0;
     text-align: center;
-    z-index: 20;
+    z-index: 1000;
 }
 .recognize-title {
     display: inline-flex;

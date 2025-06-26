@@ -211,7 +211,7 @@ export default {
 <style scoped>
 .fab-menu {
     position: fixed;
-    z-index: 3000;
+    z-index: 1000;
     user-select: none;
     cursor: move;
 }

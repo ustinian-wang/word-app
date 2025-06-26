@@ -289,11 +289,11 @@ export default {
     background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80')
         center/cover no-repeat;
     opacity: 0.18;
-    z-index: 1;
+    z-index: 1000;
 }
 .content {
     position: relative;
-    z-index: 2;
+    z-index: 1000;
     width: 100vw;
     max-width: 420px;
     margin: 0 auto;
@@ -372,7 +372,7 @@ export default {
     justify-content: center;
     align-items: center;
     gap: 20px;
-    z-index: 10;
+    z-index: 1000;
     padding: 0 16px;
     box-sizing: border-box;
 }
