@@ -43,7 +43,7 @@ export default {
         ...mapState(['isFullscreen']),
         menuItems() {
             return [
-                { test: 'recognize', label: 'AI识词', icon: '📷', route: '/recognize?auto=true' },
+                // { test: 'recognize', label: 'AI识词', icon: '📷', route: '/recognize?auto=true' },
                 // { test: "words", label: '背单词', icon: '📖', route: '/words' },
                 // { test: "wordbooks", label: '词库', icon: '📚', route: '/wordbooks' },
                 { test: 'records', label: '学习记录', icon: '📊', route: '/records' },
