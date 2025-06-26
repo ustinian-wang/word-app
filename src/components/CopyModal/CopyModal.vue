@@ -3,21 +3,23 @@
         <div class="copy-modal">
             <div class="copy-modal-title" v-if="title">{{ title }}</div>
             <div class="copy-modal-content">
-                <textarea readonly :value="content"></textarea>
+                <textarea ref="copyTextarea" readonly :value="content"></textarea>
             </div>
             <div class="copy-modal-actions">
                 <button class="wa-btn wa-btn-cancel" v-test="'cancel'" @click="onCancel">
                     关闭
                 </button>
-                <!-- <button class="wa-btn wa-btn-confirm" v-test="'confirm'" @click="onCopy">
+                <button class="wa-btn wa-btn-confirm" v-test="'confirm'" @click="onCopy">
                     复制
-                </button> -->
+                </button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { $message } from '@/kits/toast';
+
 export default {
     name: 'CopyModal',
     props: {
@@ -27,7 +29,21 @@ export default {
     },
     methods: {
         onCopy() {
-            this.$emit('copied');
+            // 聚焦并全选 textarea
+            this.$refs.copyTextarea.focus();
+            this.$refs.copyTextarea.select();
+            // 尝试复制
+            try {
+                const success = document.execCommand('copy');
+                if (success) {
+                    $message.success('复制成功');
+                    this.$emit('copied');
+                } else {
+                    $message.error('复制失败，请手动复制');
+                }
+            } catch (e) {
+                $message.error('复制失败，请手动复制');
+            }
         },
         onCancel() {
             this.$emit('cancel');
