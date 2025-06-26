@@ -142,5 +142,5 @@ export function getAllDictionaryTypes() {
 
 // 获取推荐的词典列表
 export function getRecommendedDictionaries() {
-    return ['youdao', 'iciba', 'bing', 'sogou', 'dictcn', 'aiciba'];
+    return ['iciba', 'sogou'];
 } 
