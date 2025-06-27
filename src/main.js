@@ -5,6 +5,7 @@ import store from './store';
 import { Icon } from '@iconify/vue2';
 import { registerSW } from 'virtual:pwa-register';
 import { test } from './directives/test';
+import { getCloudApp } from './cloud/app';
 // import './styles/index.less';
 import 'vconsole';
 
@@ -46,3 +47,6 @@ new Vue({
 
 window.$router = router;
 window.$store = store;
+
+let app = getCloudApp();
+console.log(app);

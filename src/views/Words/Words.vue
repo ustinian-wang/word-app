@@ -478,7 +478,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    z-index: 10;
+    z-index: 1000;
     pointer-events: none;
     opacity: 0.92;
 }
@@ -586,7 +586,7 @@ export default {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.18);
-    z-index: 1100;
+    z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;

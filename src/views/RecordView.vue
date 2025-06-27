@@ -341,7 +341,7 @@ export default {
     position: absolute;
     // bottom: 20px;
     // right: 20px;
-    z-index: 1;
+    z-index: 1000;
     top: 22px;
     left: 50%;
     transform: translateX(-50%);

@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import app from '@/kits/cloudbase';
+
 export default {
     name: 'Register',
     data() {
@@ -48,7 +50,7 @@ export default {
         };
     },
     methods: {
-        handleSubmit() {
+        async handleSubmit() {
             if (!this.form.account || !this.form.password || !this.form.confirmPassword) {
                 alert('请填写完整信息');
                 return;
@@ -57,8 +59,18 @@ export default {
                 alert('两次输入的密码不一致');
                 return;
             }
-            // 注册逻辑
-            alert('注册成功（示例）');
+
+            function btoaUtf8(str) {
+              return btoa(unescape(encodeURIComponent(str)));
+            }
+            try {
+                console.log(btoaUtf8(this.form.account), btoaUtf8(this.form.password));
+                await app.auth().signUpWithUsernameAndPassword(this.form.account, this.form.password);
+                alert('注册成功，请登录');
+                this.$router.push('/login');
+            } catch (e) {
+                alert(e.message || '注册失败');
+            }
         }
     }
 };
