@@ -9,14 +9,14 @@ export const dictionaryConfig = {
         color: '#1e88e5',
         description: '网易有道词典'
     },
-    // 金山词霸 - 国内可直接访问
+    // 金山 - 国内可直接访问
     iciba: {
-        name: '金山词霸',
+        name: '金山',
         nameEn: 'iCIBA',
         url: 'https://www.iciba.com/word?w=',
         icon: 'mdi:book-open-variant',
         color: '#1976d2',
-        description: '金山词霸在线词典'
+        description: '金山在线词典'
     },
     // 百度翻译 - 国内可直接访问
     baidu: {
@@ -27,14 +27,14 @@ export const dictionaryConfig = {
         color: '#388e3c',
         description: '百度翻译词典'
     },
-    // 搜狗翻译 - 国内可直接访问
+    // 搜狗 - 国内可直接访问
     sogou: {
-        name: '搜狗翻译',
+        name: '搜狗',
         nameEn: 'Sogou Translate',
         url: 'https://fanyi.sogou.com/text?keyword=',
         icon: 'mdi:book-open-variant',
         color: '#7b1fa2',
-        description: '搜狗翻译词典'
+        description: '搜狗词典'
     },
     // 腾讯翻译 - 国内可直接访问
     tencent: {

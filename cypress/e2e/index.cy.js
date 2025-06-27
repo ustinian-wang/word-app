@@ -22,7 +22,7 @@ context('首页', () => {
         cy.get('[data-test="daily-sentence-zh"]').should('not.be.empty');
     });
 
-    it('点击“背单词”按钮应跳转到单词学习页面', () => {
+    it('点击“背一背”按钮应跳转到单词学习页面', () => {
         cy.get('[data-test="primary"]').click();
         cy.location('hash').should('include', '/words');
     });

@@ -8,7 +8,7 @@
         <nav class="bottom-nav" v-if="false">
             <router-link to="/" exact-active-class="active">首页</router-link>
             <router-link to="/recognize" exact-active-class="active">图片识别</router-link>
-            <router-link to="/words" exact-active-class="active">背单词</router-link>
+            <router-link to="/words" exact-active-class="active">背一背</router-link>
             <router-link to="/wordbooks" exact-active-class="active">词库</router-link>
         </nav>
         <FabMenu />

@@ -9,8 +9,8 @@ export const RouterDef = {
     Words: {
         path: '/words',
         component: () => import('@/views/Words/Words.vue'),
-        name: '背单词',
-        title: '背单词'
+        name: '背一背',
+        title: '背一背'
     },
     ReviewWords: {
         path: '/reviewWords',

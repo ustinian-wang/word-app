@@ -7,5 +7,5 @@ alwaysApply: false
 - 这个页面没有导航
 - 页面中间有背景图
 - 展示每天精选的单词和英文句子
-- 有一个开始背单词的示意入口，点击后跳转到 [words.mdc](mdc:.cursor/rules/words.mdc) 的界面
+- 有一个背一背的示意入口，点击后跳转到 [words.mdc](mdc:.cursor/rules/words.mdc) 的界面
 
