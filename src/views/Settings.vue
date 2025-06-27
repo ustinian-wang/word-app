@@ -30,7 +30,7 @@
                 <wa-switch v-test="'wa-switch-debug'" v-model="currDebug" />
             </div>
             <div class="setting-item" v-test="'setting-group-size'">
-                <span class="setting-label">主单词字号</span>
+                <span class="setting-label">每次学习数量</span>
                 <div class="setting-control">
                     <wa-input-number
                         v-test="'setting-group-size'"

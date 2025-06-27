@@ -5,7 +5,7 @@
             <div style="padding-top: 10vh">
                 <template v-if="dailyWord">
                     <div class="daily-word-block" v-test="'daily-word-block'">
-                        <div class="daily-label">每日精选单词</div>
+                        <div class="daily-label">每日精选</div>
                         <div class="daily-word" v-test="'daily-word-en'">{{ dailyWord.en }}</div>
                         <div
                             style="
@@ -35,7 +35,7 @@
                         <div class="daily-zh" v-test="'daily-word-zh'">{{ dailyWord.zh }}</div>
                     </div>
                     <div class="daily-sentence-block" v-test="'daily-sentence-block'">
-                        <div class="sentence-label">每日英文句子</div>
+                        <div class="sentence-label">每日一句</div>
                         <div class="sentence-en" v-test="'daily-sentence-en'">
                             “{{ dailyWord.sentence_en }}”
                         </div>
@@ -109,7 +109,7 @@ export default {
             if (this.study_status === STUDY_STATUS_DEF.DEFAULT) {
                 return [
                     {
-                        text: '背单词',
+                        text: '背一背',
                         nextStatus: STUDY_STATUS_DEF.LEARNING,
                         type: 'primary',
                         action: () => {
@@ -130,7 +130,7 @@ export default {
             } else if (this.study_status === STUDY_STATUS_DEF.LEARNING) {
                 return [
                     {
-                        text: '继续背单词',
+                        text: '继续背一背',
                         nextStatus: STUDY_STATUS_DEF.LEARNING,
                         type: 'primary',
                         action: () => {
@@ -163,7 +163,7 @@ export default {
             } else if (this.study_status === STUDY_STATUS_DEF.REVIEWING) {
                 return [
                     {
-                        text: '背单词',
+                        text: '背一背',
                         nextStatus: STUDY_STATUS_DEF.LEARNING,
                         type: 'primary',
                         action: () => {
@@ -184,7 +184,7 @@ export default {
             } else if (this.study_status === STUDY_STATUS_DEF.REVIEWED) {
                 return [
                     {
-                        text: '背单词',
+                        text: '背一背',
                         nextStatus: STUDY_STATUS_DEF.DEFAULT,
                         type: 'primary',
                         action: () => {
@@ -206,7 +206,7 @@ export default {
 
             return [
                 {
-                    text: '背单词',
+                    text: '背一背',
                     nextStatus: STUDY_STATUS_DEF.DEFAULT,
                     type: 'primary',
                     action: () => {
@@ -220,9 +220,9 @@ export default {
         buttonText() {
             switch (this.study_status) {
                 case STUDY_STATUS_DEF.DEFAULT:
-                    return '背单词';
+                    return '背一背';
                 case STUDY_STATUS_DEF.LEARNING:
-                    return '继续背单词';
+                    return '继续背一背';
                 case STUDY_STATUS_DEF.LEARNED:
                     return '复习';
             }
