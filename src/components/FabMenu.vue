@@ -54,8 +54,10 @@ export default {
                 //     icon: this.fullscreenIcon,
                 //     action: 'toggleFullscreen'
                 // },
-                { test: 'settings', label: '设置', icon: '⚙️', route: '/settings' }
+                { test: 'settings', label: '设置', icon: '⚙️', route: '/settings' },
                 // { test: "index", label: '首页', icon: '🏠', route: '/' }
+                { test: 'login', label: '登录', icon: '🔒', route: '/login' },
+                { test: 'register', label: '注册', icon: '🔒', route: '/register' }
             ];
         },
         fullscreenIcon() {

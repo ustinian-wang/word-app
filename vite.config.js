@@ -26,7 +26,7 @@ export default ({ mode }) => {
     const VITE_PROXY_API = env.VITE_PROXY_API;
     const VITE_BASE = env.VITE_BASE;
     const VITE_CLOUD_CLIENT_ID = env.VITE_CLOUD_CLIENT_ID || 'cloud1-0g1b3rvpff0d993b';
-    const VITE_CLOUD_ENV = env.VITE_CLOUD_ENV || 'development';
+    const VITE_CLOUD_ENV = env.VITE_CLOUD_ENV || 'cloud1-0g1b3rvpff0d993b';
     // console.log(env);
 
     const plugins = [vue2()];

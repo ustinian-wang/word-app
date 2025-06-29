@@ -5,7 +5,7 @@ import store from './store';
 import { Icon } from '@iconify/vue2';
 import { registerSW } from 'virtual:pwa-register';
 import { test } from './directives/test';
-import { getCloudApp } from './cloud/app';
+import { getAllUsers, getCloudApp } from './cloud/app';
 // import './styles/index.less';
 import 'vconsole';
 
@@ -48,5 +48,12 @@ new Vue({
 window.$router = router;
 window.$store = store;
 
-let app = getCloudApp();
-console.log(app);
+// window.cloudApp = getCloudApp();
+// const auth = app.auth({
+//     persistence: 'local'
+// });
+
+// auth.onAuthStateChanged(user => {
+//     console.log(user);
+// });
+window.getAllUsers = getAllUsers;
