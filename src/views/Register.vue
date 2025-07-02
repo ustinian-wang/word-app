@@ -4,7 +4,7 @@
             <div class="auth-title">注册</div>
             <form @submit.prevent="handleSubmit">
                 <input
-                    v-model="form.account"
+                    v-model="form.username"
                     placeholder="请输入账号"
                     class="auth-input"
                     type="text"
@@ -35,7 +35,8 @@
 </template>
 
 <script>
-import app from '@/kits/cloudbase';
+import { registerApi } from '@/apis/userApi';
+import $message from '@/kits/toast';
 
 export default {
     name: 'Register',
@@ -43,7 +44,7 @@ export default {
         return {
             isPhoneMode: true, // 可扩展为邮箱/手机号切换
             form: {
-                account: '',
+                username: '',
                 password: '',
                 confirmPassword: ''
             }
@@ -51,25 +52,20 @@ export default {
     },
     methods: {
         async handleSubmit() {
-            if (!this.form.account || !this.form.password || !this.form.confirmPassword) {
-                alert('请填写完整信息');
+            if (!this.form.username || !this.form.password || !this.form.confirmPassword) {
+                $message.warning('请填写完整信息');
                 return;
             }
             if (this.form.password !== this.form.confirmPassword) {
-                alert('两次输入的密码不一致');
+                $message.warning('两次输入的密码不一致');
                 return;
             }
-
-            function btoaUtf8(str) {
-              return btoa(unescape(encodeURIComponent(str)));
-            }
-            try {
-                console.log(btoaUtf8(this.form.account), btoaUtf8(this.form.password));
-                await app.auth().signUpWithUsernameAndPassword(this.form.account, this.form.password);
-                alert('注册成功，请登录');
-                this.$router.push('/login');
-            } catch (e) {
-                alert(e.message || '注册失败');
+            let res = await registerApi(this.form);
+            if (res.data.success) {
+                $message.success(res.data.msg);
+                this.$router.push('/');
+            } else {
+                $message.error(res.data.msg);
             }
         }
     }

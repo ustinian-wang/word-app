@@ -1,10 +1,10 @@
 <template>
     <div class="auth-page">
         <div class="auth-container">
-            <div class="auth-title">{{ isLogin ? '登录' : '注册' }}</div>
+            <div class="auth-title">{{ true ? '登录' : '注册' }}</div>
             <form @submit.prevent="handleSubmit">
                 <input
-                    v-model="form.account"
+                    v-model="form.username"
                     placeholder="请输入账号"
                     class="auth-input"
                     type="text"
@@ -17,81 +17,46 @@
                     type="password"
                     autocomplete="current-password"
                 />
-                <transition name="fade">
-                    <input
-                        v-if="!isLogin"
-                        v-model="form.code"
-                        placeholder="请输入验证码"
-                        class="auth-input"
-                        type="text"
-                        autocomplete="off"
-                        style="margin-bottom: 0"
-                    />
-                </transition>
-                <div v-if="!isLogin" class="auth-code-row">
-                    <button
-                        type="button"
-                        class="auth-code-btn"
-                        :disabled="codeCountdown > 0"
-                        @click="sendCode"
-                    >
-                        {{ codeCountdown > 0 ? codeCountdown + 's后重试' : '获取验证码' }}
-                    </button>
-                </div>
-                <button class="auth-btn" type="submit">{{ isLogin ? '登录' : '注册' }}</button>
+                <button class="auth-btn" type="submit">登录</button>
             </form>
             <div class="auth-switch">
-                <span>{{ isLogin ? '还没有账号？' : '已有账号？' }}</span>
-                <a href="javascript:;" @click="isLogin = !isLogin">{{
-                    isLogin ? '注册' : '登录'
-                }}</a>
+                <span>还没有账号？</span>
+                <a href="/#/register">注册</a>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import app from '@/kits/cloudbase';
+import { loginApi } from '@/apis/userApi';
+import $message from '@/kits/toast';
 
 export default {
     name: 'Login',
     data() {
         return {
-            isLogin: true,
+            true: true,
             isPhoneMode: true, // 可扩展为邮箱/手机号切换
-            codeCountdown: 0,
             form: {
-                account: '',
-                password: '',
-                code: ''
+                username: '',
+                password: ''
             }
         };
     },
     methods: {
         async handleSubmit() {
-            if (!this.form.account || !this.form.password) {
+            if (!this.form.username || !this.form.password) {
                 alert('请填写完整信息');
                 return;
             }
-            try {
-                await app.auth().signInWithUsernameAndPassword(this.form.account, this.form.password);
-                alert('登录成功');
+            let res = await loginApi(this.form);
+            if (res.data.success) {
+                $message.success(res.data.msg);
+                res.data.data.token && localStorage.setItem('token', res.data.data.token);
                 this.$router.push('/settings');
-            } catch (e) {
-                alert(e.message || '登录失败');
+            } else {
+                $message.error(res.data.msg);
             }
-        },
-        sendCode() {
-            if (!this.form.account) {
-                alert('请先输入手机号/邮箱');
-                return;
-            }
-            this.codeCountdown = 60;
-            const timer = setInterval(() => {
-                this.codeCountdown--;
-                if (this.codeCountdown <= 0) clearInterval(timer);
-            }, 1000);
-            alert('验证码已发送（示例）');
         }
     }
 };
@@ -166,33 +131,5 @@ export default {
     margin-left: 6px;
     text-decoration: underline;
     cursor: pointer;
-}
-.auth-code-row {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 12px;
-}
-.auth-code-btn {
-    background: #e9f2ff;
-    color: #3578e5;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 14px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.18s;
-}
-.auth-code-btn:disabled {
-    background: #f0f4fa;
-    color: #bbb;
-    cursor: not-allowed;
-}
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s;
-}
-.fade-enter,
-.fade-leave-to {
-    opacity: 0;
 }
 </style> 

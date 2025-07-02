@@ -1,5 +1,18 @@
 <template>
     <div class="settings-page">
+        <!-- 用户信息展示区域 -->
+        <div class="user-info-box" v-if="meInfo">
+            <div class="user-avatar">
+                <!-- 头像可扩展，暂用首字母圆圈 -->
+                <span class="avatar-text">
+                    {{ meInfo.username ? meInfo.username.charAt(0).toUpperCase() : '?' }}
+                </span>
+            </div>
+            <div class="user-meta">
+                <div class="user-name">{{ meInfo.username || '未登录' }}</div>
+                <div class="user-email" v-if="meInfo.email">{{ meInfo.email }}</div>
+            </div>
+        </div>
         <div class="settings-group">
             <div class="settings-title">通用</div>
             <!-- <div class="setting-item">
@@ -101,6 +114,7 @@ import { mapGetters, mapState } from 'vuex';
 import { exportAppData2Clipboard } from '@/kits/idb/idbExport';
 import { importAppData2DB } from '@/kits/idb/idbExport';
 import $message from '@/kits/toast';
+import { meApi } from '@/apis/userApi';
 
 export default {
     name: 'Settings',
@@ -113,7 +127,8 @@ export default {
             showDictionary: true,
             enableShortcuts: true,
             showImportModal: false,
-            importData: ''
+            importData: '',
+            meInfo: {}
         };
     },
     computed: {
@@ -135,6 +150,14 @@ export default {
             set(value) {
                 this.setDebug(value);
             }
+        },
+        user() {
+            // 假设用户信息保存在localStorage或vuex
+            // 优先从vuex获取，没有则从localStorage获取
+            return (
+                this.$store.state.user?.userInfo ||
+                JSON.parse(localStorage.getItem('userInfo') || '{}')
+            );
         }
     },
     methods: {
@@ -162,7 +185,16 @@ export default {
         },
         openFeedback() {
             window.open('https://support.qq.com/product/741648', '_blank');
+        },
+        async getMe() {
+            let res = await meApi();
+            if (res.data.success) {
+                this.meInfo = res.data.data;
+            }
         }
+    },
+    mounted() {
+        this.getMe();
     }
 };
 </script>
@@ -310,5 +342,44 @@ button[type='button']:hover {
 .settings-feedback {
     margin: 16px 0 0 0;
     text-align: center;
+}
+.user-info-box {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(60, 60, 60, 0.06);
+    max-width: 420px;
+    margin: 0 auto 18px auto;
+    padding: 18px 22px;
+}
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #e9f2ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #3578e5;
+    margin-right: 16px;
+}
+.avatar-text {
+    font-weight: bold;
+}
+.user-meta {
+    display: flex;
+    flex-direction: column;
+}
+.user-name {
+    font-size: 17px;
+    color: #222;
+    font-weight: 600;
+}
+.user-email {
+    font-size: 14px;
+    color: #888;
+    margin-top: 2px;
 }
 </style>
