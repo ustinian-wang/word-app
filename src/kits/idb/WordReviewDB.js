@@ -1,6 +1,9 @@
 import { openDB } from 'idb';
 import { updateBinarySM2, getDefaultSM2 } from '../sm2';
 import { addFailWordRecord, addPassWordRecord } from './WordRecordDB';
+import { WORD_RECORD_STATUS, WORD_RECORD_TYPE } from './idbWordRecord';
+import { addWordRecordApi } from '@/apis/wordRecordApi';
+import { upsertDataWdSm2Api } from '@/apis/wordSm2Api';
 
 // SM-2 算法参数
 const SM2_PARAMS = {
@@ -12,11 +15,11 @@ const SM2_PARAMS = {
 };
 
 const DATA_FIELD = {
-    WORD: 'word',
-    EF: 'EF',
-    INTERVAL: 'interval',
-    REPETITIONS: 'repetitions',
-    NEXT_REVIEW: 'next_review'
+    WORD: 'word', //string
+    EF: 'EF', //number
+    INTERVAL: 'interval', //number
+    REPETITIONS: 'repetitions', //number
+    NEXT_REVIEW: 'next_review' //number
 };
 
 class WordReviewDB {
@@ -170,11 +173,29 @@ export const wordReviewDB = new WordReviewDB();
 wordReviewDB.init();
 
 export async function passReview(word) {
+    addWordRecordApi({
+        word,
+        status: WORD_RECORD_STATUS.PASS,
+        type: WORD_RECORD_TYPE.LEARNING
+    });
     addPassWordRecord(word);
+    upsertDataWdSm2Api({
+        word,
+        pass: 0
+    });
     return await wordReviewDB.processReview(word, 1);
 }
 
 export async function failReview(word) {
+    addWordRecordApi({
+        word,
+        status: WORD_RECORD_STATUS.FAIL,
+        type: WORD_RECORD_TYPE.LEARNING
+    });
     addFailWordRecord(word);
+    upsertDataWdSm2Api({
+        word,
+        pass: 0
+    });
     return await wordReviewDB.processReview(word, 0);
 }
