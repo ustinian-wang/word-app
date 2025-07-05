@@ -84,7 +84,7 @@ export function batchAddWordRecordApi(params) {
  * @param {string} params.endDate - 结束日期
  * @returns {Promise<{ data: {
  *   data: {
- *      dates: string[],    
+ *      dates: string[],
  *      learningPass: number[],
  *      learningFail: number[],
  *      reviewPass: number[],
@@ -96,13 +96,11 @@ export function getLearnResByTimeApi(params) {
     return request.get('/api/wordRecord/getLearnResByTime', { params });
 }
 
-
 /**
  * @description 获取下一组学习词汇
  * @param {Object} params - 查询参数
  * @param {number} params.page - 页码
  * @param {number} params.limit - 每页数量
- * @param {number} params.group - 组数
  * @returns {Promise<{ data: {
  *   data: {
  *      words: {
@@ -121,7 +119,25 @@ export function getNextLearningWordsApi(params) {
     return request.get('/api/wordRecord/getNextLearningWords', { params });
 }
 
-
-
-
-
+/**
+ * @description 获取今日复习词汇
+ * @param {Object} params - 查询参数
+ * @param {number} params.page - 页码
+ * @param {number} params.limit - 每页数量
+ * @returns {Promise<{ data: {
+ *   data: {
+ *      words: {
+ *        word: string,
+ *        definition: string,
+ *      },
+ *      hasMore: boolean,
+ *      currentPage: number,
+ *      totalWords: number,
+ *      startIndex: number,
+ *      endIndex: number
+ *   }
+ * }}>} 响应结果
+ */
+export function getTodayReviewWordsApi(params) {
+    return request.get('/api/wordRecord/getTodayReviewWords', { params });
+}

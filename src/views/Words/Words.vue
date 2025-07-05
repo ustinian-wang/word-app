@@ -80,7 +80,7 @@ const MoveDef = {
     NOW: 0,
     NEXT: 1
 };
-// const GROUP_SIZE = 10 // 每组单词数量
+// const groupSize = 10 // 每组单词数量
 
 export default {
     name: 'Words',
@@ -127,7 +127,8 @@ export default {
             return this.learningQueue[this.currentIdx].word;
         },
         ...mapGetters('cache', ['add_usr_learned_no']),
-        ...mapState('book', ['currentBookIdx', 'wordBooks', 'words', 'GROUP_SIZE', 'currentGroup']),
+        ...mapState('setting', ['groupSize']),
+        ...mapState('book', ['wordBooks', 'words', 'currentGroup']),
         ...mapGetters('cache', ['usr_learned_no_arr']),
         ...mapGetters('book', [
             'bookName',
@@ -135,7 +136,8 @@ export default {
             'groupCount',
             'groupStart',
             'groupEnd',
-            'getGroupWords'
+            'getGroupWords',
+            'currentBookIdx'
         ]),
         currWord() {
             return this.learningQueue[this.currentIdx] || { word: '', definition: '' };
@@ -352,9 +354,11 @@ export default {
         },
         // 初始化学习队列
         async initLearningQueue() {
+            console.log('[this.currentBookIdx initLearningQueue]', this.currentBookIdx);
             this.nextRes = await getNextLearningWordsApi({
-                limit: this.GROUP_SIZE,
-                dictIndex: this.currentBookIdx
+                page: 1,
+                limit: this.groupSize,
+                dictIndex: Math.max(this.currentBookIdx, 0) || 0
             });
             if (this.nextRes.data.success) {
                 this.learningQueue = this.nextRes.data.data.words;

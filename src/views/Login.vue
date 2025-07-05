@@ -52,11 +52,36 @@ export default {
             let res = await loginApi(this.form);
             if (res.data.success) {
                 $message.success(res.data.msg);
-                res.data.data.token && localStorage.setItem('token', res.data.data.token);
+                res.data.data.token && this.setTokenToCookie(res.data.data.token);
                 this.$router.push('/settings');
             } else {
                 $message.error(res.data.msg);
             }
+        },
+        setTokenToCookie(token) {
+            const expires = new Date();
+            expires.setDate(expires.getDate() + 7); // 7天过期
+            
+            document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/; ${process.env.NODE_ENV === 'production' ? 'secure; ' : ''}samesite=strict`;
+        },
+        getTokenFromCookie() {
+            const name = 'token=';
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const cookieArray = decodedCookie.split(';');
+            
+            for (let i = 0; i < cookieArray.length; i++) {
+                let cookie = cookieArray[i];
+                while (cookie.charAt(0) === ' ') {
+                    cookie = cookie.substring(1);
+                }
+                if (cookie.indexOf(name) === 0) {
+                    return cookie.substring(name.length, cookie.length);
+                }
+            }
+            return null;
+        },
+        removeTokenFromCookie() {
+            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         }
     }
 };
