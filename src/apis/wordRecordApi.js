@@ -96,3 +96,32 @@ export function getLearnResByTimeApi(params) {
     return request.get('/api/wordRecord/getLearnResByTime', { params });
 }
 
+
+/**
+ * @description 获取下一组学习词汇
+ * @param {Object} params - 查询参数
+ * @param {number} params.page - 页码
+ * @param {number} params.limit - 每页数量
+ * @param {number} params.group - 组数
+ * @returns {Promise<{ data: {
+ *   data: {
+ *      words: {
+ *        word: string,
+ *        definition: string,
+ *      },
+ *      hasMore: boolean,
+ *      currentPage: number,
+ *      totalWords: number,
+ *      startIndex: number,
+ *      endIndex: number
+ *   }
+ * }}>} 响应结果
+ */
+export function getNextLearningWordsApi(params) {
+    return request.get('/api/wordRecord/getNextLearningWords', { params });
+}
+
+
+
+
+

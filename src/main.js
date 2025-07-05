@@ -8,7 +8,7 @@ import { test } from './directives/test';
 // import './styles/index.less';
 import 'vconsole';
 
-import './kits/monitor.js'; // 加载监控
+// import './kits/monitor.js'; // 加载监控
 window.Vue = Vue;
 
 // 导入Less样式
