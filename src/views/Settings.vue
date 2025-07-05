@@ -40,7 +40,7 @@
                 <span class="setting-label" style="color: #3578e5">清理缓存</span>
             </div>
         </div>
-        <div class="settings-group">
+        <div class="settings-group" v-if="false">
             <div class="settings-title">数据同步</div>
             <div class="setting-item">
                 <span class="setting-label">学习记录</span>
@@ -202,6 +202,8 @@ export default {
     box-sizing: border-box;
     padding: 16px;
     padding-top: 76px;
+    padding-bottom: 36px;
+    overflow-y: auto;
 }
 .settings-group {
     background: #fff;
