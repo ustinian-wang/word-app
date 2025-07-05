@@ -59,8 +59,11 @@
                 </div>
             </div>
         </div>
-        <!-- 退出登录单独为一个操作区域 -->
+        <!-- 退出登录和修改密码整合为一个操作区域 -->
         <div class="ios-section ios-setting-list ios-logout-section">
+            <div class="setting-item" @click="showChangePwdModal = true">
+                <span class="setting-label" style="color: #3578e5">修改密码</span>
+            </div>
             <IosSettingItem v-if="meInfo.username" label="退出登录" danger @click="handleLogout" />
         </div>
         <div class="settings-footer">更多设置即将开放…</div>
@@ -80,6 +83,34 @@
                 v-test="'import-textarea'"
             ></textarea>
         </wa-modal>
+
+        <!-- 修改密码弹窗入口 -->
+        <wa-modal
+            :visible.sync="showChangePwdModal"
+            title="修改密码"
+            @confirm="handleChangePassword"
+        >
+            <div class="change-pwd-form">
+                <input
+                    v-model="changePwdForm.oldPassword"
+                    type="password"
+                    placeholder="请输入旧密码"
+                    class="auth-input"
+                />
+                <input
+                    v-model="changePwdForm.newPassword"
+                    type="password"
+                    placeholder="请输入新密码"
+                    class="auth-input"
+                />
+                <input
+                    v-model="changePwdForm.confirmPassword"
+                    type="password"
+                    placeholder="请确认新密码"
+                    class="auth-input"
+                />
+            </div>
+        </wa-modal>
     </div>
 </template>
 
@@ -96,7 +127,7 @@ import { mapGetters, mapState } from 'vuex';
 import { exportAppData2Clipboard } from '@/kits/idb/idbExport';
 import { importAppData2DB } from '@/kits/idb/idbExport';
 import $message from '@/kits/toast';
-import { meApi } from '@/apis/userApi';
+import { meApi, changePasswordApi } from '@/apis/userApi';
 
 export default {
     name: 'Settings',
@@ -109,8 +140,14 @@ export default {
             showDictionary: true,
             enableShortcuts: true,
             showImportModal: false,
+            showChangePwdModal: false,
             importData: '',
-            meInfo: {}
+            meInfo: {},
+            changePwdForm: {
+                oldPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            }
         };
     },
     computed: {
@@ -182,6 +219,37 @@ export default {
             $message.success('已退出登录');
             // 可选：刷新页面或跳转到首页
             // location.reload();
+        },
+        async handleChangePassword() {
+            if (
+                !this.changePwdForm.oldPassword ||
+                !this.changePwdForm.newPassword ||
+                !this.changePwdForm.confirmPassword
+            ) {
+                $message.error('请填写完整信息');
+                return;
+            }
+            if (this.changePwdForm.newPassword !== this.changePwdForm.confirmPassword) {
+                $message.error('两次输入的新密码不一致');
+                return;
+            }
+            // if (this.changePwdForm.newPassword.length < 6) {
+            //     $message.error('新密码长度至少6位');
+            //     return;
+            // }
+            const res = await changePasswordApi({
+                oldPassword: this.changePwdForm.oldPassword,
+                newPassword: this.changePwdForm.newPassword
+            });
+            if (res.data.success) {
+                $message.success('密码修改成功');
+                this.showChangePwdModal = false;
+                this.changePwdForm.oldPassword = '';
+                this.changePwdForm.newPassword = '';
+                this.changePwdForm.confirmPassword = '';
+            } else {
+                $message.error(res.data.msg || '密码修改失败');
+            }
         }
     },
     mounted() {
@@ -418,9 +486,7 @@ button[type='button']:hover {
     font-weight: 600;
     outline: none;
     border: none;
-    transition: background 0.2s,
-        color 0.2s,
-        border 0.2s;
+    transition: background 0.2s, color 0.2s, border 0.2s;
     cursor: pointer;
     box-shadow: none;
     margin: 0 6px;
@@ -459,7 +525,8 @@ button[type='button']:hover {
     .ios-user-email {
         font-size: 13px;
     }
-    .ios-login-btn, .ios-logout-btn {
+    .ios-login-btn,
+    .ios-logout-btn {
         font-size: 14px;
         padding: 7px 18px;
     }
@@ -497,5 +564,17 @@ button[type='button']:hover {
     background: #3578e5;
     color: #fff;
     border-color: #2256a5;
+}
+.change-pwd-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 8px;
+}
+.auth-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 </style>

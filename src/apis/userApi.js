@@ -1,5 +1,5 @@
-import store from "@/store";
-import { request } from "./request";
+import store from '@/store';
+import { request } from './request';
 
 export function loginApi(data) {
     return request.get('/api/user/login', { params: data });
@@ -11,4 +11,8 @@ export function registerApi(data) {
 
 export function meApi() {
     return request.get('/api/user/me');
+}
+
+export function changePasswordApi(data) {
+    return request.post('/api/user/changePassword', data);
 }
