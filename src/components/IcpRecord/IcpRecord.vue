@@ -9,8 +9,8 @@ export default {
     name: 'IcpRecord',
     data() {
         return {
-            text: '粤ICP备2024000000号-1',
-            link: 'https://beian.miit.gov.cn/'
+            text: '粤ICP备2025441512号-1',
+            link: 'https://beian.miit.gov.cn'
         };
     }
 };
