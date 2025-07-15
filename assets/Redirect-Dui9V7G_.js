@@ -1,0 +1,1 @@
+import{n}from"./index-DGvlKVSw.js";import"./vendor-C-Ryi81X.js";import"./utils-DttJ4vl2.js";const o={name:"Redirect",created(){const{params:r,query:e}=this.$route,{path:t}=r;this.$router.replace({path:"/"+t,query:e})},render:function(r){return r()}};var a=function(){var e=this,t=e._self._c;return t("div")},s=[],c=n(o,a,s,!1,null,null);const p=c.exports;export{p as default};
