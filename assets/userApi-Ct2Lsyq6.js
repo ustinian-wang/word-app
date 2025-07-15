@@ -1,1 +1,0 @@
-import"./index-DGvlKVSw.js";import{r as e}from"./request-gJ70rrDV.js";function s(r){return e.get("/api/user/login",{params:r})}function t(r){return e.get("/api/user/register",{params:r})}function a(){return e.get("/api/user/me")}function o(r){return e.post("/api/user/changePassword",r)}function p(){return e.get("/api/user/checkLogin")}export{o as a,p as c,s as l,a as m,t as r};
