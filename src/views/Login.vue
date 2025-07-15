@@ -61,7 +61,7 @@ export default {
         setTokenToCookie(token) {
             const expires = new Date();
             expires.setDate(expires.getDate() + 7); // 7天过期
-            
+            localStorage.setItem('token', token);
             document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/; ${process.env.NODE_ENV === 'production' ? 'secure; ' : ''}samesite=strict`;
         },
         getTokenFromCookie() {
