@@ -24,7 +24,7 @@ request.interceptors.response.use(response => {
     // 兼容后端rt=401但http状态码为200的情况
     if (response && response.data && response.data.rt === 401) {
         router.push('/login');
-        $message.error('请登录');
+        $message.error(response.data.msg || '请登录');
         return Promise.reject({
             isCustom401: true,
             response
