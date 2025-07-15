@@ -1,5 +1,7 @@
 import { cloneRequest } from '@ustinian-wang/kit';
 import store from '@/store';
+import router from '@/router';
+import $message from '@/kits/toast';
 
 let request = cloneRequest();
 request.defaults.baseURL = VITE_API;
@@ -17,5 +19,29 @@ request.interceptors.request.use(config => {
     }
     return config;
 });
+
+// 响应拦截器：处理401自动跳转登录并toast
+request.interceptors.response.use(
+    response => {
+        // 兼容后端rt=401但http状态码为200的情况
+        if (response && response.data && response.data.rt === 401) {
+            router.push('/login');
+            $message.error('请登录');
+            // 返回一个reject防止后续then继续处理
+            return Promise.reject({
+                isCustom401: true,
+                response
+            });
+        }
+        return response;
+    },
+    error => {
+        if (error && error.response && error.response.status === 401) {
+            $message.error('请登录');
+            router.push('/login');
+        }
+        return Promise.reject(error);
+    }
+);
 
 export { request };
