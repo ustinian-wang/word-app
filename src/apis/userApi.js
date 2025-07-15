@@ -16,3 +16,7 @@ export function meApi() {
 export function changePasswordApi(data) {
     return request.post('/api/user/changePassword', data);
 }
+
+export function checkLoginApi() {
+    return request.get('/api/user/checkLogin');
+}

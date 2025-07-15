@@ -37,6 +37,7 @@
 <script>
 import { registerApi } from '@/apis/userApi';
 import $message from '@/kits/toast';
+import { gotoIndex } from '@/router';
 
 export default {
     name: 'Register',
@@ -52,18 +53,30 @@ export default {
     },
     methods: {
         async handleSubmit() {
-            if (!this.form.username || !this.form.password || !this.form.confirmPassword) {
+            let {
+                username,
+                password,
+                confirmPassword
+            } = this.form;
+            username = username.trim();
+            password = password.trim();
+            confirmPassword = confirmPassword.trim();
+            if (!username || !password || !confirmPassword) {
                 $message.warning('请填写完整信息');
                 return;
             }
-            if (this.form.password !== this.form.confirmPassword) {
+            if (password !== confirmPassword) {
                 $message.warning('两次输入的密码不一致');
                 return;
             }
-            let res = await registerApi(this.form);
+            let res = await registerApi({
+                username,
+                password,
+                confirmPassword
+            });
             if (res.data.success) {
                 $message.success(res.data.msg);
-                this.$router.push('/');
+                gotoIndex(); // 跳转首页
             } else {
                 $message.error(res.data.msg);
             }

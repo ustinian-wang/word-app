@@ -127,7 +127,8 @@ import { mapGetters, mapState } from 'vuex';
 import { exportAppData2Clipboard } from '@/kits/idb/idbExport';
 import { importAppData2DB } from '@/kits/idb/idbExport';
 import $message from '@/kits/toast';
-import { meApi, changePasswordApi } from '@/apis/userApi';
+import { meApi, changePasswordApi, checkLoginApi } from '@/apis/userApi';
+import { setLoginToken } from '@/core/token';
 
 export default {
     name: 'Settings',
@@ -212,13 +213,9 @@ export default {
             }
         },
         async handleLogout() {
-            // 清除本地登录信息
-            localStorage.removeItem('userInfo');
-            localStorage.removeItem('token');
             this.meInfo = {};
             $message.success('已退出登录');
-            // 可选：刷新页面或跳转到首页
-            // location.reload();
+            setLoginToken(null);
         },
         async handleChangePassword() {
             if (
@@ -252,8 +249,13 @@ export default {
             }
         }
     },
-    mounted() {
-        this.getMe();
+    async mounted() {
+        // 检查当前是否处于登录状态
+        let res = await checkLoginApi();
+        // 登录的情况下才去获取设置页面的信息
+        if (res.data.success && res.data.data.loggedIn) {
+            this.getMe();
+        }
     }
 };
 </script>

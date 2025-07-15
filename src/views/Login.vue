@@ -29,7 +29,9 @@
 
 <script>
 import { loginApi } from '@/apis/userApi';
+import { setLoginToken } from '@/core/token';
 import $message from '@/kits/toast';
+import router, { gotoIndex } from '@/router';
 
 export default {
     name: 'Login',
@@ -45,43 +47,26 @@ export default {
     },
     methods: {
         async handleSubmit() {
-            if (!this.form.username || !this.form.password) {
-                alert('请填写完整信息');
+            let { username = '', password = '' } = this.form;
+            username = username.trim();
+            password = password.trim();
+            if (!username || !password) {
+                $message.error('请输入账号密码');
                 return;
             }
-            let res = await loginApi(this.form);
+            // login(this.form);
+            let res = await loginApi({
+                username,
+                password
+            });
             if (res.data.success) {
+                setLoginToken(res.data.data.token);
                 $message.success(res.data.msg);
-                res.data.data.token && this.setTokenToCookie(res.data.data.token);
-                this.$router.push('/settings');
+                // todo jump to callback url
+                gotoIndex(); // 登陆后默认跳转首页
             } else {
                 $message.error(res.data.msg);
             }
-        },
-        setTokenToCookie(token) {
-            const expires = new Date();
-            expires.setDate(expires.getDate() + 7); // 7天过期
-            localStorage.setItem('token', token);
-            document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/; ${process.env.NODE_ENV === 'production' ? 'secure; ' : ''}samesite=strict`;
-        },
-        getTokenFromCookie() {
-            const name = 'token=';
-            const decodedCookie = decodeURIComponent(document.cookie);
-            const cookieArray = decodedCookie.split(';');
-            
-            for (let i = 0; i < cookieArray.length; i++) {
-                let cookie = cookieArray[i];
-                while (cookie.charAt(0) === ' ') {
-                    cookie = cookie.substring(1);
-                }
-                if (cookie.indexOf(name) === 0) {
-                    return cookie.substring(name.length, cookie.length);
-                }
-            }
-            return null;
-        },
-        removeTokenFromCookie() {
-            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         }
     }
 };
@@ -157,4 +142,4 @@ export default {
     text-decoration: underline;
     cursor: pointer;
 }
-</style> 
+</style>

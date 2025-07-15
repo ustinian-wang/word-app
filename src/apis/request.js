@@ -1,7 +1,7 @@
 import { cloneRequest } from '@ustinian-wang/kit';
-import store from '@/store';
+import { getLoginToken } from '@/core/token';
 import router from '@/router';
-import $message from '@/kits/toast';
+import { $message } from '@/kits/toast';
 
 let request = cloneRequest();
 request.defaults.baseURL = VITE_API;
@@ -11,8 +11,7 @@ request.defaults.withCredentials = true;
 // 请求拦截器：自动带token
 request.interceptors.request.use(config => {
     // 优先从store获取token，没有则从localStorage
-    let token = store.state.user?.token || localStorage.getItem('token');
-    console.log('token', token);
+    let token = getLoginToken();
     if (token) {
         config.headers = config.headers || {};
         config.headers['Authorization'] = 'Bearer ' + token;
@@ -21,27 +20,17 @@ request.interceptors.request.use(config => {
 });
 
 // 响应拦截器：处理401自动跳转登录并toast
-request.interceptors.response.use(
-    response => {
-        // 兼容后端rt=401但http状态码为200的情况
-        if (response && response.data && response.data.rt === 401) {
-            router.push('/login');
-            $message.error('请登录');
-            // 返回一个reject防止后续then继续处理
-            return Promise.reject({
-                isCustom401: true,
-                response
-            });
-        }
-        return response;
-    },
-    error => {
-        if (error && error.response && error.response.status === 401) {
-            $message.error('请登录');
-            router.push('/login');
-        }
-        return Promise.reject(error);
+request.interceptors.response.use(response => {
+    // 兼容后端rt=401但http状态码为200的情况
+    if (response && response.data && response.data.rt === 401) {
+        router.push('/login');
+        $message.error('登录过期，请重新登录');
+        return Promise.reject({
+            isCustom401: true,
+            response
+        });
     }
-);
+    return response;
+});
 
 export { request };

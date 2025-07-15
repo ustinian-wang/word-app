@@ -25,27 +25,30 @@
         <!-- 单词卡片滑动容器 -->
         <SliderContainer :items="sliderWords" :isAnimating="isAnimating" :deltaX="deltaX">
             <template #default="{ item: word, index: idx }">
-                <!-- 英文单词 -->
-                <div class="word-en">{{ word.word }}</div>
+                <template v-if="word">
+                    <!-- 英文单词 -->
+                    <div class="word-en">{{ word.word }}</div>
 
-                <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
-                    <WaPhoneticAudio :word="currWord?.word" :phonetic="phonetic" ref="phonetic" />
-                </div>
-
-                <!-- 中文释义(点击显示) -->
-                <div
-                    class="word-zh"
-                    :class="{ mosaic: !isZhRevealed }"
-                    v-test="'word-zh'"
-                    @click="revealZh"
-                >
-                    <div v-for="item in splitTaggedText(word.definition)" :key="item" class="word-zh-item">
-                        {{ item }}
+                    <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
+                        <WaPhoneticAudio :word="currWord?.word" :phonetic="phonetic" ref="phonetic" />
                     </div>
-                </div>
 
-                <!-- 权威词典链接 -->
-                <DictionaryLinks :word="word.word" />
+                    <!-- 中文释义(点击显示) -->
+                    <div
+                        class="word-zh"
+                        :class="{ mosaic: !isZhRevealed }"
+                        v-test="'word-zh'"
+                        @click="revealZh"
+                    >
+                        <div v-for="item in splitTaggedText(word.definition)" :key="item" class="word-zh-item">
+                            {{ item }}
+                        </div>
+                    </div>
+
+                    <!-- 权威词典链接 -->
+                    <DictionaryLinks :word="word.word" />
+                </template>
+                
             </template>
         </SliderContainer>
 
@@ -124,7 +127,7 @@ export default {
     },
     computed: {
         curr_learning_word() {
-            return this.learningQueue[this.currentIdx].word;
+            return this.learningQueue[this.currentIdx]?.word || '';
         },
         ...mapGetters('cache', ['add_usr_learned_no']),
         ...mapState('setting', ['groupSize']),
