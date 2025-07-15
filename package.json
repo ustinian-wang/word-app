@@ -8,11 +8,13 @@
     "build:github": "vite build --mode=github",
     "upus": "yarn upgrade @ustinian-wang/kit@latest @ustinian-wang/js-monitor@latest",
     "build:production": "vite build --mode production",
+    "build:domain": "vite build --mode domain",
     "lint": "eslint src --ext .js,.vue --fix",
     "lint:check": "eslint src --ext .js,.vue",
     "format": "prettier --write \"src/**/*.{js,vue,css,less,scss,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,vue,css,less,scss,json,md}\"",
     "deploy": "yarn build:production && node ./scripts/deploy.mjs",
+    "deploy:domain": "yarn build:domain && node ./scripts/deploy.mjs",
     "docs:gen": "jsdoc -c jsdoc.conf.json",
     "test": "cypress open"
   },
