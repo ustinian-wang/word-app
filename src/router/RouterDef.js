@@ -36,5 +36,17 @@ export const RouterDef = {
         component: () => import('@/views/Settings.vue'),
         name: '设置',
         title: '设置'
+    },
+    Login: {
+        path: '/login',
+        component: () => import('@/views/Login.vue'),
+        name: '登录',
+        title: '登录'
+    },
+    Register: {
+        path: '/register',
+        component: () => import('@/views/Register.vue'),
+        name: '注册',
+        title: '注册'
     }
 };

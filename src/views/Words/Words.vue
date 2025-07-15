@@ -25,27 +25,30 @@
         <!-- 单词卡片滑动容器 -->
         <SliderContainer :items="sliderWords" :isAnimating="isAnimating" :deltaX="deltaX">
             <template #default="{ item: word, index: idx }">
-                <!-- 英文单词 -->
-                <div class="word-en">{{ word.en }}</div>
+                <template v-if="word">
+                    <!-- 英文单词 -->
+                    <div class="word-en">{{ word.word }}</div>
 
-                <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
-                    <WaPhoneticAudio :word="currWord?.en" :phonetic="phonetic" ref="phonetic" />
-                </div>
-
-                <!-- 中文释义(点击显示) -->
-                <div
-                    class="word-zh"
-                    :class="{ mosaic: !isZhRevealed }"
-                    v-test="'word-zh'"
-                    @click="revealZh"
-                >
-                    <div v-for="item in splitTaggedText(word.zh)" :key="item" class="word-zh-item">
-                        {{ item }}
+                    <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
+                        <WaPhoneticAudio :word="currWord?.word" :phonetic="phonetic" ref="phonetic" />
                     </div>
-                </div>
 
-                <!-- 权威词典链接 -->
-                <DictionaryLinks :word="word.en" />
+                    <!-- 中文释义(点击显示) -->
+                    <div
+                        class="word-zh"
+                        :class="{ mosaic: !isZhRevealed }"
+                        v-test="'word-zh'"
+                        @click="revealZh"
+                    >
+                        <div v-for="item in splitTaggedText(word.definition)" :key="item" class="word-zh-item">
+                            {{ item }}
+                        </div>
+                    </div>
+
+                    <!-- 权威词典链接 -->
+                    <DictionaryLinks :word="word.word" />
+                </template>
+                
             </template>
         </SliderContainer>
 
@@ -71,6 +74,8 @@ import { passReview, failReview } from '@/kits/idb/WordReviewDB';
 import { playNice, playHandsup, playOhno, playRight } from '@/kits/audio';
 import { gotoIndex, gotoWordBooks } from '@/router';
 import { keyboard } from '@/directives/keyboard';
+import { getNextLearningWordsApi } from '@/apis/wordRecordApi';
+import $message from '@/kits/toast';
 // 滑动相关常量
 const MOVE_SCALE = 1;
 const MoveDef = {
@@ -78,7 +83,7 @@ const MoveDef = {
     NOW: 0,
     NEXT: 1
 };
-// const GROUP_SIZE = 10 // 每组单词数量
+// const groupSize = 10 // 每组单词数量
 
 export default {
     name: 'Words',
@@ -109,23 +114,24 @@ export default {
             // currentGroup: 0, // 当前组号
             // usr_learned_no_arr: [] // 已学过的单词索引数组
             // groupCount: 1, // 总组数
-            phonetic: ''
+            phonetic: '',
+            nextRes: null
         };
     },
     watch: {
-        groupCount() {
+        async groupCount() {
             console.log('[groupCount]', this.groupCount);
-            this.initLearningQueue();
+            await this.initLearningQueue();
             // this.saveProgress();
         }
     },
     computed: {
         curr_learning_word() {
-            let no = this.learningQueue[this.currentIdx];
-            return this.words[no].en;
+            return this.learningQueue[this.currentIdx]?.word || '';
         },
         ...mapGetters('cache', ['add_usr_learned_no']),
-        ...mapState('book', ['currentBookIdx', 'wordBooks', 'words', 'GROUP_SIZE', 'currentGroup']),
+        ...mapState('setting', ['groupSize']),
+        ...mapState('book', ['wordBooks', 'words', 'currentGroup']),
         ...mapGetters('cache', ['usr_learned_no_arr']),
         ...mapGetters('book', [
             'bookName',
@@ -133,29 +139,34 @@ export default {
             'groupCount',
             'groupStart',
             'groupEnd',
-            'getGroupWords'
+            'getGroupWords',
+            'currentBookIdx'
         ]),
         currWord() {
-            return this.sliderWords[1];
+            return this.learningQueue[this.currentIdx] || { word: '', definition: '' };
         },
         // 获取当前显示的三个单词(前一个、当前、后一个)
         sliderWords() {
-            const prevIdx = this.learningQueue[this.currentIdx - 1];
-            const currIdx = this.learningQueue[this.currentIdx];
-            const nextIdx = this.learningQueue[this.currentIdx + 1];
-            const getWord = idx => {
-                if (typeof idx === 'number') {
-                    return this.words[idx] || { en: '', zh: '', enDef: '' };
-                }
-                return { en: '', zh: '', enDef: '' };
-            };
-            return [getWord(prevIdx), getWord(currIdx), getWord(nextIdx)];
+            let prevIdx = this.currentIdx - 1;
+            if (prevIdx < 0) {
+                prevIdx = this.learningQueue.length - 1;
+            }
+            const currIdx = this.currentIdx;
+            let nextIdx = this.currentIdx + 1;
+            if (nextIdx >= this.learningQueue.length) {
+                nextIdx = 0;
+            }
+            return [
+                this.learningQueue[prevIdx],
+                this.learningQueue[currIdx],
+                this.learningQueue[nextIdx]
+            ];
         },
         ...mapGetters('book', ['progressPercent', 'progressText', 'words']),
 
         // 当前单词是否已显示中文释义
         isZhRevealed() {
-            return this.revealedSet.has(this.learningQueue[this.currentIdx]);
+            return this.revealedSet.has(this.currentIdx);
         },
         ...mapGetters(['cacheWrapper'])
     },
@@ -213,10 +224,10 @@ export default {
             this.isAnimating = false;
         },
         async afterChange() {
-            try{
+            try {
                 this.phonetic = '';
                 let word = this.currWord;
-                this.phonetic = await getPhonetic(word?.en || '');
+                this.phonetic = await getPhonetic(word?.word || '');
                 console.log('this.phonetic', this.phonetic);
                 this.playCurrentWord();
             } catch (error) {
@@ -225,7 +236,7 @@ export default {
         },
         // 显示中文释义
         revealZh() {
-            this.revealedSet.add(this.learningQueue[this.currentIdx]);
+            this.revealedSet.add(this.currentIdx);
             this.revealedSet = new Set(this.revealedSet);
         },
         // 已掌握单词
@@ -325,18 +336,18 @@ export default {
             }
         },
         // 重新开始学习
-        restartLearning() {
+        async restartLearning() {
             this.currentGroup = 0;
             // this.usr_learned_no_arr = [];
             // this.saveProgress();
-            this.initLearningQueue();
+            await this.initLearningQueue();
             this.setStudyStatus(STUDY_STATUS_DEF.LEARNED);
         },
         // 继续下一组
-        continueToNextGroup() {
+        async continueToNextGroup() {
             // 继续下一组
             this.moveToNextGroup();
-            this.initLearningQueue();
+            await this.initLearningQueue();
         },
         // 停止在当前组
         stopAtCurrentGroup() {
@@ -345,8 +356,19 @@ export default {
             gotoIndex();
         },
         // 初始化学习队列
-        initLearningQueue() {
-            this.learningQueue = this.getGroupWords();
+        async initLearningQueue() {
+            console.log('[this.currentBookIdx initLearningQueue]', this.currentBookIdx);
+            this.nextRes = await getNextLearningWordsApi({
+                page: 1,
+                limit: this.groupSize,
+                dictIndex: Math.max(this.currentBookIdx, 0) || 0
+            });
+            if (this.nextRes.data.success) {
+                this.learningQueue = this.nextRes.data.data.words;
+            } else {
+                this.learningQueue = [];
+                $message.error(this.nextRes.data.message);
+            }
             console.log('[this.learningQueue initLearningQueue]', this.learningQueue);
             this.currentIdx = 0;
             this.revealedSet = new Set();
@@ -356,14 +378,13 @@ export default {
         },
         ...mapActions('book', ['loadBook', 'saveProgress', 'moveToNextGroup']),
         // 加载学习进度
-        loadProgress() {
+        async loadProgress() {
             // this.loadBook(this.currentBookIdx);
             // const progress = this.progress;
             // this.currentGroup = progress.currentGroup || 0;
             // this.usr_learned_no_arr = progress.usr_learned_no_arr || [];
-            this.initLearningQueue();
-
-            this.afterChange();
+            await this.initLearningQueue();
+            await this.afterChange();
         },
         // 停止学习
         stopLearning() {
@@ -405,8 +426,8 @@ export default {
         }
     },
     // 组件挂载
-    mounted() {
-        this.loadProgress();
+    async mounted() {
+        await this.loadProgress();
         console.log('[this.learningQueue mounted]', this.learningQueue);
         if (this.learningQueue.length === 0) {
             this.nextGroupOrFinish();
@@ -478,7 +499,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    z-index: 10;
+    z-index: 1000;
     pointer-events: none;
     opacity: 0.92;
 }
@@ -586,7 +607,7 @@ export default {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.18);
-    z-index: 1100;
+    z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 import vue2 from '@vitejs/plugin-vue2';
 // import os from 'os';
 import { resolve } from 'path';
-import { VitePWA } from 'vite-plugin-pwa';
+// import { VitePWA } from 'vite-plugin-pwa';
 
 // function getLocalIp() {
 //     const interfaces = os.networkInterfaces();
@@ -24,84 +24,86 @@ export default ({ mode }) => {
     const VITE_API = env.VITE_API;
     const VITE_PORT = env.VITE_PORT;
     const VITE_PROXY_API = env.VITE_PROXY_API;
-    const VITE_BASE = env.VITE_BASE
+    const VITE_BASE = env.VITE_BASE;
+    const VITE_CLOUD_CLIENT_ID = env.VITE_CLOUD_CLIENT_ID || 'cloud1-0g1b3rvpff0d993b';
+    const VITE_CLOUD_ENV = env.VITE_CLOUD_ENV || 'cloud1-0g1b3rvpff0d993b';
     // console.log(env);
 
     const plugins = [vue2()];
     // 在Cypress测试中禁用PWA
     if (!process.env.CYPRESS) {
-        plugins.push(
-            VitePWA({
-                strategies: 'injectManifest',
-                srcDir: 'src',
-                filename: 'sw.js',
-                registerType: 'autoUpdate',
-                devOptions: {
-                    enabled: true,
-                    type: 'module'
-                },
-                includeAssets: [
-                    'favicon.ico',
-                    'apple-touch-icon.png',
-                    'masked-icon.svg',
-                    'audio/*'
-                ],
-                manifest: {
-                    name: '单词学习',
-                    short_name: '单词学习',
-                    description: '一个简单的单词学习应用',
-                    theme_color: '#3578e5',
-                    start_url: '/',
-                    display: 'standalone',
-                    background_color: '#ffffff',
-                    icons: [
-                        {
-                            src: 'icons/icon-72x72.png',
-                            sizes: '72x72',
-                            type: 'image/png'
-                        },
-                        {
-                            src: 'icons/icon-96x96.png',
-                            sizes: '96x96',
-                            type: 'image/png'
-                        },
-                        {
-                            src: 'icons/icon-128x128.png',
-                            sizes: '128x128',
-                            type: 'image/png'
-                        },
-                        {
-                            src: 'icons/icon-144x144.png',
-                            sizes: '144x144',
-                            type: 'image/png'
-                        },
-                        {
-                            src: 'icons/icon-152x152.png',
-                            sizes: '152x152',
-                            type: 'image/png'
-                        },
-                        {
-                            src: 'icons/icon-192x192.png',
-                            sizes: '192x192',
-                            type: 'image/png'
-                        },
-                        {
-                            src: 'icons/icon-384x384.png',
-                            sizes: '384x384',
-                            type: 'image/png'
-                        },
-                        {
-                            src: 'icons/icon-512x512.png',
-                            sizes: '512x512',
-                            type: 'image/png'
-                        }
-                    ]
-                },
-                injectManifest: {
-                    maximumFileSizeToCacheInBytes: 8 * 1024 * 1024 // 设置为 8MB
-                }
-            })
-        );
+        // plugins.push(
+        //     VitePWA({
+        //         strategies: 'injectManifest',
+        //         srcDir: 'src',
+        //         filename: 'sw.js',
+        //         registerType: 'autoUpdate',
+        //         devOptions: {
+        //             enabled: true,
+        //             type: 'module'
+        //         },
+        //         includeAssets: [
+        //             'favicon.ico',
+        //             'apple-touch-icon.png',
+        //             'masked-icon.svg',
+        //             'audio/*'
+        //         ],
+        //         manifest: {
+        //             name: '单词学习',
+        //             short_name: '单词学习',
+        //             description: '一个简单的单词学习应用',
+        //             theme_color: '#3578e5',
+        //             start_url: '/',
+        //             display: 'standalone',
+        //             background_color: '#ffffff',
+        //             icons: [
+        //                 {
+        //                     src: 'icons/icon-72x72.png',
+        //                     sizes: '72x72',
+        //                     type: 'image/png'
+        //                 },
+        //                 {
+        //                     src: 'icons/icon-96x96.png',
+        //                     sizes: '96x96',
+        //                     type: 'image/png'
+        //                 },
+        //                 {
+        //                     src: 'icons/icon-128x128.png',
+        //                     sizes: '128x128',
+        //                     type: 'image/png'
+        //                 },
+        //                 {
+        //                     src: 'icons/icon-144x144.png',
+        //                     sizes: '144x144',
+        //                     type: 'image/png'
+        //                 },
+        //                 {
+        //                     src: 'icons/icon-152x152.png',
+        //                     sizes: '152x152',
+        //                     type: 'image/png'
+        //                 },
+        //                 {
+        //                     src: 'icons/icon-192x192.png',
+        //                     sizes: '192x192',
+        //                     type: 'image/png'
+        //                 },
+        //                 {
+        //                     src: 'icons/icon-384x384.png',
+        //                     sizes: '384x384',
+        //                     type: 'image/png'
+        //                 },
+        //                 {
+        //                     src: 'icons/icon-512x512.png',
+        //                     sizes: '512x512',
+        //                     type: 'image/png'
+        //                 }
+        //             ]
+        //         },
+        //         injectManifest: {
+        //             maximumFileSizeToCacheInBytes: 8 * 1024 * 1024 // 设置为 8MB
+        //         }
+        //     })
+        // );
     }
 
     return defineConfig({
@@ -125,7 +127,9 @@ export default ({ mode }) => {
         },
         define: {
             VITE_API: JSON.stringify(VITE_API),
-            VITE_PROXY_API: JSON.stringify(VITE_PROXY_API)
+            VITE_PROXY_API: JSON.stringify(VITE_PROXY_API),
+            VITE_CLOUD_ENV: JSON.stringify(VITE_CLOUD_ENV),
+            VITE_CLOUD_CLIENT_ID: JSON.stringify(VITE_CLOUD_CLIENT_ID)
         },
         resolve: {
             alias: {

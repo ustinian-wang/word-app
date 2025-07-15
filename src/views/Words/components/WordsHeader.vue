@@ -32,7 +32,7 @@ export default {
     left: 0;
     right: 0;
     text-align: center;
-    z-index: 20;
+    z-index: 10;
 }
 .book-title {
     display: inline-flex;

@@ -1,4 +1,5 @@
 import { openDB } from 'idb';
+import { addWordRecordApi } from '@/apis/wordRecordApi';
 /**
  * @description 单词记录状态
  */
@@ -210,6 +211,11 @@ const wordRecordDB = new WordRecordDB();
  * @returns {Promise<IDBRequest>}
  */
 export function addPassWordRecord(word) {
+    addWordRecordApi({
+        word,
+        status: WORD_RECORD_STATUS.PASS,
+        type: WORD_RECORD_TYPE.LEARNING
+    });
     console.log('addPassWordRecord', word);
     return wordRecordDB.addNewRecord(word, WORD_RECORD_STATUS.PASS);
 }
@@ -220,6 +226,11 @@ export function addPassWordRecord(word) {
  * @returns {Promise<IDBRequest>}
  */
 export function addFailWordRecord(word) {
+    addWordRecordApi({
+        word,
+        status: WORD_RECORD_STATUS.FAIL,
+        type: WORD_RECORD_TYPE.LEARNING
+    });
     console.log('addFailWordRecord', word);
     return wordRecordDB.addNewRecord(word, WORD_RECORD_STATUS.FAIL);
 }

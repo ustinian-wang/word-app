@@ -29,6 +29,8 @@
 import * as echarts from 'echarts';
 import { wordRecordDB, WORD_RECORD_STATUS, WORD_RECORD_TYPE } from '@/kits/idb/WordRecordDB';
 import { mapGetters } from 'vuex';
+import $message from '@/kits/toast';
+import { getLearnResByTimeApi } from '@/apis/wordRecordApi';
 
 export default {
     name: 'RecordView',
@@ -40,13 +42,14 @@ export default {
             chart: null,
             touchStartX: 0,
             touchStartY: 0,
-            selectedRange: '7' // 默认显示7天
+            selectedRange: '7', // 默认显示7天
+            charData: null
         };
     },
     computed: {
         ...mapGetters('setting', ['isDebugMode']),
         hasData() {
-            return this.filteredRecords.length > 0;
+            return !!this.charData;
         }
     },
     methods: {
@@ -76,9 +79,11 @@ export default {
 
         // 处理日期范围变化
         handleRangeChange() {
-            this.filterRecords();
-            const processedData = this.processData(this.filteredRecords);
-            this.initChart(processedData);
+            // this.filterRecords();
+            // const processedData = this.processData(this.filteredRecords);
+            // this.initChart(processedData);
+
+            this.loadData();
         },
 
         // 过滤记录
@@ -144,6 +149,7 @@ export default {
 
         // 初始化图表
         initChart(data) {
+            console.log('initChart', data);
             if (!this.$refs.chartContainer) return;
 
             this.chart = echarts.init(this.$refs.chartContainer);
@@ -249,7 +255,7 @@ export default {
                     }
                 ]
             };
-
+            console.log('option', option);
             this.chart.setOption(option);
 
             // 添加触摸事件处理
@@ -280,14 +286,21 @@ export default {
 
         // 加载数据
         async loadData() {
+            this.loading = true;
             try {
-                this.loading = true;
-                this.records = await wordRecordDB.getAllRecords();
-                this.filterRecords();
-                const processedData = this.processData(this.filteredRecords);
+                const { start, end } = this.getDateRange();
+                let res = await getLearnResByTimeApi({
+                    startDate: start.toISOString().split('T')[0],
+                    endDate: end.toISOString().split('T')[0]
+                });
                 this.loading = false;
-                await this.$nextTick(() => {});
-                this.initChart(processedData);
+                if (res.data.success) {
+                    this.charData = res.data.data;
+                    await this.$nextTick(() => {});
+                    this.initChart(this.charData);
+                } else {
+                    $message.error(res.data.message);
+                }
             } catch (error) {
                 console.error('加载数据失败:', error);
             } finally {
@@ -341,7 +354,7 @@ export default {
     position: absolute;
     // bottom: 20px;
     // right: 20px;
-    z-index: 1;
+    z-index: 1000;
     top: 22px;
     left: 50%;
     transform: translateX(-50%);
