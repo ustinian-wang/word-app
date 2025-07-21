@@ -176,7 +176,7 @@ export default {
 
         // 当前单词是否已显示中文释义
         isZhRevealed() {
-            return this.revealedSet.has(this.currentIdx);
+            return this.revealedSet.has(this.curr_learning_word);
         },
         ...mapGetters(['cacheWrapper', 'isDebugMode'])
     },
@@ -247,7 +247,7 @@ export default {
         },
         // 显示中文释义
         revealZh() {
-            this.revealedSet.add(this.currentIdx);
+            this.revealedSet.add(this.curr_learning_word);
             this.revealedSet = new Set(this.revealedSet);
         },
         // 已掌握单词
