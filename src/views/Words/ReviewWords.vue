@@ -257,7 +257,7 @@ export default {
                 this.playCurrentWord();
                 return;
             }
-            passReview(this.curr_learning_word);
+            passReview(this.curr_learning_word, this.usr_bookId);
             if (this.learningQueue.length <= 1) {
                 this.nextGroupOrFinish();
                 return;
@@ -281,7 +281,7 @@ export default {
                 return;
             }
 
-            failReview(this.curr_learning_word);
+            failReview(this.curr_learning_word, this.usr_bookId);
             // 保留当前单词，切换到下一个
             if (this.currentIdx < this.learningQueue.length - 1) {
                 this.currentIdx++;

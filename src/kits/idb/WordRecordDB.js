@@ -210,11 +210,12 @@ const wordRecordDB = new WordRecordDB();
  * @param {string} word 单词
  * @returns {Promise<IDBRequest>}
  */
-export function addPassWordRecord(word) {
+export function addPassWordRecord(word, bid) {
     addWordRecordApi({
         word,
         status: WORD_RECORD_STATUS.PASS,
-        type: WORD_RECORD_TYPE.LEARNING
+        type: WORD_RECORD_TYPE.LEARNING,
+        bid
     });
     console.log('addPassWordRecord', word);
     return wordRecordDB.addNewRecord(word, WORD_RECORD_STATUS.PASS);
@@ -225,11 +226,12 @@ export function addPassWordRecord(word) {
  * @param {string} word 单词
  * @returns {Promise<IDBRequest>}
  */
-export function addFailWordRecord(word) {
+export function addFailWordRecord(word, bid) {
     addWordRecordApi({
         word,
         status: WORD_RECORD_STATUS.FAIL,
-        type: WORD_RECORD_TYPE.LEARNING
+        type: WORD_RECORD_TYPE.LEARNING,
+        bid
     });
     console.log('addFailWordRecord', word);
     return wordRecordDB.addNewRecord(word, WORD_RECORD_STATUS.FAIL);

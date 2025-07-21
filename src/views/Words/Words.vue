@@ -136,7 +136,7 @@ export default {
         curr_learning_word() {
             return this.learningQueue[this.currentIdx]?.word || '';
         },
-        ...mapGetters('cache', ['add_usr_learned_no']),
+        ...mapGetters('cache', ['add_usr_learned_no', 'usr_bookId']),
         ...mapState('setting', ['groupSize']),
         ...mapState('book', ['wordBooks', 'words', 'currentGroup']),
         ...mapGetters('cache', ['usr_learned_no_arr']),
@@ -253,7 +253,7 @@ export default {
                 this.playCurrentWord();
                 return;
             }
-            passReview(this.curr_learning_word);
+            passReview(this.curr_learning_word, this.usr_bookId);
             if (this.learningQueue.length <= 1) {
                 this.add_usr_learned_no(this.learningQueue[this.currentIdx]);
                 // this.saveProgress();
@@ -282,7 +282,7 @@ export default {
                 return;
             }
 
-            failReview(this.curr_learning_word);
+            failReview(this.curr_learning_word, this.usr_bookId);
             // 保留当前单词，切换到下一个
             if (this.currentIdx < this.learningQueue.length - 1) {
                 this.currentIdx++;
@@ -364,11 +364,11 @@ export default {
         },
         // 初始化学习队列
         async initLearningQueue() {
-            console.log('[this.currentBookIdx initLearningQueue]', this.currentBookIdx);
+            console.log('[this.currentBookIdx initLearningQueue]', this.usr_bookId);
             this.nextRes = await getNextLearningWordsApi({
                 page: 1,
                 limit: this.groupSize,
-                dictIndex: Math.max(this.currentBookIdx, 0) || 0
+                bid: this.usr_bookId
             });
             if (this.nextRes.data.success) {
                 this.learningQueue = this.nextRes.data.data.words;

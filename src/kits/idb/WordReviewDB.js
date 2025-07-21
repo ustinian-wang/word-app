@@ -170,20 +170,22 @@ export const wordReviewDB = new WordReviewDB();
 
 wordReviewDB.init();
 
-export async function passReview(word) {
-    addPassWordRecord(word);
+export async function passReview(word, bid) {
+    addPassWordRecord(word, bid);
     upsertDataWdSm2Api({
         word,
-        pass: 0
+        pass: 0,
+        bid
     });
     return await wordReviewDB.processReview(word, 1);
 }
 
-export async function failReview(word) {
-    addFailWordRecord(word);
+export async function failReview(word, bid) {
+    addFailWordRecord(word, bid);
     upsertDataWdSm2Api({
         word,
-        pass: 0
+        pass: 0,
+        bid
     });
     return await wordReviewDB.processReview(word, 0);
 }
