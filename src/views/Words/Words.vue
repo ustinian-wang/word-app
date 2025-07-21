@@ -30,7 +30,11 @@
                     <div class="word-en">{{ word.word }}</div>
 
                     <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
-                        <WaPhoneticAudio :word="currWord?.word" :phonetic="phonetic" ref="phonetic" />
+                        <WaPhoneticAudio
+                            :word="currWord?.word"
+                            :phonetic="phonetic"
+                            ref="phonetic"
+                        />
                     </div>
 
                     <!-- 中文释义(点击显示) -->
@@ -40,7 +44,11 @@
                         v-test="'word-zh'"
                         @click="revealZh"
                     >
-                        <div v-for="item in splitTaggedText(word.definition)" :key="item" class="word-zh-item">
+                        <div
+                            v-for="item in splitTaggedText(word.definition)"
+                            :key="item"
+                            class="word-zh-item"
+                        >
                             {{ item }}
                         </div>
                     </div>
@@ -48,7 +56,6 @@
                     <!-- 权威词典链接 -->
                     <DictionaryLinks :word="word.word" />
                 </template>
-                
             </template>
         </SliderContainer>
 
@@ -166,7 +173,7 @@ export default {
 
         // 当前单词是否已显示中文释义
         isZhRevealed() {
-            return this.revealedSet.has(this.currentIdx);
+            return this.revealedSet.has(this.curr_learning_word) && this.curr_learning_word !== '';
         },
         ...mapGetters(['cacheWrapper'])
     },
@@ -236,7 +243,7 @@ export default {
         },
         // 显示中文释义
         revealZh() {
-            this.revealedSet.add(this.currentIdx);
+            this.revealedSet.add(this.curr_learning_word);
             this.revealedSet = new Set(this.revealedSet);
         },
         // 已掌握单词
