@@ -24,31 +24,37 @@
         <!-- 单词卡片滑动容器 -->
         <SliderContainer :items="sliderWords" :isAnimating="isAnimating" :deltaX="deltaX">
             <template #default="{ item: word, index: idx }">
-                <!-- 英文单词 -->
-                <div class="word-en">{{ word.word }}</div>
+                <template v-if="word">
+                    <!-- 英文单词 -->
+                    <div class="word-en">{{ word.word }}</div>
 
-                <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
-                    <WaPhoneticAudio :word="currWord?.word" :phonetic="phonetic" ref="phonetic" />
-                </div>
-
-                <!-- 中文释义(点击显示) -->
-                <div
-                    class="word-zh"
-                    :class="{ mosaic: !isZhRevealed }"
-                    v-test="'word-zh'"
-                    @click="revealZh"
-                >
-                    <div
-                        v-for="item in splitTaggedText(word.definition)"
-                        :key="item"
-                        class="word-zh-item"
-                    >
-                        {{ item }}
+                    <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 16px">
+                        <WaPhoneticAudio
+                            :word="currWord?.word"
+                            :phonetic="phonetic"
+                            ref="phonetic"
+                        />
                     </div>
-                </div>
 
-                <!-- 权威词典链接 -->
-                <DictionaryLinks :word="word.word" />
+                    <!-- 中文释义(点击显示) -->
+                    <div
+                        class="word-zh"
+                        :class="{ mosaic: !isZhRevealed }"
+                        v-test="'word-zh'"
+                        @click="revealZh"
+                    >
+                        <div
+                            v-for="item in splitTaggedText(word.definition)"
+                            :key="item"
+                            class="word-zh-item"
+                        >
+                            {{ item }}
+                        </div>
+                    </div>
+
+                    <!-- 权威词典链接 -->
+                    <DictionaryLinks :word="word.word" />
+                </template>
             </template>
         </SliderContainer>
 
@@ -139,7 +145,7 @@ export default {
         curr_learning_word() {
             return this.learningQueue[this.currentIdx]?.word;
         },
-        ...mapGetters('cache', ['add_usr_learned_no']),
+        ...mapGetters('cache', ['add_usr_learned_no', 'usr_bookId']),
         ...mapState('setting', ['groupSize']),
         ...mapState('book', ['wordBooks', 'words', 'currentGroup']),
         ...mapGetters('cache', ['usr_learned_no_arr']),
@@ -178,7 +184,7 @@ export default {
         isZhRevealed() {
             return this.revealedSet.has(this.curr_learning_word);
         },
-        ...mapGetters(['cacheWrapper', 'isDebugMode'])
+        ...mapGetters('setting', ['isDebugMode'])
     },
     methods: {
         ...mapMutations('book', ['setCurrentBookIdx']),
@@ -350,7 +356,7 @@ export default {
             let res = await getTodayReviewWordsApi({
                 page: 1,
                 limit: this.groupSize,
-                dictIndex: Math.max(this.currentBookIdx, 0) || 0
+                bid: Math.max(this.usr_bookId, 0) || 0
             });
             if (res.data.success) {
                 this.learningQueue = res.data.data.words;
@@ -455,10 +461,7 @@ export default {
 }
 .word-zh.mosaic {
     color: transparent;
-    text-shadow:
-        0 0 8px #bbb,
-        0 0 12px #bbb,
-        0 0 16px #bbb;
+    text-shadow: 0 0 8px #bbb, 0 0 12px #bbb, 0 0 16px #bbb;
     filter: blur(6px) brightness(0.1);
     pointer-events: auto;
     user-select: none;
