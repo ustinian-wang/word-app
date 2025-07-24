@@ -83,10 +83,8 @@ export function singleUpdateDataWdSm2Api(params) {
  * upsert操作：单词存在则更新，否则插入（GET）
  * @param {Object} params - 单条数据参数
  * @param {string} params.word 单词内容
- * @param {number} params.EF 遗忘因子
- * @param {number} params.interval 间隔天数
- * @param {number} params.repetitions 复习次数
- * @param {number} params.next_review 下次复习时间戳
+ * @param {string} params.pass 是否学习通过?
+ * @param {number} params.bid 书本id
  * @returns {Promise<Object>} 响应结果，upsert后的数据
  */
 export function upsertDataWdSm2Api(params) {
