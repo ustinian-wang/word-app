@@ -1,7 +1,9 @@
+import { setToken } from "./config";
+
 context('复习单词页面', () => {
-    beforeEach(() => {
-        // 访问复习单词页面
-        cy.visit('/#/reviewWords');
+    beforeEach(() => { 
+        setToken();
+        cy.visit('http://www.dict.wang/#/reviewWords');
     });
 
     it('应成功加载并显示第一个单词', () => {

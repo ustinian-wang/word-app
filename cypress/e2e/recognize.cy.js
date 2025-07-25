@@ -1,6 +1,9 @@
+import { setToken } from "./config";
+
 context('图片识别页面', () => {
     beforeEach(() => {
-        cy.visit('/#/recognize');
+        setToken();     
+        cy.visit('http://www.dict.wang/#/recognize');
     });
 
     it('应成功加载并显示核心功能', () => {

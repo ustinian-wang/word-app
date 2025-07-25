@@ -1,6 +1,9 @@
+import { setToken } from "./config";
+
 context('首页', () => {
     beforeEach(() => {
-        cy.visit('/');
+        setToken(); 
+        cy.visit('http://www.dict.wang/#/');
     });
 
     it('应成功加载首页并显示所有核心区块', () => {

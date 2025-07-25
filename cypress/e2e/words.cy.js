@@ -2,6 +2,9 @@ import { getRecommendedDictionaries } from '../../src/views/Words/dictionaryConf
 console.log('[getRecommendedDictionaries]', getRecommendedDictionaries());
 
 context('单词页面测试', () => {
+    beforeEach(() => {  
+        setToken();
+    });
     it('访问单词页面, url符合预期', () => {
         // 先访问首页
         gotoWords(cy);
@@ -152,6 +155,6 @@ function runDictTest(dict) {
 }
 
 function gotoWords(cy) {
-    cy.visit('/');
+    cy.visit('http://www.dict.wang/#/');
     cy.get('[data-test="primary"]').click();
 }

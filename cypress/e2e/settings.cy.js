@@ -1,12 +1,16 @@
+import { setToken } from "./config";
 describe('设置页面：头部导航测试', () => {
+    beforeEach(() => {
+        setToken();
+    });
     it('返回首页', () => {
-        cy.visit('/?_debug=true#/settings');
+        cy.visit('http://www.dict.wang/#/settings');
         cy.get('[data-test="back-btn"]').click();
         cy.location('hash').should('equal', '');
     });
     it('返回上一页', () => {
         // 先访问首页
-        cy.visit('/?_debug=true#/');
+        cy.visit('http://www.dict.wang/?_debug=true#/');
         // 然后点击底部菜单
         cy.get('[data-test="fabMenu"]').click();
         // 点击【设置】项
@@ -22,8 +26,9 @@ describe('设置页面：头部导航测试', () => {
 
 describe('设置页面', () => {
     beforeEach(() => {
+        setToken();
         // 带上 _debug=true 参数以确保所有调试相关的设置项都可见
-        cy.visit('/?_debug=true#/settings');
+        cy.visit('http://www.dict.wang/?_debug=true#/settings');
     });
 
     it('应成功加载并显示设置项', () => {
@@ -75,7 +80,7 @@ describe('设置页面', () => {
 
     it('每组学习单词数: 从10修改到11，单词对应的组数从10修改到11', () => {
         // 先访问words页面，
-        cy.visit('/?_debug=true#/words');
+        cy.visit('http://www.dict.wang/?_debug=true#/words');
         // 点击菜单展开
         cy.get('[data-test="fabMenu"]').click();
         // 点击设置跳转到设置中心，
@@ -93,7 +98,8 @@ describe('设置页面', () => {
 
 describe('清理缓存', () => {
     beforeEach(() => {
-        cy.visit('/?_debug=true#/settings');
+        setToken();
+        cy.visit('http://www.dict.wang/?_debug=true#/settings');
     });
 
     it('清理缓存', () => {
@@ -116,7 +122,8 @@ describe('清理缓存', () => {
 
 describe('导出数据', () => {
     beforeEach(() => {
-        cy.visit('/?_debug=true#/settings');
+        setToken();
+        cy.visit('http://www.dict.wang/?_debug=true#/settings');
     });
 
     it('导出数据： 没有需要导出的学习记录', () => {
@@ -130,7 +137,7 @@ describe('导出数据', () => {
     it('导出数据： 有需要导出的学习记录', () => {
         clearAllCache();
         generateCache();
-        cy.visit('/?_debug=true#/settings');
+        cy.visit('http://www.dict.wang/?_debug=true#/settings');
         cy.get('[data-test="export"]').click({ force: true }); // 点击导出
         // 由于剪切板不可用，这个时候会走确认弹窗的逻辑
         // cy.get('[data-test="confirm"]').click({ force: true }); // 点击确认
@@ -148,7 +155,7 @@ describe('数据导入功能', () => {
     const toastMessage = '[data-test="toast-message"]';
     beforeEach(() => {
         // 跳转设置页面
-        cy.visit('/?_debug=true#/settings');
+        cy.visit('http://www.dict.wang/?_debug=true#/settings');
         // 确保每次测试开始时弹窗都是关闭的
         cy.get(modal).should('not.exist');
     });
@@ -213,7 +220,7 @@ async function clearAllCache() {
     cy.clearAllLocalStorage();
     cy.clearAllSessionStorage();
     cy.clearCookies();
-    cy.visit('/?_debug=true#/settings').then(win => {
+    cy.visit('http://www.dict.wang/?_debug=true#/settings').then(win => {
         if (indexedDB.databases) {
             indexedDB.databases().then(dbs => {
                 dbs.forEach(db => {
@@ -227,7 +234,7 @@ async function clearAllCache() {
 }
 
 async function generateCache() {
-    cy.visit('/?_debug=true#/records');
+    cy.visit('http://www.dict.wang/?_debug=true#/records');
 
     // 找到并点击"生成测试数据"按钮
     cy.contains('button', '生成测试数据').should('be.visible').click();

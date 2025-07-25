@@ -1,9 +1,9 @@
+import { setToken } from "./config";
+
 context('学习记录页面', () => {
     beforeEach(() => {
-        // 在每个测试前，清空所有相关的 IndexedDB 数据库
-        cy.cleanDB();
-        // 访问学习记录页面
-        cy.visit('/?_debug=true#/records');
+        setToken();
+        cy.visit('http://www.dict.wang/#/records');
     });
 
     it('首次访问时，应显示"暂无学习记录"', () => {

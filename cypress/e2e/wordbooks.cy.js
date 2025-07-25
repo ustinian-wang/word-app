@@ -1,6 +1,8 @@
-describe('词库页面', () => {
+import { setToken } from "./config";
+context('词库页面', () => {
     beforeEach(() => {
-        cy.visit('/#/wordbooks');
+        setToken();
+        cy.visit('http://www.dict.wang/#/wordbooks');
     });
 
     it('应成功加载并显示词库列表', () => {
