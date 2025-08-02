@@ -218,7 +218,6 @@ export function addPassWordRecord(word, bid) {
         bid
     });
     console.log('addPassWordRecord', word);
-    return wordRecordDB.addNewRecord(word, WORD_RECORD_STATUS.PASS);
 }
 
 /**
@@ -234,7 +233,6 @@ export function addFailWordRecord(word, bid) {
         bid
     });
     console.log('addFailWordRecord', word);
-    return wordRecordDB.addNewRecord(word, WORD_RECORD_STATUS.FAIL);
 }
 
 // 导出服务实例

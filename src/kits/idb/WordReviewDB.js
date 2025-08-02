@@ -1,7 +1,8 @@
 import { openDB } from 'idb';
 import { updateBinarySM2, getDefaultSM2 } from '../sm2';
-import { addFailWordRecord, addPassWordRecord } from './WordRecordDB';
+import { addFailWordRecord, addPassWordRecord, WORD_RECORD_STATUS, WORD_RECORD_TYPE } from './WordRecordDB';
 import { upsertDataWdSm2Api } from '@/apis/wordSm2Api';
+import { addWordRecordApi } from '@/apis/wordRecordApi';
 
 // SM-2 算法参数
 const SM2_PARAMS = {
@@ -171,7 +172,12 @@ export const wordReviewDB = new WordReviewDB();
 wordReviewDB.init();
 
 export async function passReview(word, bid) {
-    addPassWordRecord(word, bid);
+    addWordRecordApi({
+        word,
+        status: WORD_RECORD_STATUS.PASS,
+        type: WORD_RECORD_TYPE.REVIEW,
+        bid
+    });
     upsertDataWdSm2Api({
         word,
         pass: 0,
@@ -181,11 +187,15 @@ export async function passReview(word, bid) {
 }
 
 export async function failReview(word, bid) {
-    addFailWordRecord(word, bid);
+    addWordRecordApi({
+        word,
+        status: WORD_RECORD_STATUS.FAIL,
+        type: WORD_RECORD_TYPE.REVIEW,
+        bid
+    });
     upsertDataWdSm2Api({
         word,
         pass: 0,
         bid
     });
-    return await wordReviewDB.processReview(word, 0);
 }

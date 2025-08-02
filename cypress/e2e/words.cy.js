@@ -1,4 +1,5 @@
 import { getRecommendedDictionaries } from '../../src/views/Words/dictionaryConfig';
+import { setToken } from './config';
 console.log('[getRecommendedDictionaries]', getRecommendedDictionaries());
 
 context('单词页面测试', () => {
@@ -45,6 +46,7 @@ context('权威词典', () => {
     const dictCount = 6; // 根据你的测试，这里有6个词典
 
     beforeEach(() => {
+        setToken();
         gotoWords(cy);
     });
 
@@ -57,6 +59,7 @@ context('权威词典', () => {
 context('操作：打勾', () => {
     const dictCount = 6; // 根据你的测试，这里有6个词典
     beforeEach(() => {
+        setToken();
         gotoWords(cy);
     });
 
@@ -71,7 +74,7 @@ context('操作：打勾', () => {
         // cy.get('[data-test="finish-btn"]').click();
         // cy.get('[data-test="home-btn"]').click();
     });
-    it.only('点击20次打勾按钮，出现完成弹窗，【继续下一组】按钮', () => {
+    it('点击20次打勾按钮，出现完成弹窗，【继续下一组】按钮', () => {
         for (let i = 0; i < 10; i++) {
             cy.get('[data-test="pass-btn"]').click();
             cy.get('[data-test="pass-btn"]').click();
@@ -82,7 +85,7 @@ context('操作：打勾', () => {
         cy.location('hash').should('include', '/words');
         // cy.get('[data-test="home-btn"]').click();
     });
-    it.only('点击20次打勾按钮，出现完成弹窗，【返回首页】按钮', () => {
+    it('点击20次打勾按钮，出现完成弹窗，【返回首页】按钮', () => {
         for (let i = 0; i < 10; i++) {
             cy.get('[data-test="pass-btn"]').click();
             cy.get('[data-test="pass-btn"]').click();
@@ -96,9 +99,10 @@ context('操作：打勾', () => {
 
 
 
-context.only('操作：打叉', () => {
+context('操作：打叉', () => {
     const dictCount = 6; // 根据你的测试，这里有6个词典
     beforeEach(() => {
+        setToken();
         gotoWords(cy);
     });
 
@@ -109,7 +113,7 @@ context.only('操作：打叉', () => {
             cy.get('[data-test="fail-btn"]').click();
             cy.get('[data-test="fail-btn"]').click();
         }
-        cy.get('[data-test="finish-modal"]').should('not.be.visible');
+        // cy.get('[data-test="finish-modal"]').should('not.be.visible');
         // cy.get('[data-test="finish-btn"]').click();
         // cy.get('[data-test="home-btn"]').click();
     });

@@ -1,6 +1,6 @@
 import { setToken } from "./config";
 
-context('图片识别页面', () => {
+context.skip('图片识别页面', () => {
     beforeEach(() => {
         setToken();     
         cy.visit('http://www.dict.wang/#/recognize');

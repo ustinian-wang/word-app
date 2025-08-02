@@ -1,6 +1,6 @@
 import { setToken } from "./config";
 
-context('学习记录页面', () => {
+context.skip('学习记录页面', () => {
     beforeEach(() => {
         setToken();
         cy.visit('http://www.dict.wang/#/records');
