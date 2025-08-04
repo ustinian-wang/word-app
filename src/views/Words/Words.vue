@@ -77,8 +77,8 @@ import CardActions from '@/components/CardActions.vue';
 import DictionaryLinks from '@/components/DictionaryLinks.vue';
 import SliderContainer from '@/components/SliderContainer.vue';
 import { sleep } from '@ustinian-wang/kit';
-import { passReview, failReview } from '@/kits/idb/WordReviewDB';
-import { playNice, playHandsup, playOhno, playRight } from '@/kits/audio';
+import { passLearn, failLearn } from '@/kits/idb/WordReviewDB';
+import { playHandsup, playRight } from '@/kits/audio';
 import { gotoIndex, gotoWordBooks } from '@/router';
 import { keyboard } from '@/directives/keyboard';
 import { getNextLearningWordsApi } from '@/apis/wordRecordApi';
@@ -253,7 +253,7 @@ export default {
                 this.playCurrentWord();
                 return;
             }
-            passReview(this.curr_learning_word, this.usr_bookId);
+            passLearn(this.curr_learning_word, this.usr_bookId);
             if (this.learningQueue.length <= 1) {
                 this.add_usr_learned_no(this.learningQueue[this.currentIdx]);
                 // this.saveProgress();
@@ -282,7 +282,7 @@ export default {
                 return;
             }
 
-            failReview(this.curr_learning_word, this.usr_bookId);
+            failLearn(this.curr_learning_word, this.usr_bookId);
             // 保留当前单词，切换到下一个
             if (this.currentIdx < this.learningQueue.length - 1) {
                 this.currentIdx++;

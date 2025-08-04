@@ -171,6 +171,24 @@ export const wordReviewDB = new WordReviewDB();
 
 wordReviewDB.init();
 
+export async function passLearn(word, bid) {
+    addWordRecordApi({
+        word,
+        status: WORD_RECORD_STATUS.PASS,
+        type: WORD_RECORD_TYPE.LEARNING,
+        bid
+    });
+}
+
+export async function failLearn(word, bid) {
+    addWordRecordApi({
+        word,
+        status: WORD_RECORD_STATUS.FAIL,
+        type: WORD_RECORD_TYPE.LEARNING,
+        bid
+    });
+}
+
 export async function passReview(word, bid) {
     addWordRecordApi({
         word,
