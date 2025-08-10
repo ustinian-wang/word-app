@@ -20,17 +20,31 @@ request.interceptors.request.use(config => {
 });
 
 // 响应拦截器：处理401自动跳转登录并toast
-request.interceptors.response.use(response => {
-    // 兼容后端rt=401但http状态码为200的情况
-    if (response && response.data && response.data.rt === 401) {
-        router.push('/login');
-        $message.error(response.data.msg || '请登录');
-        return Promise.reject({
-            isCustom401: true,
-            response
-        });
+request.interceptors.response.use(
+    response => {
+        // 兼容后端rt=401但http状态码为200的情况
+        if (response && response.data && response.data.rt === 401) {
+            router.push('/login');
+            $message.error(response.data.msg || '请登录');
+            return Promise.reject({
+                isCustom401: true,
+                response
+            });
+        }
+        return response;
+    },
+    error => {
+        let { response } = error;
+        if (response && response.data && response.data.rt === 401) {
+            router.push('/login');
+            $message.error(response.data.msg || '请登录');
+            return Promise.reject({
+                isCustom401: true,
+                response
+            });
+        }
+        return Promise.reject(error);
     }
-    return response;
-});
+);
 
 export { request };
